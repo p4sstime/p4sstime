@@ -1,5 +1,6 @@
 # p4sstime-fixes
 A mashup of fixes for 4v4 PASStime.
+[Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
 
 ## Plugin Features
 

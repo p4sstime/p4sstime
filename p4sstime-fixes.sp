@@ -27,8 +27,8 @@ public Plugin myinfo =
 	name = "4v4 Competitive PASStime Fixes",
 	author = "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes for 4v4 PASStime.",
-	version = "1.0",
-	url = "https://discord.com/invite/Vrk3Etg"
+	version = "1.1",
+	url = "https://github.com/czarchasm00/p4sstime-fixes"
 };
 
 public void OnPluginStart() {
