@@ -358,3 +358,181 @@ public bool IsValidClient(int client) {
 	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <tf2>
+#include <sdkhooks>
+#include <dhooks>
+
+//#pragma semicolon 1
+//#pragma newdecls required
+
+int firstGrab;
+
+public void OnPluginStart() {
+	HookEvent("pass_pass_caught", catchBallEvent, EventHookMode_Pre);
+	HookEvent("pass_get", passGrabEvent);
+	HookEvent("pass_free", passDropEvent);
+	HookEvent("pass_ball_stolen", passStealEvent);
+	HookEvent("pass_score", passScoreEvent, EventHookMode_Pre);
+}
+
+public Action passGrabEvent(Handle event, const char[] name, bool dontBreadcast) {
+	int ply = GetEventInt(event, "owner");
+	
+	//log formatting
+	char steamid[16];
+	char team[12];
+	
+	GetClientAuthId(ply, AuthId_Steam3, steamid, sizeof(steamid));
+	
+	if(GetClientTeam(ply) == 2) {
+		team = "Red";
+	} else if(GetClientTeam(ply) == 3) {
+		team = "Blue";
+	} else { //players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
+		team = "Spectator";
+	}
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", ply, GetClientUserId(ply), steamid, team, firstGrab);
+	firstGrab = 0;
+	
+	return Plugin_Continue;
+}
+
+public Action passStealEvent(Handle event, const char[] name, bool dontBreadcast) {
+	int stealer = GetEventInt(event, "attacker");
+	int carrier = GetEventInt(event, "victim");
+	
+	//log formatting
+	char steamid_stealer[16];
+	char steamid_carrier[16];
+	char team_stealer[12];
+	char team_carrier[12];
+	
+	GetClientAuthId(stealer, AuthId_Steam3, steamid_stealer, sizeof(steamid_stealer));
+	GetClientAuthId(carrier, AuthId_Steam3, steamid_carrier, sizeof(steamid_carrier));
+	
+	if(GetClientTeam(stealer) == 2) {
+		team_stealer = "Red";
+	} else if(GetClientTeam(stealer) == 3) {
+		team_stealer = "Blue";
+	} else {
+		team_stealer = "Spectator";
+	}
+	
+	if(GetClientTeam(carrier) == 2) {
+		team_carrier = "Red";
+	} else if(GetClientTeam(carrier) == 3) {
+		team_carrier = "Blue";
+	} else {
+		team_carrier = "Spectator";
+	}
+	
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\"", stealer, GetClientUserId(stealer), steamid_stealer, team_stealer, carrier, GetClientUserId(carrier), steamid_carrier, team_carrier);
+	
+	return Plugin_Continue;
+}
+
+
+public Action passScoreEvent(Event event, const char[] name, bool dontBroadcast) {
+	int scorer = GetEventInt(event, "scorer");
+	int points = GetEventInt(event, "points");
+	int assistor = GetEventInt(event, "assister");
+	
+	//log formatting
+	char steamid_scorer[16];
+	char team_scorer[12];
+	
+	GetClientAuthId(scorer, AuthId_Steam3, steamid_scorer, sizeof(steamid_scorer));
+	
+	if(GetClientTeam(scorer) == 2) {
+		team_scorer = "Red";
+	} else if(GetClientTeam(scorer) == 3) {
+		team_scorer = "Blue";
+	} else {
+		team_scorer = "Spectator";
+	}
+	
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points);
+	
+	if(assistor > 0) {
+		char steamid_assistor[16];
+		char team_assistor[12];
+		
+		GetClientAuthId(assistor, AuthId_Steam3, steamid_assistor, sizeof(steamid_assistor));
+		
+		if(GetClientTeam(assistor) == 2) {
+			team_assistor = "Red";
+		} else if(GetClientTeam(assistor) == 3) {
+			team_assistor = "Blue";
+		} else {
+			team_assistor = "Spectator";
+		}
+		
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\"", assistor, GetClientUserId(assistor), steamid_assistor, team_assistor);
+	}
+	return Plugin_Changed;
+}
+
+public Action catchBallEvent(Handle event, const char[] name, bool dontBroadcast) {
+	int thrower = GetEventInt(event, "passer");
+	int catcher = GetEventInt(event, "catcher");
+	float dist = GetEventFloat(event, "dist");
+	float duration = GetEventFloat(event, "duration");
+	
+	int intercept = true;
+	
+	if(GetClientTeam(thrower) == GetClientTeam(catcher)) {
+		intercept = false;
+	}
+	
+	//log formatting
+	char steamid_thrower[16];
+	char steamid_catcher[16];
+	char team_thrower[12];
+	char team_catcher[12];
+	
+	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
+	GetClientAuthId(catcher, AuthId_Steam3, steamid_catcher, sizeof(steamid_catcher));
+	
+	if(GetClientTeam(thrower) == 2) {
+		team_thrower = "Red";
+	} else if(GetClientTeam(thrower) == 3) {
+		team_thrower = "Blue";
+	} else {
+		team_thrower = "Spectator";
+	}
+	
+	if(GetClientTeam(catcher) == 2) {
+		team_catcher = "Red";
+	} else if(GetClientTeam(catcher) == 3) {
+		team_catcher = "Blue";
+	} else { //if a player throws the ball then goes spec they can trigger this event as a spectator
+		team_catcher = "Spectator";
+	}
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
+	
+	return Plugin_Continue;
+}
