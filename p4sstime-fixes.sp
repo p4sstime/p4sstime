@@ -6,7 +6,6 @@
 
 #define NAME_SIZE 25
 
-bool deadPlayers[MAXPLAYERS + 1];
 //0 = hud text, 1 = chat, 2 = sound
 bool ballHudEnabled[MAXPLAYERS + 1][3];
 //playerArray: 0 = scores, saves = 1, 2 = interceptions, 3 = steals
@@ -32,7 +31,6 @@ public void OnPluginStart() {
 
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
     HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
-    HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
     HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
     HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
     HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
@@ -73,7 +71,6 @@ public void OnMapStart() {
 }
 
 public void OnClientDisconnect(int client) {
-    deadPlayers[client] = false;
     ballHudEnabled[client][0] = false;
     ballHudEnabled[client][1] = false;
     ballHudEnabled[client][2] = false;
@@ -206,14 +203,8 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
     return Plugin_Handled;
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    deadPlayers[client] = true;
-}
-
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    deadPlayers[client] = false;
     RemoveShotty(client);
 }
 
@@ -229,7 +220,7 @@ public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast) 
 }
 
 public Action OnChangeClass(int client, const char[] strCommand, int args) {
-    if(deadPlayers[client] == true && respawnEnable.BoolValue) {
+    if(!IsPlayerAlive(client) && respawnEnable.BoolValue) {
         PrintCenterText(client, "You cant change class yet.");
         return Plugin_Handled;
     }
