@@ -147,6 +147,8 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
         SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
         ShowHudText(owner, 1, "");
     }
+
+    return Plugin_Handled;
 }
 
 public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) {
@@ -163,6 +165,8 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
     if (playerBallHudSettings[owner].sound) {
         ClientCommand(owner, "playgamesound Passtime.BallSmack");
     }
+
+    return Plugin_Handled;
 }
 
 public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcast) {
@@ -221,11 +225,15 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
     RemoveShotty(client);
+
+    return Plugin_Handled;
 }
 
 public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
     RemoveShotty(client);
+
+    return Plugin_Handled;
 }
 
 public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast) {
@@ -304,6 +312,7 @@ public Action Timer_DisplayStats(Handle timer) {
         playerStatistics[i].scores = 0, playerStatistics[i].saves = 0, playerStatistics[i].interceptions = 0, playerStatistics[i].steals = 0;
     }
 
+    return Plugin_Stop;
 }
 
 /* ---FUNCTIONS--- */
