@@ -1,4 +1,4 @@
-# P4SStime-Fixes
+# p4sstime-fixes
 A mashup of fixes for 4v4 PASStime.
 
 Contains work from:
