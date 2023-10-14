@@ -1,6 +1,12 @@
 #include <sourcemod>
 #include <tf2_stocks>
 #include <sdktools>
+//#include <tf2>
+//#include <sdkhooks>
+//#include <dhooks>
+
+//#pragma semicolon 1
+//#pragma newdecls required
 
 #define NAME_SIZE 25
 
@@ -13,6 +19,7 @@ float bluGoal[3], redGoal[3];
 
 ConVar stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius;
 
+int firstGrab;
 Menu ballHudMenu;
 
 public Plugin myinfo =
@@ -38,6 +45,13 @@ public void OnPluginStart() {
 	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall)
 	AddCommandListener(OnChangeClass, "joinclass");
+
+// for logs
+	HookEvent("pass_pass_caught", catchBallEvent, EventHookMode_Pre);
+	HookEvent("pass_get", passGrabEvent);
+	HookEvent("pass_ball_stolen", passStealEvent);
+	HookEvent("pass_score", passScoreEvent, EventHookMode_Pre);
+// end
 
 	stockEnable = CreateConVar("sm_passtime_whitelist", "0", "Enables/Disables passtime stock weapon locking");
 	respawnEnable = CreateConVar("sm_passtime_respawn", "0", "Enables/disables fixed respawn time");
@@ -359,45 +373,7 @@ public bool IsValidClient(int client) {
 	return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <tf2>
-#include <sdkhooks>
-#include <dhooks>
-
-//#pragma semicolon 1
-//#pragma newdecls required
-
-int firstGrab;
-
-public void OnPluginStart() {
-	HookEvent("pass_pass_caught", catchBallEvent, EventHookMode_Pre);
-	HookEvent("pass_get", passGrabEvent);
-	HookEvent("pass_free", passDropEvent);
-	HookEvent("pass_ball_stolen", passStealEvent);
-	HookEvent("pass_score", passScoreEvent, EventHookMode_Pre);
-}
+// muddy's log functions are below this
 
 public Action passGrabEvent(Handle event, const char[] name, bool dontBreadcast) {
 	int ply = GetEventInt(event, "owner");
