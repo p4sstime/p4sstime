@@ -6,8 +6,14 @@
 
 #define NAME_SIZE 25
 
-//0 = hud text, 1 = chat, 2 = sound
-bool ballHudEnabled[MAXPLAYERS + 1][3];
+enum struct BallHudSettings {
+    bool hudText;
+    bool chat;
+    bool sound;
+}
+
+BallHudSettings playerBallHudSettings[MAXPLAYERS + 1];
+
 //playerArray: 0 = scores, saves = 1, 2 = interceptions, 3 = steals
 int playerArray[MAXPLAYERS][4];
 float bluGoal[3], redGoal[3];
@@ -71,9 +77,9 @@ public void OnMapStart() {
 }
 
 public void OnClientDisconnect(int client) {
-    ballHudEnabled[client][0] = false;
-    ballHudEnabled[client][1] = false;
-    ballHudEnabled[client][2] = false;
+    playerBallHudSettings[client].hudText = false;
+    playerBallHudSettings[client].chat = false;
+    playerBallHudSettings[client].sound = false;
     playerArray[client][0] = 0, playerArray[client][1] = 0, playerArray[client][2] = 0, playerArray[client][3] = 0;
 }
 
@@ -101,25 +107,25 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
         char status[64];
         ballHudMenu.GetItem(param2, info, sizeof(info));
         if (StrEqual(info, "hudtext")) {
-            ballHudEnabled[param1][0] = !ballHudEnabled[param1][0];
+            playerBallHudSettings[param1].hudText = !playerBallHudSettings[param1].hudText;
             ballHudMenu.Display(param1, MENU_TIME_FOREVER);
 
-            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", ballHudEnabled[param1][0] ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", playerBallHudSettings[param1].hudText ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
             PrintToChat(param1, status);
         }
         if (StrEqual(info, "chattext")) {
-            ballHudEnabled[param1][1] = !ballHudEnabled[param1][1];
+            playerBallHudSettings[param1].chat = !playerBallHudSettings[param1].chat;
             ballHudMenu.Display(param1, MENU_TIME_FOREVER);
 
-            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", ballHudEnabled[param1][1] ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", playerBallHudSettings[param1].chat ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
             PrintToChat(param1, status);
 
         }
         if (StrEqual(info, "sound")) {
-            ballHudEnabled[param1][2] = !ballHudEnabled[param1][2];
+            playerBallHudSettings[param1].sound = !playerBallHudSettings[param1].sound;
             ballHudMenu.Display(param1, MENU_TIME_FOREVER);
 
-            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", ballHudEnabled[param1][2] ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+            Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", playerBallHudSettings[param1].sound ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
             PrintToChat(param1, status);
         }
     }
@@ -129,7 +135,7 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 
 public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast) {
     int owner = event.GetInt("owner");
-    if (ballHudEnabled[owner][0]) {
+    if (playerBallHudSettings[owner].hudText) {
         SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
         ShowHudText(owner, 1, "");
     }
@@ -137,16 +143,16 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 
 public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) {
     int owner = event.GetInt("owner");
-    if (ballHudEnabled[owner][0]) {
+    if (playerBallHudSettings[owner].hudText) {
         SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
         ShowHudText(owner, 1, "YOU HAVE THE JACK");
     }
 
-    if (ballHudEnabled[owner][1]) {
+    if (playerBallHudSettings[owner].chat) {
         PrintToChat(owner, "\x07ffff00[PASS]\x0700ff00 YOU HAVE THE JACK!!!");
     }
 
-    if (ballHudEnabled[owner][2]) {
+    if (playerBallHudSettings[owner].sound) {
         ClientCommand(owner, "playgamesound Passtime.BallSmack");
     }
 }
@@ -177,7 +183,7 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
 public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast) {
     int victim = event.GetInt("victim");
     int thief = event.GetInt("attacker");
-    if (ballHudEnabled[victim][0]) {
+    if (playerBallHudSettings[victim].hudText) {
         SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
         ShowHudText(victim, 1, "");
     }
