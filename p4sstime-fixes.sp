@@ -23,7 +23,7 @@ public Plugin myinfo =
 	name = "4v4 Competitive PASStime Fixes",
 	author = "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes for 4v4 PASStime.",
-	version = "1.1",
+	version = "1.2",
 	url = "https://github.com/czarchasm00/p4sstime-fixes"
 };
 
@@ -58,9 +58,9 @@ public void OnPluginStart() {
 	saveRadius = CreateConVar("sm_passtime_stats_save_radius", "200", "The Radius in hammer units from the goal that an intercept is considered a save");
 	
 	ballHudMenu = new Menu(BallHudMenuHandler);
-	ballHudMenu.SetTitle("Jack Notifcations");
-	ballHudMenu.AddItem("hudtext", "Toggle hud notification");
-	ballHudMenu.AddItem("chattext", "Toggle chat notifcation");
+	ballHudMenu.SetTitle("Jack Notifications");
+	ballHudMenu.AddItem("hudtext", "Toggle HUD notification");
+	ballHudMenu.AddItem("chattext", "Toggle chat notification");
 	ballHudMenu.AddItem("sound", "Toggle sound notification");
 
 	char mapName[64], prefix[16];
@@ -82,13 +82,13 @@ public void OnClientDisconnect(int client) {
 	playerArray[client][0] = 0, playerArray[client][1] = 0, playerArray[client][2] = 0, playerArray[client][3] = 0;
 }
 
-// the below function is dr underscore's fix. thanks!
 public void TF2_OnConditionAdded(int client, TFCond condition) {
 	if (condition == TFCond_PasstimeInterception && clearHud.BoolValue) {
 		ClientCommand(client, "r_screenoverlay \"\"");
 	}
 }
 
+// the below function is dr underscore's fix. thanks!
 public TF2_OnConditionRemoved(client, TFCond:condition)
 {
     if (condition == TFCond_Ubercharged)
