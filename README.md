@@ -21,6 +21,8 @@ Change the delay between a team winning and the stats being displayed in chat vi
 
 sm_passtime_stats will be automatically set to 1 if the map name begins with "pa"
 
+Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball after without respawning
+
 ## Credits
 
 Contains work from:
