@@ -1,12 +1,6 @@
 #include <sourcemod>
 #include <tf2_stocks>
 #include <sdktools>
-//#include <tf2>
-//#include <sdkhooks>
-//#include <dhooks>
-
-//#pragma semicolon 1
-//#pragma newdecls required
 
 #define NAME_SIZE 25
 
@@ -27,7 +21,7 @@ public Plugin myinfo =
 	name = "4v4 Competitive PASStime Fixes",
 	author = "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes for 4v4 PASStime.",
-	version = "1.1",
+	version = "1.2",
 	url = "https://github.com/czarchasm00/p4sstime-fixes"
 };
 
