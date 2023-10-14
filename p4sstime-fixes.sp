@@ -2,6 +2,8 @@
 #include <tf2_stocks>
 #include <sdktools>
 
+#pragma semicolon 1 // required for logs.tf
+
 #define NAME_SIZE 25
 
 bool deadPlayers[MAXPLAYERS + 1];
@@ -21,7 +23,7 @@ public Plugin myinfo =
 	name = "4v4 Competitive PASStime Fixes",
 	author = "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes for 4v4 PASStime.",
-	version = "1.2",
+	version = "1.3",
 	url = "https://github.com/czarchasm00/p4sstime-fixes"
 };
 
@@ -37,7 +39,7 @@ public void OnPluginStart() {
 	HookEvent("pass_score", Event_PassScore, EventHookMode_Post);
 	HookEvent("pass_pass_caught", Event_PassCaught, EventHookMode_Post);
 	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
-	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall)
+	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
 // for logs
@@ -51,13 +53,13 @@ public void OnPluginStart() {
 	respawnEnable = CreateConVar("sm_passtime_respawn", "0", "Enables/disables fixed respawn time");
 	clearHud = CreateConVar("sm_passtime_hud", "1", "Enables/Disables blocking the blur effect after intercepting or stealing the ball");
 	collisionDisable = CreateConVar("sm_passtime_collision_disable", "0", "Enables/Disables the passtime jack from colliding with ammopacks or weapons");
-	statsEnable = CreateConVar("sm_passtime_stats", "1", "Enables passtime stats")
-	statsDelay = CreateConVar("sm_passtime_stats_delay", "7.5", "Delay for passtime stats to be displayed after a game is won")
-	saveRadius = CreateConVar("sm_passtime_stats_save_radius", "200", "The Radius in hammer units from the goal that an intercept is considered a save")
+	statsEnable = CreateConVar("sm_passtime_stats", "1", "Enables passtime stats");
+	statsDelay = CreateConVar("sm_passtime_stats_delay", "7.5", "Delay for passtime stats to be displayed after a game is won");
+	saveRadius = CreateConVar("sm_passtime_stats_save_radius", "200", "The Radius in hammer units from the goal that an intercept is considered a save");
 	
 	ballHudMenu = new Menu(BallHudMenuHandler);
 	ballHudMenu.SetTitle("Jack Notifcations");
-	ballHudMenu.AddItem("hudtext", "Toggle hud notifcation");
+	ballHudMenu.AddItem("hudtext", "Toggle hud notification");
 	ballHudMenu.AddItem("chattext", "Toggle chat notifcation");
 	ballHudMenu.AddItem("sound", "Toggle sound notification");
 
@@ -131,7 +133,7 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 /* ---EVENTS--- */
 
 public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast) {
-	int owner = event.GetInt("owner")
+	int owner = event.GetInt("owner");
 	if (ballHudEnabled[owner][0]) {
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
@@ -197,7 +199,7 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
 public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast) {
 	if (!statsEnable.BoolValue) return Plugin_Handled;
 
-	int client = event.GetInt("scorer")
+	int client = event.GetInt("scorer");
 	if (!IsValidClient(client)) return Plugin_Handled;
 	char playerName[NAME_SIZE];
 	GetClientName(client, playerName, sizeof(playerName));
@@ -207,24 +209,24 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"))
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	deadPlayers[client] = true;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"))
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	deadPlayers[client] = false;
 	RemoveShotty(client);
 }
 
 public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast) {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"))
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	RemoveShotty(client);
 }
 
 public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast) {
 	if (!statsEnable.BoolValue) return Plugin_Handled;	
-	CreateTimer(statsDelay.FloatValue, Timer_DisplayStats)
+	CreateTimer(statsDelay.FloatValue, Timer_DisplayStats);
 	return Plugin_Handled;
 }
 
@@ -266,28 +268,28 @@ public Action Timer_DisplayStats(Handle timer) {
 		if (TF2_GetClientTeam(x) == TFTeam_Red) {
 			for (int i=0; i < bluCursor; i++) {
 				char playerName[NAME_SIZE];
-				GetClientName(bluTeam[i], playerName, sizeof(playerName))
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3])
+				GetClientName(bluTeam[i], playerName, sizeof(playerName));
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3]);
 			}
 
 			for (int i=0; i < redCursor; i++) {
 				char playerName[NAME_SIZE];
-				GetClientName(redTeam[i], playerName, sizeof(playerName))
-				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3])
+				GetClientName(redTeam[i], playerName, sizeof(playerName));
+				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3]);
 			}
 		}
 
 		else if (TF2_GetClientTeam(x) == TFTeam_Blue|| TF2_GetClientTeam(x) == TFTeam_Spectator) {
 			for (int i=0; i < redCursor; i++) {
                                  char playerName[NAME_SIZE];
-                                 GetClientName(redTeam[i], playerName, sizeof(playerName))
-                                 PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3])
+                                 GetClientName(redTeam[i], playerName, sizeof(playerName));
+                                 PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3]);
                          }
 
 			for (int i=0; i < bluCursor; i++) {
 				char playerName[NAME_SIZE];
-				GetClientName(bluTeam[i], playerName, sizeof(playerName))
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3])
+				GetClientName(bluTeam[i], playerName, sizeof(playerName));
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3]);
 			}
 
 		}
@@ -306,7 +308,7 @@ public void RemoveShotty(int client) {
 	if(stockEnable.BoolValue) {
 		TFClassType class = TF2_GetPlayerClass(client);
 		int iWep;
-		if (class == TFClass_DemoMan || class == TFClass_Soldier) iWep = GetPlayerWeaponSlot(client, 1)
+		if (class == TFClass_DemoMan || class == TFClass_Soldier) iWep = GetPlayerWeaponSlot(client, 1);
 		else if (class == TFClass_Medic) iWep = GetPlayerWeaponSlot(client, 0);
 
 		if(iWep >= 0) {
