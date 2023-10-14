@@ -12,10 +12,16 @@ enum struct BallHudSettings {
     bool sound;
 }
 
-BallHudSettings playerBallHudSettings[MAXPLAYERS + 1];
+enum struct Statistics {
+    int scores;
+    int saves;
+    int interceptions;
+    int steals;
+}
 
-//playerArray: 0 = scores, saves = 1, 2 = interceptions, 3 = steals
-int playerArray[MAXPLAYERS][4];
+BallHudSettings playerBallHudSettings[MAXPLAYERS + 1];
+Statistics playerStatistics[MAXPLAYERS + 1];
+
 float bluGoal[3], redGoal[3];
 
 ConVar stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius;
@@ -80,7 +86,11 @@ public void OnClientDisconnect(int client) {
     playerBallHudSettings[client].hudText = false;
     playerBallHudSettings[client].chat = false;
     playerBallHudSettings[client].sound = false;
-    playerArray[client][0] = 0, playerArray[client][1] = 0, playerArray[client][2] = 0, playerArray[client][3] = 0;
+
+    playerStatistics[client].scores = 0;
+    playerStatistics[client].saves = 0;
+    playerStatistics[client].interceptions = 0;
+    playerStatistics[client].steals = 0;
 }
 
 public void TF2_OnConditionAdded(int client, TFCond condition) {
@@ -170,11 +180,11 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
     GetClientName(catcher, catcherName, sizeof(catcherName));
     if (InGoalieZone(catcher)) {
         PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00 blocked \x0700ffff%s!", catcherName, passerName);
-        playerArray[catcher][1]++;
+        playerStatistics[catcher].saves++;
     }
     else {
         PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, passerName);
-        playerArray[catcher][2]++;
+        playerStatistics[catcher].interceptions++;
     }
 
     return Plugin_Handled;
@@ -192,7 +202,7 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
         GetClientName(thief, thiefName, sizeof(thiefName));
         GetClientName(victim, victimName, sizeof(victimName));
         PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
-        playerArray[thief][3]++;
+        playerStatistics[thief].steals++;
     }
     return Plugin_Handled;
 }
@@ -205,7 +215,8 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
     char playerName[NAME_SIZE];
     GetClientName(client, playerName, sizeof(playerName));
     PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
-    playerArray[client][0]++;
+    playerStatistics[client].scores++;
+
     return Plugin_Handled;
 }
 
@@ -264,13 +275,13 @@ public Action Timer_DisplayStats(Handle timer) {
             for (int i=0; i < bluCursor; i++) {
                 char playerName[NAME_SIZE];
                 GetClientName(bluTeam[i], playerName, sizeof(playerName));
-                PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3]);
+                PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
             }
 
             for (int i=0; i < redCursor; i++) {
                 char playerName[NAME_SIZE];
                 GetClientName(redTeam[i], playerName, sizeof(playerName));
-                PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3]);
+                PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
             }
         }
 
@@ -278,13 +289,13 @@ public Action Timer_DisplayStats(Handle timer) {
             for (int i=0; i < redCursor; i++) {
                                  char playerName[NAME_SIZE];
                                  GetClientName(redTeam[i], playerName, sizeof(playerName));
-                                 PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[redTeam[i]][0], playerArray[redTeam[i]][1], playerArray[redTeam[i]][2], playerArray[redTeam[i]][3]);
+                                 PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
                          }
 
             for (int i=0; i < bluCursor; i++) {
                 char playerName[NAME_SIZE];
                 GetClientName(bluTeam[i], playerName, sizeof(playerName));
-                PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerArray[bluTeam[i]][0], playerArray[bluTeam[i]][1], playerArray[bluTeam[i]][2], playerArray[bluTeam[i]][3]);
+                PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
             }
 
         }
@@ -292,7 +303,7 @@ public Action Timer_DisplayStats(Handle timer) {
 
     //clear stats
     for (int i=0; i < MaxClients+1;i++) {
-        playerArray[i][0] = 0, playerArray[i][1] = 0, playerArray[i][2] = 0, playerArray[i][3] = 0;
+        playerStatistics[i].scores = 0, playerStatistics[i].saves = 0, playerStatistics[i].interceptions = 0, playerStatistics[i].steals = 0;
     }
 
 }
