@@ -4,8 +4,6 @@
 
 #pragma semicolon 1 // required for logs.tf
 
-#define NAME_SIZE 25
-
 enum struct BallHudSettings {
     bool hudText;
     bool chat;
@@ -175,7 +173,7 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
     if (TF2_GetClientTeam(passer) == TF2_GetClientTeam(catcher)) return Plugin_Handled;
     if (TF2_GetClientTeam(passer) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
 
-    char passerName[NAME_SIZE], catcherName[NAME_SIZE];
+    char passerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
     GetClientName(passer, passerName, sizeof(passerName));
     GetClientName(catcher, catcherName, sizeof(catcherName));
     if (InGoalieZone(catcher)) {
@@ -198,7 +196,7 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
         ShowHudText(victim, 1, "");
     }
     if (statsEnable.BoolValue){
-        char thiefName[NAME_SIZE], victimName[NAME_SIZE];
+        char thiefName[MAX_NAME_LENGTH], victimName[MAX_NAME_LENGTH];
         GetClientName(thief, thiefName, sizeof(thiefName));
         GetClientName(victim, victimName, sizeof(victimName));
         PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
@@ -212,7 +210,7 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 
     int client = event.GetInt("scorer");
     if (!IsValidClient(client)) return Plugin_Handled;
-    char playerName[NAME_SIZE];
+    char playerName[MAX_NAME_LENGTH];
     GetClientName(client, playerName, sizeof(playerName));
     PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
     playerStatistics[client].scores++;
@@ -273,13 +271,13 @@ public Action Timer_DisplayStats(Handle timer) {
 
         if (TF2_GetClientTeam(x) == TFTeam_Red) {
             for (int i=0; i < bluCursor; i++) {
-                char playerName[NAME_SIZE];
+                char playerName[MAX_NAME_LENGTH];
                 GetClientName(bluTeam[i], playerName, sizeof(playerName));
                 PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
             }
 
             for (int i=0; i < redCursor; i++) {
-                char playerName[NAME_SIZE];
+                char playerName[MAX_NAME_LENGTH];
                 GetClientName(redTeam[i], playerName, sizeof(playerName));
                 PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
             }
@@ -287,13 +285,13 @@ public Action Timer_DisplayStats(Handle timer) {
 
         else if (TF2_GetClientTeam(x) == TFTeam_Blue|| TF2_GetClientTeam(x) == TFTeam_Spectator) {
             for (int i=0; i < redCursor; i++) {
-                                 char playerName[NAME_SIZE];
+                                 char playerName[MAX_NAME_LENGTH];
                                  GetClientName(redTeam[i], playerName, sizeof(playerName));
                                  PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
                          }
 
             for (int i=0; i < bluCursor; i++) {
-                char playerName[NAME_SIZE];
+                char playerName[MAX_NAME_LENGTH];
                 GetClientName(bluTeam[i], playerName, sizeof(playerName));
                 PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
             }
