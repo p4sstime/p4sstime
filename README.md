@@ -1,31 +1,45 @@
 # p4sstime-fixes
+
 A mashup of fixes for 4v4 PASStime.
+
 [Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
 
 ## Plugin Features
 
-Disables shotgun, stickies, and needles via sm_passtime_whitelist 1/0 (def. 0)
+- Uploads passtime-specific data to logs.tf for (hopefully) eventual display by logs.tf
 
-Prevents switches classes while dead to instantly respawn via sm_passtime_respawn 1/0 (def. 0)
+- Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball without respawning
 
-Disables the blurry screenoverlay after intercepting or stealing via sm_passtime_hud 1/0 (def. 1)
+- Prints chat messages upon a player scoring, intercepting, or stealing during game
 
-Prevents the jack from colliding with dropped ammo packs or weapons via sm_passtime_disable_collisions 1/0 (def. 0)
+### Commands
 
-Turn on hud text, chat text, or sound notifcations when picking up the ball via sm_ballhud
+> [!IMPORTANT]
+> First value before forward slash is default.
 
-Prints chat messages upon a player scoring, intercepting, or stealing
+```
+CLIENT
+sm_ballhud                     cmd    # Open menu to toggle hud text, chat text, or sound notifications when picking up the ball
 
-Prints players total scores, saves, intercepts, and steals to chat after a game is over via sm_passtime_stats 1/0 (def. 0)
+SERVER
+sm_passtime_whitelist          0/1    # Disables shotgun, stickies, and needles
+sm_passtime_respawn            0/1    # Prevents switches classes while dead to instantly respawn
+sm_passtime_hud                1/0    # Disables the blurry screen overlay after intercepting or stealing
+sm_passtime_disable_collisions 0/1    # Prevents the jack from colliding with dropped ammo packs or weapons
+sm_passtime_stats              0/1    # Prints players total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
+sm_passtime_stats_delay        7.5    # Change the delay between a team winning and the stats being displayed in chat
+```
 
-Change the delay between a team winning and the stats being displayed in chat via sm_passtime_stats_delay (def. 7.5)
+## TODO
 
-sm_passtime_stats will be automatically set to 1 if the map name begins with "pa"
-
-Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball after without respawning
+- [ ] Communicate with logs.tf owner to have PASS stats display on logs
 
 ## Credits
 
 Contains work from:
+
 [eaasye](https://github.com/eaasye/passtime/tree/master/addons/sourcemod/plugins)
+
 [drunderscore](https://github.com/drunderscore/SourcemodPlugins/blob/master/fix_uber_wearoff_condition.sp)
+
+[muddy](https://github.com/SirBlockles/pass-tweaks/blob/main/passtweaks.sp)
