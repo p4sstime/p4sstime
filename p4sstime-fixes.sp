@@ -170,25 +170,19 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
 }
 
 public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast) {
-	int owner = event.GetInt("victim");
-	if (ballHudEnabled[owner][0]) {
-		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
-		ShowHudText(owner, 1, "");
-	}
-}
-
-// need to look at this; need another way to stop this from running the following event
-public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast) {
-	if (!statsEnable.BoolValue) return Plugin_Handled;
-
-	int thief = event.GetInt("attacker");
 	int victim = event.GetInt("victim");
-	char thiefName[NAME_SIZE], victimName[NAME_SIZE];
-	GetClientName(thief, thiefName, sizeof(thiefName));
-	GetClientName(victim, victimName, sizeof(victimName));
-	PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
-	playerArray[thief][3]++;
-
+	int thief = event.GetInt("attacker");
+	if (ballHudEnabled[victim][0]) {
+		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
+		ShowHudText(victim, 1, "");
+	}
+	if (statsEnable.BoolValue){
+		char thiefName[NAME_SIZE], victimName[NAME_SIZE];
+		GetClientName(thief, thiefName, sizeof(thiefName));
+		GetClientName(victim, victimName, sizeof(victimName));
+		PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
+		playerArray[thief][3]++;
+	}
 	return Plugin_Handled;
 }
 
@@ -258,7 +252,7 @@ public Action Timer_DisplayStats(Handle timer) {
 		}
 	}
 	for (int x=1; x < MaxClients+1; x++) {
-		if (!IsValidClient2(x)) continue;
+		if (!IsValidClient(x)) continue;
 		
 		if (TF2_GetClientTeam(x) == TFTeam_Red) {
 			for (int i=0; i < bluCursor; i++) {
