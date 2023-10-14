@@ -246,6 +246,7 @@ public Action OnChangeClass(int client, const char[] strCommand, int args) {
 public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay) {
 	int ball = FindEntityByClassname(-1, "passtime_ball");
 	if(collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
+	firstGrab = 1;
 }
 
 //this is really fucking sloppy but shrug
