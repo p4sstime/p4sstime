@@ -63,11 +63,9 @@ public void OnPluginStart() {
     ballHudMenu.AddItem("chattext", "Toggle chat notification");
     ballHudMenu.AddItem("sound", "Toggle sound notification");
 
-    char mapName[64], prefix[16];
-    GetCurrentMap(mapName, sizeof(mapName));
-    prefix[0] = mapName[0], prefix[1] = mapName[1];
-    if (StrEqual("pa", prefix)) statsEnable.SetInt(1);
-    else statsEnable.SetInt(0);
+    char mapPrefix[3];
+    GetCurrentMap(mapPrefix, sizeof(mapPrefix));
+    statsEnable.BoolValue = StrEqual("pa", mapPrefix);
 }
 
 public void OnMapStart() {
