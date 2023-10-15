@@ -12,6 +12,8 @@ A mashup of fixes for 4v4 PASStime.
 
 - Prints chat messages upon a player scoring, intercepting, or stealing during game
 
+- Recognizes unique bombs like Panaceas
+
 ### Commands
 
 > [!IMPORTANT]
