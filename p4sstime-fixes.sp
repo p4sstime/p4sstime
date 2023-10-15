@@ -29,6 +29,7 @@ ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, st
 int				firstGrab;
 int				panaceaCheck;
 Menu			ballHudMenu;
+bool			deadPlayers[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -45,6 +46,7 @@ public void OnPluginStart()
 
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
+	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
 	HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
 	HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
@@ -95,6 +97,7 @@ public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float
 
 public void OnClientDisconnect(int client)
 {
+	deadPlayers[client] = false;
 	playerBallHudSettings[client].hudText  = false;
 	playerBallHudSettings[client].chat	   = false;
 	playerBallHudSettings[client].sound	   = false;
@@ -220,6 +223,11 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
 	return Plugin_Handled;
 }
 
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	deadPlayers[client] = true;
+}
+
 public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = event.GetInt("victim");
@@ -264,6 +272,7 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	deadPlayers[client] = false;
 	RemoveShotty(client);
 
 	return Plugin_Handled;
@@ -286,7 +295,7 @@ public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 
 public Action OnChangeClass(int client, const char[] strCommand, int args)
 {
-	if (!IsPlayerAlive(client) && respawnEnable.BoolValue)
+	if(deadPlayers[client] == true && respawnEnable.BoolValue)
 	{
 		PrintCenterText(client, "You cant change class yet.");
 		return Plugin_Handled;
