@@ -226,6 +226,8 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	deadPlayers[client] = true;
+
+	return Plugin_Handled;
 }
 
 public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
