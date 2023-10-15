@@ -27,6 +27,7 @@ float			bluGoal[3], redGoal[3];
 ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius;
 
 int				firstGrab;
+int				panaceaCheck;
 Menu			ballHudMenu;
 
 public Plugin myinfo =
@@ -82,6 +83,14 @@ public void OnPluginStart()
 public void OnMapStart()
 {
 	GetGoalLocations();
+}
+
+public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
+{
+	int ball = FindEntityByClassname(-1, "passtime_ball");
+	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
+	firstGrab = 1;
+	panaceaCheck = 2;
 }
 
 public void OnClientDisconnect(int client)
@@ -239,7 +248,14 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 	if (!IsValidClient(client)) return Plugin_Handled;
 	char playerName[MAX_NAME_LENGTH];
 	GetClientName(client, playerName, sizeof(playerName));
-	PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
+	if (panaceaCheck == 1)
+	{
+		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+	}
+	else
+	{
+		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
+	}
 	playerStatistics[client].scores++;
 
 	return Plugin_Handled;
@@ -277,13 +293,6 @@ public Action OnChangeClass(int client, const char[] strCommand, int args)
 	}
 
 	return Plugin_Continue;
-}
-
-public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
-{
-	int ball = FindEntityByClassname(-1, "passtime_ball");
-	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
-	firstGrab = 1;
 }
 
 // this is really fucking sloppy but shrug
@@ -452,6 +461,7 @@ public Action passGrabEvent(Handle event, const char[] name, bool dontBreadcast)
 		team = "Spectator";
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", ply, GetClientUserId(ply), steamid, team, firstGrab);
+	panaceaCheck--;
 	firstGrab = 0;
 
 	return Plugin_Continue;
@@ -521,7 +531,7 @@ public Action passScoreEvent(Event event, const char[] name, bool dontBroadcast)
 		team_scorer = "Spectator";
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%i\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck); // if panaceaCheck = 1, it's a panacea
 
 	if (assistor > 0)
 	{

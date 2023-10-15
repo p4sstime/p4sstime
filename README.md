@@ -33,7 +33,8 @@ sm_passtime_stats_delay        7.5    # Change the delay between a team winning 
 ## TODO
 
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (in progress, waiting on reply)
-- [ ] Track Panaceas and send as logs and chat msgs; (if firstcontact does not change from 0 before pass_score is triggered, it's a panacea)
+- [ ] Rename pre and post functions to make more sense and reorganize them based on that for easier work
+- [ ] Track Griff bombs; send as logs and chat msg; (if ball pass takes ??? distance, it's a griff bomb (it's like griff going in loops in arena))
 - [ ] Track deathbombs; send as logs and chat msg; (if ball goes into goal neutral and player who last had it is dead, it's a deathbomb)
 - [ ] Track goal defenses; send as logs and chat msg; (if ball is intercepted within ??? hammer units of goal, it's a defense)
 - [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot)
