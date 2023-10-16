@@ -515,6 +515,7 @@ public Action passStealEvent(Handle event, const char[] name, bool dontBreadcast
 	}
 
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\"", stealer, GetClientUserId(stealer), steamid_stealer, team_stealer, carrier, GetClientUserId(carrier), steamid_carrier, team_carrier);
+	panaceaCheck = 0;
 
 	return Plugin_Continue;
 }
@@ -612,6 +613,7 @@ public Action catchBallEvent(Handle event, const char[] name, bool dontBroadcast
 		team_catcher = "Spectator";
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
+	panaceaCheck = 0;
 
 	return Plugin_Continue;
 }

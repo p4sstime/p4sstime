@@ -34,6 +34,7 @@ sm_passtime_stats_delay        7.5    # Change the delay between a team winning 
 
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (in progress, waiting on reply)
 - [ ] Rename pre and post functions to make more sense and reorganize them based on that for easier work
+- [ ] sm_ballhud settings do not save
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 - [ ] Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb) 
