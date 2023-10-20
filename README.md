@@ -10,7 +10,12 @@ A mashup of fixes for 4v4 PASStime.
 
 - Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball without respawning
 
-- Prints chat messages upon a player scoring, intercepting, stealing, or Panaceas during game
+- Prints chat messages for the following:
+	- Scoring
+	- Intercepting
+	- Stealing
+	- Panaceas
+	- Catapults
 
 ### Commands
 
@@ -37,14 +42,12 @@ sm_passtime_stats_delay        7.5    # Change the delay between a team winning 
 - [ ] sm_ballhud settings do not save
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
-- [ ] Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb) 
+- [ ] Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb); needs map events first
 - [ ] Track triple sync bombs; send as logs and chat msg; (if player reaches a certain Y level in map, it's a triple sync) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM)
-- [ ] Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it is dead already, it's a deathbomb)
-- [ ] Track goal defenses; send as logs and chat msg; (if ball is intercepted within ??? hammer units of goal, it's a defense)
-- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot)
+- [ ] Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
+- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
 - [ ] Track ball airshots; send as logs and chatmsg; (if ball gets shot while in the air, it's a ball airshot)
 - [ ] Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and someone picks it up within ???, it's a pull bomb?) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
-- [ ] Track catapults; send as logs and chat msg?
 - [ ] Track handoffs; send as logs and chat msg? [Ramp Handoff Example](https://www.youtube.com/watch?v=vL9x8PUDE2Q) [Air Handoff Example](https://www.youtube.com/watch?v=x7fKfVuBEjc)
 - [ ] Track splash defense; send as logs and chat msg?
 

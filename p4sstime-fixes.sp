@@ -26,17 +26,19 @@ float			bluGoal[3], redGoal[3];
 
 ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius;
 
+int				plyGrab;
 int				firstGrab;
-int				panaceaCheck;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
+bool			inAir;
+bool			panaceaCheck = false;
 
 public Plugin myinfo =
 {
 	name		= "4v4 Competitive PASStime Fixes",
 	author		= "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes for 4v4 PASStime.",
-	version		= "1.3",
+	version		= "1.4",
 	url			= "https://github.com/czarchasm00/p4sstime-fixes"
 };
 
@@ -52,7 +54,12 @@ public void OnPluginStart()
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
 	HookEvent("pass_score", Event_PassScore, EventHookMode_Post);
 	HookEvent("pass_pass_caught", Event_PassCaught, EventHookMode_Post);
+	HookEvent("rocket_jump", Event_RJ, EventHookMode_Post);
+	HookEvent("rocket_jump_landed", Event_RJLand, EventHookMode_Post);
+	HookEvent("sticky_jump", Event_SJ, EventHookMode_Post);
+	HookEvent("sticky_jump_landed", Event_SJLand, EventHookMode_Post);
 	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
+	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
@@ -87,12 +94,39 @@ public void OnMapStart()
 	GetGoalLocations();
 }
 
+public void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
+{
+	char steamid[16];
+	char team[12];
+	char plyName[MAX_NAME_LENGTH];
+	int ball = FindEntityByClassname(-1, "passtime_ball");
+	if(activator == ball && firstGrab == 0 && IsClientConnected(plyGrab))
+	{
+		GetClientName(plyGrab, plyName, sizeof(plyName));
+		GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
+
+		if (GetClientTeam(plyGrab) == 2)
+		{
+			team = "Red";
+		}
+		else if (GetClientTeam(plyGrab) == 3) 
+		{
+			team = "Blue";
+		}
+		else // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
+		{	  
+			team = "Spectator";
+		}
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"trigger_catapult\" with the jack (catapult \"1\")", plyGrab, GetClientUserId(plyGrab), steamid, team);
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
+	}
+}
+
 public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
 	int ball = FindEntityByClassname(-1, "passtime_ball");
 	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
 	firstGrab = 1;
-	panaceaCheck = 2;
 }
 
 public void OnClientDisconnect(int client)
@@ -195,6 +229,11 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		ClientCommand(owner, "playgamesound Passtime.BallSmack");
 	}
 
+	if (GetEntityFlags(owner) & FL_ONGROUND != FL_ONGROUND)
+	{ 
+		inAir = true;
+	}
+
 	return Plugin_Handled;
 }
 
@@ -212,7 +251,7 @@ public Action Event_PassCaught(Event event, const char[] name, bool dontBroadcas
 	GetClientName(catcher, catcherName, sizeof(catcherName));
 	if (InGoalieZone(catcher))
 	{
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00 blocked \x0700ffff%s!", catcherName, passerName);
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, passerName);
 		playerStatistics[catcher].saves++;
 	}
 	else {
@@ -258,7 +297,11 @@ public Action Event_PassScore(Event event, const char[] name, bool dontBroadcast
 	if (!IsValidClient(client)) return Plugin_Handled;
 	char playerName[MAX_NAME_LENGTH];
 	GetClientName(client, playerName, sizeof(playerName));
-	if (panaceaCheck == 1)
+	if (GetEntityFlags(client) & FL_ONGROUND == FL_ONGROUND)
+	{ 
+		inAir = false;
+	}
+	if (panaceaCheck && inAir && TF2_GetPlayerClass(client) != TFClass_Medic)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}
@@ -288,6 +331,30 @@ public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
+public Action Event_RJ(Event event, const char[] name, bool dontBroadcast)
+{
+	inAir = true;
+	return Plugin_Handled;
+}
+
+public Action Event_RJLand(Event event, const char[] name, bool dontBroadcast)
+{
+	inAir = false;
+	return Plugin_Handled;
+}
+
+public Action Event_SJ(Event event, const char[] name, bool dontBroadcast)
+{
+	inAir = true;
+	return Plugin_Handled;
+}
+
+public Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
+{
+	inAir = false;
+	return Plugin_Handled;
+}
+
 public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!statsEnable.BoolValue) return Plugin_Handled;
@@ -299,10 +366,9 @@ public Action OnChangeClass(int client, const char[] strCommand, int args)
 {
 	if(deadPlayers[client] == true && respawnEnable.BoolValue)
 	{
-		PrintCenterText(client, "You cant change class yet.");
+		PrintCenterText(client, "You can't change class yet.");
 		return Plugin_Handled;
 	}
-
 	return Plugin_Continue;
 }
 
@@ -451,37 +517,46 @@ public bool IsValidClient(int client)
 }
 
 // muddy's log functions are below this
-public Action passGrabEvent(Handle event, const char[] name, bool dontBreadcast)
+public Action passGrabEvent(Handle event, const char[] name, bool dontBroadcast)
 {
-	int	 ply = GetEventInt(event, "owner");
+	plyGrab = GetEventInt(event, "owner");
 
 	// log formatting
 	char steamid[16];
 	char team[12];
 
-	GetClientAuthId(ply, AuthId_Steam3, steamid, sizeof(steamid));
+	GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
 
-	if (GetClientTeam(ply) == 2)
+	if (GetClientTeam(plyGrab) == 2)
 	{
 		team = "Red";
 	}
-	else if (GetClientTeam(ply) == 3) {
+	else if (GetClientTeam(plyGrab) == 3) {
 		team = "Blue";
 	}
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", ply, GetClientUserId(ply), steamid, team, firstGrab);
-	panaceaCheck--;
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab);
+		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
+	if(firstGrab == 1 && inAir)
+	{
+		panaceaCheck = true;
+	}
+	else
+	{
+		panaceaCheck = false;
+	}
 	firstGrab = 0;
 
 	return Plugin_Continue;
 }
 
-public Action passStealEvent(Handle event, const char[] name, bool dontBreadcast)
+public Action passStealEvent(Handle event, const char[] name, bool dontBroadcast)
 {
 	int	 stealer = GetEventInt(event, "attacker");
 	int	 carrier = GetEventInt(event, "victim");
+	plyGrab = stealer;
 
 	// log formatting
 	char steamid_stealer[16];
@@ -515,7 +590,7 @@ public Action passStealEvent(Handle event, const char[] name, bool dontBreadcast
 	}
 
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\"", stealer, GetClientUserId(stealer), steamid_stealer, team_stealer, carrier, GetClientUserId(carrier), steamid_carrier, team_carrier);
-	panaceaCheck = 0;
+	panaceaCheck = false;
 
 	return Plugin_Continue;
 }
@@ -543,7 +618,11 @@ public Action passScoreEvent(Event event, const char[] name, bool dontBroadcast)
 		team_scorer = "Spectator";
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%i\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck); // if panaceaCheck = 1, it's a panacea
+	if(TF2_GetPlayerClass(scorer) == TFClass_Medic){
+		panaceaCheck = false;
+	}
+
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%b\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck);
 
 	if (assistor > 0)
 	{
@@ -574,6 +653,7 @@ public Action catchBallEvent(Handle event, const char[] name, bool dontBroadcast
 	int	  catcher	= GetEventInt(event, "catcher");
 	float dist		= GetEventFloat(event, "dist");
 	float duration	= GetEventFloat(event, "duration");
+	plyGrab = catcher;
 
 	int	  intercept = true;
 
@@ -613,7 +693,7 @@ public Action catchBallEvent(Handle event, const char[] name, bool dontBroadcast
 		team_catcher = "Spectator";
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
-	panaceaCheck = 0;
+	panaceaCheck = false;
 
 	return Plugin_Continue;
 }
