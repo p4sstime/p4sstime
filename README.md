@@ -46,11 +46,13 @@ The below unique bombs may require special map triggers that have not been added
 ### Easy:
 - Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
 - Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
+- Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
 - Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
 	- Use inAir and onPlayerDeath?
 - Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height
 - Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
   	- Needs map entities first to fire outputs we can hook onto, then count
+- Track Goblin/Gorblin bombs; send as logs and chat msg; (goblin has ball go through holes, gorblin has you go through holes with ball); use map entities
 
 ### Medium:
 - Track splash defense; send as logs and chat msg?
@@ -61,6 +63,13 @@ The below unique bombs may require special map triggers that have not been added
 ### Hard:
 - Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
 - Track handoffs; send as logs and chat msg? [Ramp Handoff Example](https://www.youtube.com/watch?v=vL9x8PUDE2Q) [Air Handoff Example](https://www.youtube.com/watch?v=x7fKfVuBEjc)
+
+### Impossible:
+For these, I just don't know how I would track them. Could be easily possible
+
+- Demo instadets
+- Dribbledet
+- [Pretty much every other bomb not listed already](https://www.youtube.com/watch?v=TGivc75TSQI)
 
 ## Credits
 
