@@ -42,14 +42,24 @@ sm_passtime_stats_delay        7.5    # Change the delay between a team winning 
 - [ ] sm_ballhud settings do not save
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
-- [ ] Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb); needs map events first
-- [ ] Track triple sync bombs; send as logs and chat msg; (if player reaches a certain Y level in map, it's a triple sync) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM)
-- [ ] Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
-- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
-- [ ] Track ball airshots; send as logs and chatmsg; (if ball gets shot while in the air, it's a ball airshot)
-- [ ] Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and someone picks it up within ???, it's a pull bomb?) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
-- [ ] Track handoffs; send as logs and chat msg? [Ramp Handoff Example](https://www.youtube.com/watch?v=vL9x8PUDE2Q) [Air Handoff Example](https://www.youtube.com/watch?v=x7fKfVuBEjc)
-- [ ] Track splash defense; send as logs and chat msg?
+
+### Easy:
+- Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM)
+- Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
+- Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
+	- Use inAir and onPlayerDeath?
+- Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
+  	- Needs map entities first to fire outputs we can hook onto, then count
+
+### Medium:
+- Track splash defense; send as logs and chat msg?
+	- Use the same radius; if ball goes neutral within radius of goal due to splash, it's splash defense
+- Track ball airshots; send as logs and chatmsg; (if ball gets shot while in the air, it's a ball airshot)
+  	- Somehow hook onto projectiles and see if they hit ball while it's midair; use FL_ONGROUND?
+
+### Hard:
+- Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
+- Track handoffs; send as logs and chat msg? [Ramp Handoff Example](https://www.youtube.com/watch?v=vL9x8PUDE2Q) [Air Handoff Example](https://www.youtube.com/watch?v=x7fKfVuBEjc)
 
 ## Credits
 
