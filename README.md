@@ -49,7 +49,7 @@ The below unique bombs may require special map triggers that have not been added
 - Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
 - Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
 	- Use inAir and onPlayerDeath?
-- Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height
+- Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height (using map entities just from water would make this super easy lol)
 - Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
   	- Needs map entities first to fire outputs we can hook onto, then count
 - Track Goblin/Gorblin bombs; send as logs and chat msg; (goblin has ball go through holes, gorblin has you go through holes with ball); use map entities
