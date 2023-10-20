@@ -44,10 +44,11 @@ sm_passtime_stats_delay        7.5    # Change the delay between a team winning 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 
 ### Easy:
-- Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM)
+- Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
 - Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
 - Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
 	- Use inAir and onPlayerDeath?
+- Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height
 - Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
   	- Needs map entities first to fire outputs we can hook onto, then count
 
