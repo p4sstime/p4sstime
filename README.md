@@ -16,6 +16,9 @@ A mashup of fixes for 4v4 PASStime.
 	- Stealing
 	- Panaceas
 	- Catapults
+	- Ball airshots
+
+- Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere (beta)
 
 ### Commands
 
@@ -27,23 +30,25 @@ CLIENT
 sm_ballhud                     cmd    # Open menu to toggle hud text, chat text, or sound notifications when picking up the ball
 
 SERVER
-sm_passtime_whitelist          0/1    # Disables shotgun, stickies, and needles
-sm_passtime_respawn            0/1    # Prevents switches classes while dead to instantly respawn
-sm_passtime_hud                1/0    # Disables the blurry screen overlay after intercepting or stealing
-sm_passtime_disable_collisions 0/1    # Prevents the jack from colliding with dropped ammo packs or weapons
-sm_passtime_stats              0/1    # Prints players total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
-sm_passtime_stats_delay        7.5    # Change the delay between a team winning and the stats being displayed in chat
+sm_passtime_whitelist          0/1    # Toggles ability to equip shotgun, stickies, and needles
+sm_passtime_respawn            0/1    # Toggles class switch ability while dead to instantly respawn
+sm_passtime_hud                1/0    # Toggles the blurry screen overlay after intercepting or stealing
+sm_passtime_disable_collisions 1/0    # Toggles whether the jack will collide with dropped ammo packs or weapons
+sm_passtime_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
+sm_passtime_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
+sm_passtime_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
+sm_passtime_trikz			  0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
 ```
 
 ## TODO
 
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (in progress, waiting on reply)
-- [ ] Rename pre and post functions to make more sense and reorganize them based on that for easier work
 - [ ] sm_ballhud settings do not save
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 
 ### Easy:
+- Track distance for scores; add to logs and chat msg thing
 - Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
 - Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
 - Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
@@ -57,8 +62,6 @@ The below unique bombs may require special map triggers that have not been added
 ### Medium:
 - Track splash defense; send as logs and chat msg?
 	- Use the same radius; if ball goes neutral within radius of goal due to splash, it's splash defense
-- Track ball airshots; send as logs and chatmsg; (if ball gets shot while in the air, it's a ball airshot)
-  	- Somehow hook onto projectiles and see if they hit ball while it's midair; use FL_ONGROUND?
 
 ### Hard:
 - Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
@@ -67,6 +70,7 @@ The below unique bombs may require special map triggers that have not been added
 ### Impossible:
 For these, I just don't know how I would track them. Could be easily possible
 
+- Lobs (maybe somehow hook onto ball throw and see where viewangles are to determine lob?)
 - Demo instadets
 - Dribbledet
 - [Pretty much every other bomb not listed already](https://www.youtube.com/watch?v=TGivc75TSQI)
@@ -80,3 +84,7 @@ Contains work from:
 [drunderscore](https://github.com/drunderscore/SourcemodPlugins/blob/master/fix_uber_wearoff_condition.sp)
 
 [muddy](https://github.com/SirBlockles/pass-tweaks/blob/main/passtweaks.sp)
+
+[MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp#L546-L562); Direct hit detector
+
+Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.
