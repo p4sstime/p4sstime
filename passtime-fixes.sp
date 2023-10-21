@@ -42,9 +42,9 @@ bool			ballTakenDirectHit[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
-	name		= "4v4 Competitive PASStime Fixes",
+	name		= "Passtime Fixes",
 	author		= "czarchasm, Dr. Underscore (James), EasyE",
-	description = "A mashup of fixes for 4v4 PASStime.",
+	description = "A mashup of fixes for Competitive 4v4 PASStime.",
 	version		= "1.4",
 	url			= "https://github.com/czarchasm00/p4sstime-fixes"
 };
