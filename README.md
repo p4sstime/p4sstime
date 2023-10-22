@@ -4,6 +4,8 @@ A mashup of fixes for 4v4 PASStime.
 
 [Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
 
+[Check out the 4v4 PASS Time settings repository here.](https://github.com/eaasye/passtime)
+
 ## Plugin Features
 
 - Uploads passtime-specific data to logs.tf for (hopefully) eventual display by logs.tf
@@ -17,8 +19,11 @@ A mashup of fixes for 4v4 PASStime.
 	- Panaceas
 	- Catapults
 	- Ball airshots
+	- Handoffs
 
 - Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere (beta)
+
+- Adds a mode to easily practice PASS Time bombs
 
 ### Commands
 
@@ -38,17 +43,29 @@ sm_passtime_stats              0/1    # Toggles printing of players' total score
 sm_passtime_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
 sm_passtime_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
 sm_passtime_trikz			  0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
+sm_passtime_practice		   0/1	  # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
 ## TODO
 
-- [ ] Communicate with logs.tf owner to have PASS stats display on logs (in progress, waiting on reply)
+Fix rocket player collide on mp_friendlyfire; should've fixed it; test
+Fix handoff does not even get triggered; test 3
+Fix ball airshots not triggering; test 3
+Fix panacea check does not account for if you are on the ground when the goal is scored
+Remove forced whitelist stuff? Waiting on EasyE reply
+
+- [ ] Track distance for scores; add to logs and chat msg thing
+- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot)
+- [ ] Talk with EasyE about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
+- [ ] Communicate with logs.tf owner to have PASS stats display on logs (need to talk to Arie or Underscore to see if they can get in contact?)
+
+## Eventual Additions
+
 - [ ] sm_ballhud settings do not save
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 
 ### Easy:
-- Track distance for scores; add to logs and chat msg thing
 - Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
 - Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
 - Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
@@ -61,11 +78,7 @@ The below unique bombs may require special map triggers that have not been added
 
 ### Medium:
 - Track splash defense; send as logs and chat msg?
-	- Use the same radius; if ball goes neutral within radius of goal due to splash, it's splash defense
-
-### Hard:
-- Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot); look at [substats2.sp](https://github.com/F2/F2s-sourcemod-plugins/blob/master/supstats2/supstats2.sp)
-- Track handoffs; send as logs and chat msg? [Ramp Handoff Example](https://www.youtube.com/watch?v=vL9x8PUDE2Q) [Air Handoff Example](https://www.youtube.com/watch?v=x7fKfVuBEjc)
+	- Use the same radius; if ball goes neutral within radius of goal due to splash, it's splash defense; making this consistent is the hard part i think
 
 ### Impossible:
 For these, I just don't know how I would track them. Could be easily possible

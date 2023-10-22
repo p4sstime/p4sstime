@@ -2,6 +2,9 @@
 #include <tf2_stocks>
 #include <sdkhooks>
 #include <sdktools>
+#include <dhooks>
+
+#include "passtime-fixes/dhooks.sp"
 
 #pragma semicolon 1	   // required for logs.tf
 
@@ -26,12 +29,14 @@ Statistics		playerStatistics[MAXPLAYERS + 1];
 
 float			bluGoal[3], redGoal[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable;
+ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, practiceMode;
 
 int				plyGrab;
 int				plyDirecter;
 int				firstGrab;
 int				ball;
+int 			handoffCheck;
+int  			handoffThrower;
 char			storeProjectileName[MAX_NAME_LENGTH]; // setting this to the max length we can have, which is the 26 characters of tf_projectile_healing_bolt. each letter in string takes up cell (plus null terminator)
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
@@ -51,12 +56,20 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	GameData gamedata = new GameData("passtime-fixes");
+	if (gamedata)
+	{
+		DHooks_Initialize(gamedata);
+		delete gamedata;
+	}
+
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
-	HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
+	HookEvent("pass_get", Event_PassGetPre, EventHookMode_Pre);
+	HookEvent("pass_get", Event_PassGetPost, EventHookMode_Post);
 	HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
 	HookEvent("pass_score", Event_PassScorePre, EventHookMode_Pre);
@@ -70,6 +83,7 @@ public void OnPluginStart()
 	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
+	HookEntityOutput("team_round_timer", "On5MinRemain", Hook_OnFiveMinutes);
 	AddCommandListener(OnChangeClass, "joinclass");
 
 	stockEnable		 = CreateConVar("sm_passtime_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles", FCVAR_NOTIFY);
@@ -80,6 +94,7 @@ public void OnPluginStart()
 	statsDelay		 = CreateConVar("sm_passtime_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_passtime_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
 	trikzEnable		 = CreateConVar("sm_passtime_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
+	practiceMode	 = CreateConVar("sm_passtime_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
 
@@ -102,6 +117,11 @@ public void OnPluginStart()
   	}
 }
 
+public bool IsFriendlyFireEnabled()
+{
+	return !GameRules_GetProp("m_bTruceActive");
+}
+
 public void OnMapStart() // getgoallocations
 {
 	int goal1 = FindEntityByClassname(-1, "func_passtime_goal");
@@ -115,6 +135,12 @@ public void OnMapStart() // getgoallocations
 	else {
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", bluGoal);
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", redGoal);
+	}
+
+	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+	{	
+		Handle hCvar = FindConVar("sm_projectiles_ignore_teammates");
+		SetConVarFlags(hCvar, GetConVarFlags(hCvar) & ~FCVAR_NOTIFY);
 	}
 }
 
@@ -144,6 +170,7 @@ public OnClientPutInServer(client)
 // following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
 public void OnEntityCreated(int entity, const char[] classname)
 {
+	DHooks_OnEntityCreated(entity, classname);
 	ball = FindEntityByClassname(-1, "passtime_ball"); // just going to run this again here to be safe
 	if (StrEqual(classname, "tf_projectile_rocket") || StrEqual(classname, "tf_projectile_pipe"))
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
@@ -171,29 +198,23 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 {
 	plyDirecter = other;
 	if (IsValidClient(plyDirecter) && entity == ball)
+	{
+		PrintToChatAll("onprojtouch ball works");
 		ballTakenDirectHit[plyDirecter] = true;
+	}
 	else if (IsValidClient(plyDirecter))
-        plyTakenDirectHit[plyDirecter] = true;
+	{
+		PrintToChatAll("onprojtouch works");
+		plyTakenDirectHit[plyDirecter] = true;
+    }
 }
 
 public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (newValue[0] == '0')
-	{
 		SetConVarInt(FindConVar("mp_friendlyfire"), 0);
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-		{
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 1);
-		}
-	}
 	if (newValue[0] == '1' || newValue[0] == '2' || newValue[0] == '3')
-	{
 		SetConVarInt(FindConVar("mp_friendlyfire"), 1);
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-		{
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0); // just assuming this is required
-		}
-	}
 }
 
 public Action Command_BallHud(int client, int args)
@@ -255,6 +276,33 @@ public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
+public bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
+{
+    return entity > MaxClients || !entity;
+}
+
+public float DistanceAboveGround(int victim) // taken from mgemod
+{
+    float vStart[3];
+    float vEnd[3];
+    float vAngles[3] =  { 90.0, 0.0, 0.0 };
+    GetClientAbsOrigin(victim, vStart);
+    Handle trace = TR_TraceRayFilterEx(vStart, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceEntityFilterPlayer);
+
+    float distance = -1.0;
+    if (TR_DidHit(trace))
+    {
+        TR_GetEndPosition(vEnd, trace);
+        distance = GetVectorDistance(vStart, vEnd, false);
+    } else {
+        LogError("trace error. victim %N(%d)", victim, victim);
+    }
+
+    delete trace;
+    return distance;
+}
+
+
 public Action Event_RJ(Event event, const char[] name, bool dontBroadcast)
 {
 	inAir = true;
@@ -294,36 +342,47 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 	char victimName[MAX_NAME_LENGTH], attackerName[MAX_NAME_LENGTH];
 	GetClientName(victim, victimName, sizeof(victimName));
 	GetClientName(attacker, attackerName, sizeof(attackerName));
-	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || IsValidClient(victim))
+	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || !IsValidClient(victim)) // should not damage
 	{
 		return Plugin_Continue;	// end function early if attacker or victim is not legit player in game
 	}
-	if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND && plyTakenDirectHit[victim]))
+	if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && plyTakenDirectHit[victim])
 	{
+		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
 		plyTakenDirectHit[victim] = false;
 		return Plugin_Changed;
 	}
-	else if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
+	else if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
 	{
+		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 1);
 		damage = 0.0;
+		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND))
 	{
+		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
-	else if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
-	{
+	else if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
+	{	
+		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 1);
 		damage = 0.0;
+		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 3 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
 	{
+		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
-
 	return Plugin_Continue;	
 }
 
@@ -376,8 +435,10 @@ public void OnBallTouch(int entity)
 	char steamid[16];
 	char team[12];
 	char plyDirecterName[MAX_NAME_LENGTH];
-	if (ballTakenDirectHit[plyDirecter])
+	PrintToChatAll("onballtouch works");
+	if (ballTakenDirectHit[plyDirecter] && !(GetEntityFlags(ball) & FL_ONGROUND))
 	{
+		PrintToChatAll("onball if statement fulfilled");
 		GetClientName(plyDirecter, plyDirecterName, sizeof(plyDirecterName));
 		LogToGame("\"%N<%i><%s><%s>\" airshot the jack with %s", plyDirecter, GetClientUserId(plyDirecter), steamid, team);
 		PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434airshot \x0700ffffthe jack!", plyDirecterName);
@@ -398,7 +459,24 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PassGetPre(Event event, const char[] name, bool dontBroadcast) // occurs AFTER ball throw
+{
+	int owner = event.GetInt("owner");
+	int curCarrier = GetEntProp(ball, Prop_Send, "m_hCarrier");
+	int prevCarrier = GetEntProp(ball, Prop_Send, "m_hPrevCarrier");
+	int passTarget = GetEntProp(owner, Prop_Send, "m_bIsTargetedForPasstimePass");
+	handoffThrower = 0;
+	if (passTarget == 0)
+		{
+			PrintToChatAll("prev carrier: %i", prevCarrier);
+			PrintToChatAll("prev carrier: %N", GetClientUserId(prevCarrier));
+			handoffCheck = 1;
+			handoffThrower = prevCarrier;
+		}	
+	return Plugin_Continue;
+}
+
+public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadcast)
 {
 	plyGrab = event.GetInt("owner");
 
@@ -418,9 +496,13 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (handoff \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab, handoffCheck);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if(firstGrab == 1 && inAir)
+	if (handoffCheck == 1 && !(GetEntityFlags(plyGrab) & FL_ONGROUND) && DistanceAboveGround(plyGrab) > 200 && IsValidClient(handoffThrower))
+	{
+		PrintToChatAll("\x0700ffff[PASS] %N \x07ffff00handed off \x0700ffffto %N!", GetClientUserId(handoffThrower), GetClientUserId(plyGrab));
+	}
+	if (firstGrab == 1 && inAir)
 	{
 		panaceaCheck = true;
 	}
@@ -713,6 +795,16 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 }
 
 /*-------------------------------------------------- Game Events --------------------------------------------------*/
+public void Hook_OnFiveMinutes(const char[] output, int caller, int activator, float delay)
+{
+	if (practiceMode.BoolValue)
+	{
+		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
+		SetVariantInt(300);
+		AcceptEntityInput(entityTimer, "AddTime");
+	}
+}
+
 public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!statsEnable.BoolValue) return Plugin_Handled;
@@ -815,3 +907,10 @@ public void RemoveShotty(int client)
 		}
 	}
 }
+
+
+/*
+some data that will be useful later
+https://lmaobox.net/lua/TF2_props/
+
+*/
