@@ -21,7 +21,7 @@ A mashup of fixes for 4v4 PASStime.
 	- Ball airshots
 	- Handoffs
 
-- Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere (beta)
+- Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere
 
 - Adds a mode to easily practice PASS Time bombs
 
