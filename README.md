@@ -71,6 +71,7 @@ Need to Test:
 ## Eventual Additions
 
 - [ ] Track distance for scores; add to logs and chat msg thing (dhooks somehow)?
+- [ ] Spec hud that shows you who has ball, pass targets, etc
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 
