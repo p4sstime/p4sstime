@@ -29,7 +29,7 @@ Statistics		playerStatistics[MAXPLAYERS + 1];
 
 float			bluGoal[3], redGoal[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, practiceMode;
+ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, trikzProjCollide, practiceMode;
 
 int				plyGrab;
 int				plyDirecter;
@@ -74,8 +74,7 @@ public void OnPluginStart()
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
 	HookEvent("pass_score", Event_PassScorePre, EventHookMode_Pre);
 	HookEvent("pass_score", Event_PassScorePost, EventHookMode_Post);
-	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
-	HookEvent("pass_pass_caught", Event_PassCaughtPost, EventHookMode_Post);
+	HookEvent("pass_pass_caught", Event_PassCaught, EventHookMode_Post);
 	HookEvent("rocket_jump", Event_RJ, EventHookMode_Post);
 	HookEvent("rocket_jump_landed", Event_RJLand, EventHookMode_Post);
 	HookEvent("sticky_jump", Event_SJ, EventHookMode_Post);
@@ -86,15 +85,16 @@ public void OnPluginStart()
 	HookEntityOutput("team_round_timer", "On5MinRemain", Hook_OnFiveMinutes);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	stockEnable		 = CreateConVar("sm_passtime_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles", FCVAR_NOTIFY);
-	respawnEnable	 = CreateConVar("sm_passtime_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
-	clearHud		 = CreateConVar("sm_passtime_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
-	collisionDisable = CreateConVar("sm_passtime_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
-	statsEnable		 = CreateConVar("sm_passtime_stats", "0", "Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with 'pa'", FCVAR_NOTIFY);
-	statsDelay		 = CreateConVar("sm_passtime_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
-	saveRadius		 = CreateConVar("sm_passtime_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
-	trikzEnable		 = CreateConVar("sm_passtime_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
-	practiceMode	 = CreateConVar("sm_passtime_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles", FCVAR_NOTIFY);
+	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
+	clearHud		 = CreateConVar("sm_pt_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
+	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
+	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with 'pa'", FCVAR_NOTIFY);
+	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
+	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
+	trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
+	trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "1", "When mp_friendlyfire is 1, toggle distance-based team projectile collision. 1 removes distance-checking, 0 will cause your projectiles to phase through if you are too close.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	practiceMode	 = CreateConVar("sm_pt_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
 
@@ -120,6 +120,11 @@ public void OnPluginStart()
 public bool IsFriendlyFireEnabled()
 {
 	return !GameRules_GetProp("m_bTruceActive");
+}
+
+public bool trikzProjCollideCheck()
+{
+	return trikzProjCollide.BoolValue;
 }
 
 public void OnMapStart() // getgoallocations
@@ -536,15 +541,16 @@ public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
-public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 {
-	int	thrower	= GetEventInt(event, "passer"); // using GetEventInt is required for some reason; guess cuz it's pre hook
+	int	thrower	= GetEventInt(event, "passer");
 	int	catcher	= GetEventInt(event, "catcher");
 	float dist = GetEventFloat(event, "dist");
 	float duration = GetEventFloat(event, "duration");
+	int intercept = true;
 	plyGrab = catcher;
 
-	int	  intercept = true;
+	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
 
 	if (GetClientTeam(thrower) == GetClientTeam(catcher))
 	{
@@ -556,7 +562,10 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	char steamid_catcher[16];
 	char team_thrower[12];
 	char team_catcher[12];
+	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
 
+	GetClientName(thrower, throwerName, sizeof(throwerName));
+	GetClientName(catcher, catcherName, sizeof(catcherName));
 	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
 	GetClientAuthId(catcher, AuthId_Steam3, steamid_catcher, sizeof(steamid_catcher));
 
@@ -581,33 +590,19 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
 		team_catcher = "Spectator";
 	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
-	panaceaCheck = false;
-
-	return Plugin_Continue;
-}
-
-public Action Event_PassCaughtPost(Event event, const char[] name, bool dontBroadcast)
-{
-	if (!statsEnable.BoolValue) return Plugin_Handled;
-
-	int passer	= event.GetInt("passer");
-	int catcher = event.GetInt("catcher");
-	if (TF2_GetClientTeam(passer) == TF2_GetClientTeam(catcher)) return Plugin_Handled;
-	if (TF2_GetClientTeam(passer) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
-
-	char passerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
-	GetClientName(passer, passerName, sizeof(passerName));
-	GetClientName(catcher, catcherName, sizeof(catcherName));
-	if (InGoalieZone(catcher))
+	
+	if (InGoalieZone(catcher) && statsEnable.BoolValue)
 	{
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, passerName);
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (save \"1\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, dist, duration); // only do this for logs.tf; no need to put a variable on saves cuz if this if statement prints its always a save
 		playerStatistics[catcher].saves++;
 	}
-	else {
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, passerName);
+	else if (statsEnable.BoolValue) {
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
 		playerStatistics[catcher].interceptions++;
 	}
+	panaceaCheck = false;
 
 	return Plugin_Handled;
 }

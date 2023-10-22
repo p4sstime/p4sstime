@@ -58,8 +58,11 @@ static MRESReturn DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post(int
 	if (!IsFriendlyFireEnabled())
 		return MRES_Ignored;
 	
-	// Always make projectiles collide with teammates
-	ret.Value = true;
+	if (trikzProjCollideCheck()) // Always make projectiles collide with teammates
+		ret.Value = true;
+	if (!trikzProjCollideCheck()) // Normal game behavior (if too close, phases through)
+		ret.Value = false;
+
 	
 	return MRES_Supercede;
 }

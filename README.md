@@ -35,15 +35,16 @@ CLIENT
 sm_ballhud                     cmd    # Open menu to toggle hud text, chat text, or sound notifications when picking up the ball
 
 SERVER
-sm_passtime_whitelist          0/1    # Toggles ability to equip shotgun, stickies, and needles
-sm_passtime_respawn            0/1    # Toggles class switch ability while dead to instantly respawn
-sm_passtime_hud                1/0    # Toggles the blurry screen overlay after intercepting or stealing
-sm_passtime_disable_collisions 1/0    # Toggles whether the jack will collide with dropped ammo packs or weapons
-sm_passtime_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
-sm_passtime_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
-sm_passtime_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
-sm_passtime_trikz	      0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
-sm_passtime_practice	       0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
+sm_pt_whitelist          0/1    # Toggles ability to equip shotgun, stickies, and needles
+sm_pt_respawn            0/1    # Toggles class switch ability while dead to instantly respawn
+sm_pt_hud                1/0    # Toggles the blurry screen overlay after intercepting or stealing
+sm_pt_disable_collisions 1/0    # Toggles whether the jack will collide with dropped ammo packs or weapons
+sm_pt_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
+sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
+sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
+sm_pt_trikz             0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
+sm_pt_trikz_projcollide        1/0    # When mp_friendlyfire is 1, toggle distance-based team projectile collision. 1 removes distance-checking, 0 will cause your projectiles to phase through if you are too close.
+sm_pt_practice	       0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
 ## TODO
@@ -53,7 +54,9 @@ Need to Test:
 
 - Fix rocket player collide on mp_friendlyfire; should've fixed it; test
 
-- Need to add saves to be sent to logs.tf; they aren't currently (on pass_pass_caught)
+- Need to add saves to be sent to logs.tf; they aren't currently (on pass_pass_caught), should've fixed it; test
+
+- Check sm_pt_projcollide
 
 - Fix handoff does not even get triggered; test 3
 
