@@ -48,19 +48,24 @@ sm_passtime_practice		   0/1	  # Toggle practice mode. If 1, then when the round
 
 ## TODO
 Need to Test:
--splash damage still doing damage on teammates trikz 1/2; trying with damage 0 to fix; need to check if enemies still get damage by the rocket splash; seems to work? need 2 others
--do friendly player airshots count towards airshot counter on logs.tf
--test like literally everything again due to restructuring
 
-Fix rocket player collide on mp_friendlyfire; should've fixed it; test
-Fix handoff does not even get triggered; test 3
-Fix ball airshots not triggering; test 3
-Fix panacea check does not account for if you are on the ground when the goal is scored
-Remove forced whitelist stuff? Waiting on EasyE reply
+- Test fix for splash damage still doing damage on teammates trikz 1/2; need to check if enemies still get damage by the rocket splash; seems to work? need 2 others
+
+- Fix rocket player collide on mp_friendlyfire; should've fixed it; test
+
+- Fix handoff does not even get triggered; test 3
+
+- Fix ball airshots not triggering; test 3; also remove distance from ground check if there is one
+
+- Remove forced whitelist stuff? Waiting on EasyE reply
+
+- Do friendly player airshots count towards airshot counter on logs.tf
+
+- Make sure everything still goes to logs as expected
 
 - [ ] Track distance for scores; add to logs and chat msg thing
-- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot)
-- [ ] Talk with EasyE about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
+- [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot) (OnTakeDamage if airshot while "m_bHasPasstimeBall" == 1)
+- [ ] Send a pull request to EasyE passtime repo about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (need to talk to Arie or Underscore to see if they can get in contact?)
 
 ## Eventual Additions
