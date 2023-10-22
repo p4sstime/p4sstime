@@ -53,6 +53,8 @@ Need to Test:
 
 - Fix rocket player collide on mp_friendlyfire; should've fixed it; test
 
+- Need to add saves to be sent to logs.tf; they aren't currently (on pass_pass_caught)
+
 - Fix handoff does not even get triggered; test 3
 
 - Fix ball airshots not triggering; test 3; also remove distance from ground check if there is one
