@@ -47,6 +47,10 @@ sm_passtime_practice		   0/1	  # Toggle practice mode. If 1, then when the round
 ```
 
 ## TODO
+Need to Test:
+-splash damage still doing damage on teammates trikz 1/2; trying with damage 0 to fix; need to check if enemies still get damage by the rocket splash; seems to work? need 2 others
+-do friendly player airshots count towards airshot counter on logs.tf
+-test like literally everything again due to restructuring
 
 Fix rocket player collide on mp_friendlyfire; should've fixed it; test
 Fix handoff does not even get triggered; test 3
