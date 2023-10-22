@@ -42,8 +42,8 @@ sm_passtime_disable_collisions 1/0    # Toggles whether the jack will collide wi
 sm_passtime_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
 sm_passtime_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
 sm_passtime_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
-sm_passtime_trikz			  0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
-sm_passtime_practice		   0/1	  # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
+sm_passtime_trikz	      0/1/2/3 # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
+sm_passtime_practice	       0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
 ## TODO
@@ -63,14 +63,14 @@ Need to Test:
 
 - Make sure everything still goes to logs as expected
 
-- [ ] Track distance for scores; add to logs and chat msg thing
+- [ ] sm_ballhud settings do not save (use [client prefs api](https://sourcemod.dev/#/clientprefs))
 - [ ] Track ball carrier airshots; send as logs and chatmsg; (if player carrying ball gets airshot, it's a ball carrier airshot) (OnTakeDamage if airshot while "m_bHasPasstimeBall" == 1)
 - [ ] Send a pull request to EasyE passtime repo about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (need to talk to Arie or Underscore to see if they can get in contact?)
 
 ## Eventual Additions
 
-- [ ] sm_ballhud settings do not save
+- [ ] Track distance for scores; add to logs and chat msg thing (dhooks somehow)?
 
 The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
 
