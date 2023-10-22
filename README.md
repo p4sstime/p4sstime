@@ -113,4 +113,6 @@ Contains work from:
 
 [MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp#L546-L562); Direct hit detector
 
+[Fixed Friendly Fire](https://github.com/Mikusch/friendlyfire); Remove distance-based projectile blocking on teammates when mp_friendlyfire 1
+
 Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.
