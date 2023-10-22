@@ -78,7 +78,7 @@ The below unique bombs may require special map triggers that have not been added
 - Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
 - Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
 - Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
-- Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it died already in the air, it's a deathbomb)
+- Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it killbinded already in the air, it's a deathbomb)
 	- Use inAir and onPlayerDeath?
 - Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height (using map entities just from water would make this super easy lol)
 - Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
