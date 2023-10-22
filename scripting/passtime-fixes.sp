@@ -85,7 +85,7 @@ public void OnPluginStart()
 	HookEntityOutput("team_round_timer", "On5MinRemain", Hook_OnFiveMinutes);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles", FCVAR_NOTIFY);
+	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons", FCVAR_NOTIFY);
 	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
 	clearHud		 = CreateConVar("sm_pt_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
 	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
