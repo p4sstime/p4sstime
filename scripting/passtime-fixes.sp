@@ -40,6 +40,7 @@ Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
 bool			panaceaCheck = false;
+int  			handoffCheck;
 bool			plyTakenDirectHit[MAXPLAYERS + 1];
 Handle  		g_ballhudHud = INVALID_HANDLE;
 Handle  		g_ballhudChat = INVALID_HANDLE;
@@ -539,7 +540,10 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
 	int passTarget = GetEntProp(catcher, Prop_Send, "m_bIsTargetedForPasstimePass");
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget == 0 && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+	{
 		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		handoffCheck = 1;
+	}
 	return Plugin_Continue;
 }
 
@@ -603,7 +607,7 @@ public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBro
 	{
 		if (intercept)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, handoffCheck, dist, duration);
 		playerStatistics[catcher].interceptions++;
 	}
 	panaceaCheck = false;
@@ -734,7 +738,7 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	{ 
 		inAir = false;
 	}
-	if (panaceaCheck && inAir && TF2_GetPlayerClass(client) != TFClass_Medic)
+	if (panaceaCheck && TF2_GetPlayerClass(client) != TFClass_Medic)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}

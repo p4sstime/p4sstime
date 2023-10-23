@@ -59,7 +59,7 @@ Need to Test:
 
 - Handoff should get triggered; test 2
 
-- Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
+- Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
 
 - [ ] Send a pull request to EasyE passtime repo about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
 - [ ] Communicate with logs.tf owner to have PASS stats display on logs (need to talk to Arie or Underscore to see if they can get in contact?)
