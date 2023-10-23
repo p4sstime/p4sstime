@@ -56,13 +56,14 @@ public void DHookRemovalCB_OnHookRemoved(int hookid)
 static MRESReturn DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post(int entity, DHookReturn ret)
 {
 	if (!IsFriendlyFireEnabled())
-		return MRES_Ignored;
-	
-	if (trikzProjCollideCheck()) // Always make projectiles collide with teammates
-		ret.Value = true;
-	if (!trikzProjCollideCheck()) // Normal game behavior (if too close, phases through)
-		return MRES_Ignored;
-
-	
-	return MRES_Supercede;
+	{
+		if (trikzProjCollideCheck()) // Always make projectiles collide with teammates
+		{
+			ret.Value = true;
+			return MRES_Supercede;
+		}
+		if (!trikzProjCollideCheck()) // Normal game behavior (if too close, phases through)
+			return MRES_Ignored;
+	}
+	return MRES_Ignored;
 }

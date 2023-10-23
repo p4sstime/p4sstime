@@ -54,11 +54,10 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 Need to Test:
 - retest trikz totally; need two players
 
-- Check sm_pt_projcollide; 0 just completely stops projectiles from touching teammates, should be fixed and result in projectiles touching teammates like they do casually when trikz 1
+- Check sm_pt_projcollide; maybe fixed; test it in every scenario (annoying)
+    - for this, we may need to just completely remove sm_projectiles_ignore_teammates by setting it to 0 on map start
 
-- test chat message for assisted goals
-
-- Fix handoff does not even get triggered; it actually triggers pass_pass_caught so switch to that tmrw
+- Handoff should get triggered; test 2
 
 - Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
 

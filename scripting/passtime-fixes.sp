@@ -36,8 +36,6 @@ int				plyGrab;
 int				plyDirecter;
 int				firstGrab;
 int  			ball;
-int 			handoffCheck;
-int  			handoffThrower;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
@@ -74,13 +72,13 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
-	HookEvent("pass_get", Event_PassGetPre, EventHookMode_Pre);
-	HookEvent("pass_get", Event_PassGetPost, EventHookMode_Post);
+	HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
 	HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
 	HookEvent("pass_score", Event_PassScorePre, EventHookMode_Pre);
 	HookEvent("pass_score", Event_PassScorePost, EventHookMode_Post);
-	HookEvent("pass_pass_caught", Event_PassCaught, EventHookMode_Post);
+	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
+	HookEvent("pass_pass_caught", Event_PassCaughtPost, EventHookMode_Post);
 	HookEvent("rocket_jump", Event_RJ, EventHookMode_Post);
 	HookEvent("rocket_jump_landed", Event_RJLand, EventHookMode_Post);
 	HookEvent("sticky_jump", Event_SJ, EventHookMode_Post);
@@ -199,7 +197,6 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 	plyDirecter = other;
 	if (other > 0 && other <= MaxClients)
 	{
-		PrintToChatAll("onprojtouch works");
 		plyTakenDirectHit[plyDirecter] = true;
 	}
 }
@@ -476,27 +473,7 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-public Action Event_PassGetPre(Event event, const char[] name, bool dontBroadcast) // occurs AFTER ball throw
-{
-	int owner = event.GetInt("owner");
-	int curCarrier = GetEntPropEnt(ball, Prop_Send, "m_hCarrier");
-	int prevCarrier = GetEntPropEnt(ball, Prop_Send, "m_hPrevCarrier");
-	char curCarrierName[MAX_NAME_LENGTH], prevCarrierName[MAX_NAME_LENGTH];
-	int passTarget = GetEntProp(owner, Prop_Send, "m_bIsTargetedForPasstimePass");
-	handoffThrower = 0;
-	if (passTarget == 0 && prevCarrier != -1 && curCarrier != -1) // this prolly doesn't work cuz passing with no pass target = handoff and WAIT IC NA DO THAT JUST CONFIRM
-		{
-			GetClientName(prevCarrier, prevCarrierName, sizeof(prevCarrierName));
-			GetClientName(curCarrier, curCarrierName, sizeof(curCarrierName));
-			PrintToChatAll("prev carrier: %N", prevCarrierName);
-			PrintToChatAll("cur carrier: %N", curCarrierName);
-			handoffCheck = 1;
-			handoffThrower = prevCarrier;
-		}	
-	return Plugin_Continue;
-}
-
-public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw
 {
 	plyGrab = event.GetInt("owner");
 
@@ -516,12 +493,8 @@ public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadca
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (handoff \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab, handoffCheck);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (handoffCheck == 1 && !(GetEntityFlags(plyGrab) & FL_ONGROUND) && DistanceAboveGround(plyGrab) > 250)
-	{
-		PrintToChatAll("\x0700ffff[PASS] %N \x07ffff00handed off \x0700ffffto %N!", GetClientUserId(handoffThrower), GetClientUserId(plyGrab));
-	}
 	if (firstGrab == 1 && inAir)
 	{
 		panaceaCheck = true;
@@ -556,7 +529,21 @@ public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
-public Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
+{
+	int	thrower	= GetEventInt(event, "passer");
+	int	catcher	= GetEventInt(event, "catcher");
+	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
+	GetClientName(thrower, throwerName, sizeof(throwerName));
+	GetClientName(catcher, catcherName, sizeof(catcherName));
+	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
+	int passTarget = GetEntProp(catcher, Prop_Send, "m_bIsTargetedForPasstimePass");
+	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget == 0 && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+	return Plugin_Continue;
+}
+
+public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 {
 	int	thrower	= GetEventInt(event, "passer");
 	int	catcher	= GetEventInt(event, "catcher");
@@ -612,8 +599,10 @@ public Action Event_PassCaught(Handle event, const char[] name, bool dontBroadca
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (save \"1\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, dist, duration); // only do this for logs.tf; no need to put a variable on saves cuz if this if statement prints its always a save
 		playerStatistics[catcher].saves++;
 	}
-	else if (statsEnable.BoolValue && intercept) {
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+	else if (statsEnable.BoolValue) 
+	{
+		if (intercept)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
 		playerStatistics[catcher].interceptions++;
 	}
@@ -729,7 +718,7 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 		playerStatistics[assistor].assists++;
 
 	}
-	return Plugin_Changed;
+	return Plugin_Continue;
 }
 
 public Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
