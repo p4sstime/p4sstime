@@ -36,11 +36,13 @@ int				plyGrab;
 int				plyDirecter;
 int				firstGrab;
 int  			ball;
+int  			handoffCheck;
+int  			trikzProjCollideSave;
+int  			trikzProjCollideCurVal;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
 bool			panaceaCheck = false;
-int  			handoffCheck;
 bool			plyTakenDirectHit[MAXPLAYERS + 1];
 Handle  		g_ballhudHud = INVALID_HANDLE;
 Handle  		g_ballhudChat = INVALID_HANDLE;
@@ -98,10 +100,11 @@ public void OnPluginStart()
 	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
 	trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
-	trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "1", "When mp_friendlyfire is 1, toggle distance-based team projectile collision. 1 removes distance-checking, 0 will cause your projectiles to phase through if you are too close.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "0", "Set team projectile collision behavior. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
 	practiceMode	 = CreateConVar("sm_pt_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
+	HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
 
 	ballHudMenu = new Menu(BallHudMenuHandler);
 	ballHudMenu.SetTitle("Jack Notifications");
@@ -130,16 +133,6 @@ public void OnPluginStart()
 	}
 }
 
-public bool IsFriendlyFireEnabled()
-{
-	return !GameRules_GetProp("m_bTruceActive");
-}
-
-public bool trikzProjCollideCheck()
-{
-	return trikzProjCollide.BoolValue;
-}
-
 public void OnMapStart() // getgoallocations
 {
 	int goal1 = FindEntityByClassname(-1, "func_passtime_goal");
@@ -156,10 +149,8 @@ public void OnMapStart() // getgoallocations
 	}
 
 	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-	{	
-		Handle hCvar = FindConVar("sm_projectiles_ignore_teammates");
-		SetConVarFlags(hCvar, GetConVarFlags(hCvar) & ~FCVAR_NOTIFY);
-	}
+		SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
+	trikzProjCollideSave = GetConVarInt(trikzProjCollide);
 }
 
 public bool IsValidClient(int client)
@@ -200,6 +191,21 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 	{
 		plyTakenDirectHit[plyDirecter] = true;
 	}
+}
+
+public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (newValue[0] == '0') // never collide projectiles with teammates
+		trikzProjCollideCurVal = 0;
+	if (newValue[0] == '1') // projectiles will phase through teammates if you are too close
+		trikzProjCollideCurVal = 1;
+	if (newValue[0] == '2') // always collide projectiles with teammates
+		trikzProjCollideCurVal = 2;
+}
+
+public int ProjCollideValue()
+{
+	return trikzProjCollideCurVal;
 }
 
 public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -371,12 +377,12 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 	}
 	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || !IsValidClient(victim)) // should not damage
 	{
+		SetConVarInt(trikzProjCollide, trikzProjCollideSave); // reset
 		return Plugin_Continue;	// end function early if attacker or victim is not legit player in game
 	}
 	if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && plyTakenDirectHit[victim])
 	{
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
+		SetConVarInt(trikzProjCollide, 2); // always collide
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		if (DistanceAboveGround(victim) > 200)
 		{
@@ -392,29 +398,25 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 	}
 	else if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
 	{
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 1);
+		SetConVarInt(trikzProjCollide, 0); // never collide
 		damage = 0.0;
 		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND))
 	{
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
+		SetConVarInt(trikzProjCollide, 2); // always collide
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
 	else if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
 	{	
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 1);
+		SetConVarInt(trikzProjCollide, 0); // never collide
 		damage = 0.0;
 		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 3 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
 	{
-		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
+		SetConVarInt(trikzProjCollide, 2); // always collide
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
