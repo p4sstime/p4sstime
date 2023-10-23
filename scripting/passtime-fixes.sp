@@ -3,6 +3,7 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <dhooks>
+#include <clientprefs>
 
 #include "passtime-fixes/dhooks.sp"
 
@@ -34,24 +35,25 @@ ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, st
 int				plyGrab;
 int				plyDirecter;
 int				firstGrab;
-int				ball;
+int  			ball;
 int 			handoffCheck;
 int  			handoffThrower;
-char			storeProjectileName[MAX_NAME_LENGTH]; // setting this to the max length we can have, which is the 26 characters of tf_projectile_healing_bolt. each letter in string takes up cell (plus null terminator)
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
 bool			panaceaCheck = false;
 bool			plyTakenDirectHit[MAXPLAYERS + 1];
-bool			ballTakenDirectHit[MAXPLAYERS + 1];
+Handle  		g_ballhudHud = INVALID_HANDLE;
+Handle  		g_ballhudChat = INVALID_HANDLE;
+Handle  		g_ballhudSound = INVALID_HANDLE;
 
 public Plugin myinfo =
 {
 	name		= "Passtime Fixes",
 	author		= "czarchasm, Dr. Underscore (James), EasyE",
-	description = "A mashup of fixes for Competitive 4v4 PASStime.",
+	description = "A mashup of fixes and features for Competitive 4v4 PASS Time.",
 	version		= "1.4",
-	url			= "https://github.com/czarchasm00/p4sstime-fixes"
+	url			= "https://github.com/czarchasm00/passtime-fixes"
 };
 
 public void OnPluginStart()
@@ -62,6 +64,10 @@ public void OnPluginStart()
 		DHooks_Initialize(gamedata);
 		delete gamedata;
 	}
+
+	g_ballhudHud = RegClientCookie("ballhudHudSetting", "Passtime Fixes' sm_ballhud HUD Setting Value", CookieAccess_Public);
+	g_ballhudChat = RegClientCookie("ballhudChatSetting", "Passtime Fixes' sm_ballhud Chat Setting Value", CookieAccess_Public);
+	g_ballhudSound = RegClientCookie("ballhudSoundSetting", "Passtime Fixes' sm_ballhud Sounds Setting Value", CookieAccess_Public);
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
@@ -98,7 +104,7 @@ public void OnPluginStart()
 
 	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
 
-	ballHudMenu		 = new Menu(BallHudMenuHandler);
+	ballHudMenu = new Menu(BallHudMenuHandler);
 	ballHudMenu.SetTitle("Jack Notifications");
 	ballHudMenu.AddItem("hudtext", "Toggle HUD notification");
 	ballHudMenu.AddItem("chattext", "Toggle chat notification");
@@ -114,7 +120,15 @@ public void OnPluginStart()
 		{
 			OnClientPutInServer(client);
 		}
-  	}
+	}
+	for (new i = MaxClients; i > 0; --i)
+	{
+		if (!AreClientCookiesCached(i))
+		{
+			continue;
+		}
+		OnClientCookiesCached(i);
+	}
 }
 
 public bool IsFriendlyFireEnabled()
@@ -169,49 +183,25 @@ OnTakeDamageAlivePost -> After player has been damaged, period. Cannot change pa
 */
 public OnClientPutInServer(client)
 {
-    SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
+	SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
 }
 
 // following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
 public void OnEntityCreated(int entity, const char[] classname)
 {
 	DHooks_OnEntityCreated(entity, classname);
-	ball = FindEntityByClassname(-1, "passtime_ball"); // just going to run this again here to be safe
 	if (StrEqual(classname, "tf_projectile_rocket") || StrEqual(classname, "tf_projectile_pipe"))
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
-	if (entity == ball)
-	{
-		if (StrEqual(classname, "tf_projectile_rocket"))
-		{
-			SDKHook(entity, SDKHook_VPhysicsUpdate, OnBallTouch);
-			storeProjectileName = "tf_projectile_rocket";
-		}
-		if (StrEqual(classname, "tf_projectile_pipe"))
-		{
-			SDKHook(entity, SDKHook_VPhysicsUpdate, OnBallTouch);
-			storeProjectileName = "tf_projectile_pipe";
-		}
-		if (StrEqual(classname, "tf_projectile_healing_bolt"))
-		{
-			SDKHook(entity, SDKHook_VPhysicsUpdate, OnBallTouch);
-			storeProjectileName = "tf_projectile_healing_bolt";
-		}
-	}
 }
 
-public void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod
+public void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod; also doesnt work rofl check again
 {
 	plyDirecter = other;
-	if (IsValidClient(plyDirecter) && entity == ball)
-	{
-		PrintToChatAll("onprojtouch ball works");
-		ballTakenDirectHit[plyDirecter] = true;
-	}
-	else if (IsValidClient(plyDirecter))
+	if (other > 0 && other <= MaxClients)
 	{
 		PrintToChatAll("onprojtouch works");
 		plyTakenDirectHit[plyDirecter] = true;
-    }
+	}
 }
 
 public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -221,6 +211,18 @@ public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[
 	if (newValue[0] == '1' || newValue[0] == '2' || newValue[0] == '3')
 		SetConVarInt(FindConVar("mp_friendlyfire"), 1);
 }
+
+public OnClientCookiesCached(int client)
+{
+	char sValue[8];
+	GetClientCookie(client, g_ballhudHud, sValue, sizeof(sValue));
+	GetClientCookie(client, g_ballhudChat, sValue, sizeof(sValue));
+	GetClientCookie(client, g_ballhudSound, sValue, sizeof(sValue));
+	
+	playerBallHudSettings[client].hudText = (StringToInt(sValue) > 0);
+	playerBallHudSettings[client].chat = (StringToInt(sValue) > 0);
+	playerBallHudSettings[client].sound	= (StringToInt(sValue) > 0);
+}  
 
 public Action Command_BallHud(int client, int args)
 {
@@ -239,6 +241,10 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 		{
 			playerBallHudSettings[param1].hudText = !playerBallHudSettings[param1].hudText;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (playerBallHudSettings[param1].hudText) 
+				SetClientCookie(param1, g_ballhudHud, "1");
+			else
+				SetClientCookie(param1, g_ballhudHud, "0");
 
 			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", playerBallHudSettings[param1].hudText ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
@@ -247,6 +253,10 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 		{
 			playerBallHudSettings[param1].chat = !playerBallHudSettings[param1].chat;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (playerBallHudSettings[param1].chat) 
+				SetClientCookie(param1, g_ballhudChat, "1");
+			else
+				SetClientCookie(param1, g_ballhudChat, "0");
 
 			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", playerBallHudSettings[param1].chat ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
@@ -255,6 +265,10 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 		{
 			playerBallHudSettings[param1].sound = !playerBallHudSettings[param1].sound;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (playerBallHudSettings[param1].sound) 
+				SetClientCookie(param1, g_ballhudSound, "1");
+			else
+				SetClientCookie(param1, g_ballhudSound, "0");
 
 			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", playerBallHudSettings[param1].sound ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
@@ -283,30 +297,29 @@ public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadca
 
 public bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
 {
-    return entity > MaxClients || !entity;
+	return entity > MaxClients || !entity;
 }
 
 public float DistanceAboveGround(int victim) // taken from mgemod
 {
-    float vStart[3];
-    float vEnd[3];
-    float vAngles[3] =  { 90.0, 0.0, 0.0 };
-    GetClientAbsOrigin(victim, vStart);
-    Handle trace = TR_TraceRayFilterEx(vStart, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceEntityFilterPlayer);
+	float vStart[3];
+	float vEnd[3];
+	float vAngles[3] =  { 90.0, 0.0, 0.0 };
+	GetClientAbsOrigin(victim, vStart);
+	Handle trace = TR_TraceRayFilterEx(vStart, vAngles, MASK_PLAYERSOLID, RayType_Infinite, TraceEntityFilterPlayer);
 
-    float distance = -1.0;
-    if (TR_DidHit(trace))
-    {
-        TR_GetEndPosition(vEnd, trace);
-        distance = GetVectorDistance(vStart, vEnd, false);
-    } else {
-        LogError("trace error. victim %N(%d)", victim, victim);
-    }
+	float distance = -1.0;
+	if (TR_DidHit(trace))
+	{
+		TR_GetEndPosition(vEnd, trace);
+		distance = GetVectorDistance(vStart, vEnd, false);
+	} else {
+		LogError("trace error. victim %N(%d)", victim, victim);
+	}
 
-    delete trace;
-    return distance;
+	delete trace;
+	return distance;
 }
-
 
 public Action Event_RJ(Event event, const char[] name, bool dontBroadcast)
 {
@@ -345,8 +358,19 @@ public Action OnChangeClass(int client, const char[] strCommand, int args)
 public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
 	char victimName[MAX_NAME_LENGTH], attackerName[MAX_NAME_LENGTH];
+	char steamid_victim[16];
+	char team_victim[12];
 	GetClientName(victim, victimName, sizeof(victimName));
-	GetClientName(attacker, attackerName, sizeof(attackerName));
+	GetClientAuthId(victim, AuthId_Steam3, steamid_victim, sizeof(steamid_victim));
+	if (victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && DistanceAboveGround(victim) > 200 && plyTakenDirectHit[victim] && GetEntProp(victim, Prop_Send, "m_bHasPasstimeBall") == 1 && TF2_GetClientTeam(victim) != TF2_GetClientTeam(attacker))
+	{
+		char steamid_attacker[16];
+		char team_attacker[12];
+		GetClientName(attacker, attackerName, sizeof(attackerName));
+		GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffffball carrier %s!", attackerName, victimName);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_carrier_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
+	}
 	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || !IsValidClient(victim)) // should not damage
 	{
 		return Plugin_Continue;	// end function early if attacker or victim is not legit player in game
@@ -356,7 +380,15 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 		if(FindConVar("sm_projectiles_ignore_teammates") != null) 
 			SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
+		if (DistanceAboveGround(victim) > 200)
+		{
+			char steamid_attacker[16];
+			char team_attacker[12];
+			GetClientName(attacker, attackerName, sizeof(attackerName));
+			GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
+			LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_friendly_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
+		}
 		plyTakenDirectHit[victim] = false;
 		return Plugin_Changed;
 	}
@@ -416,9 +448,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 public void OnClientDisconnect(int client)
 {
 	deadPlayers[client] = false;
-	playerBallHudSettings[client].hudText  = false;
-	playerBallHudSettings[client].chat	   = false;
-	playerBallHudSettings[client].sound	   = false;
 
 	playerStatistics[client].scores		   = 0;
 	playerStatistics[client].assists	   = 0;
@@ -433,23 +462,6 @@ public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float
 	ball = FindEntityByClassname(-1, "passtime_ball");
 	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
 	firstGrab = 1;
-}
-
-public void OnBallTouch(int entity)
-{
-	char steamid[16];
-	char team[12];
-	char plyDirecterName[MAX_NAME_LENGTH];
-	PrintToChatAll("onballtouch works");
-	if (ballTakenDirectHit[plyDirecter] && !(GetEntityFlags(ball) & FL_ONGROUND))
-	{
-		PrintToChatAll("onball if statement fulfilled");
-		GetClientName(plyDirecter, plyDirecterName, sizeof(plyDirecterName));
-		LogToGame("\"%N<%i><%s><%s>\" airshot the jack with %s", plyDirecter, GetClientUserId(plyDirecter), steamid, team);
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434airshot \x0700ffffthe jack!", plyDirecterName);
-		ballTakenDirectHit[plyDirecter] = false;
-		plyDirecter = 0;
-	}
 }
 
 public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
@@ -467,14 +479,17 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 public Action Event_PassGetPre(Event event, const char[] name, bool dontBroadcast) // occurs AFTER ball throw
 {
 	int owner = event.GetInt("owner");
-	int curCarrier = GetEntProp(ball, Prop_Send, "m_hCarrier");
-	int prevCarrier = GetEntProp(ball, Prop_Send, "m_hPrevCarrier");
+	int curCarrier = GetEntPropEnt(ball, Prop_Send, "m_hCarrier");
+	int prevCarrier = GetEntPropEnt(ball, Prop_Send, "m_hPrevCarrier");
+	char curCarrierName[MAX_NAME_LENGTH], prevCarrierName[MAX_NAME_LENGTH];
 	int passTarget = GetEntProp(owner, Prop_Send, "m_bIsTargetedForPasstimePass");
 	handoffThrower = 0;
-	if (passTarget == 0)
+	if (passTarget == 0 && prevCarrier != -1 && curCarrier != -1) // this prolly doesn't work cuz passing with no pass target = handoff and WAIT IC NA DO THAT JUST CONFIRM
 		{
-			PrintToChatAll("prev carrier: %i", prevCarrier);
-			PrintToChatAll("prev carrier: %N", GetClientUserId(prevCarrier));
+			GetClientName(prevCarrier, prevCarrierName, sizeof(prevCarrierName));
+			GetClientName(curCarrier, curCarrierName, sizeof(curCarrierName));
+			PrintToChatAll("prev carrier: %N", prevCarrierName);
+			PrintToChatAll("cur carrier: %N", curCarrierName);
 			handoffCheck = 1;
 			handoffThrower = prevCarrier;
 		}	
@@ -503,7 +518,7 @@ public Action Event_PassGetPost(Event event, const char[] name, bool dontBroadca
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (handoff \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab, handoffCheck);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (handoffCheck == 1 && !(GetEntityFlags(plyGrab) & FL_ONGROUND) && DistanceAboveGround(plyGrab) > 200 && IsValidClient(handoffThrower))
+	if (handoffCheck == 1 && !(GetEntityFlags(plyGrab) & FL_ONGROUND) && DistanceAboveGround(plyGrab) > 250)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %N \x07ffff00handed off \x0700ffffto %N!", GetClientUserId(handoffThrower), GetClientUserId(plyGrab));
 	}
@@ -597,7 +612,7 @@ public Action Event_PassCaught(Handle event, const char[] name, bool dontBroadca
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (save \"1\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, dist, duration); // only do this for logs.tf; no need to put a variable on saves cuz if this if statement prints its always a save
 		playerStatistics[catcher].saves++;
 	}
-	else if (statsEnable.BoolValue) {
+	else if (statsEnable.BoolValue && intercept) {
 		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, dist, duration);
 		playerStatistics[catcher].interceptions++;
@@ -722,8 +737,9 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	if (!statsEnable.BoolValue) return Plugin_Handled;
 
 	int client = event.GetInt("scorer");
+	int	assistor = event.GetInt("assister");
 	if (!IsValidClient(client)) return Plugin_Handled;
-	char playerName[MAX_NAME_LENGTH];
+	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
 	GetClientName(client, playerName, sizeof(playerName));
 	if (GetEntityFlags(client) & FL_ONGROUND == FL_ONGROUND)
 	{ 
@@ -732,6 +748,11 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	if (panaceaCheck && inAir && TF2_GetPlayerClass(client) != TFClass_Medic)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+	}
+	else if (assistor > 0)
+	{
+		GetClientName(assistor, assistorName, sizeof(assistorName));
+		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistorName);
 	}
 	else
 	{
@@ -784,7 +805,7 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 		{	  
 			team = "Spectator";
 		}
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"trigger_catapult\" with the jack (catapult \"1\")", plyGrab, GetClientUserId(plyGrab), steamid, team);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (catapult \"1\")", plyGrab, GetClientUserId(plyGrab), steamid, team);
 		PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
 	}
 }
@@ -797,7 +818,20 @@ public void Hook_OnFiveMinutes(const char[] output, int caller, int activator, f
 		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
 		SetVariantInt(300);
 		AcceptEntityInput(entityTimer, "AddTime");
+		CreateTimer(300.0, FiveMinuteStateReset, TIMER_REPEAT); // 5 minutes
 	}
+}
+
+Action FiveMinuteStateReset(Handle timer)
+{
+	if (practiceMode.BoolValue)
+	{
+		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
+		SetVariantInt(300);
+		AcceptEntityInput(entityTimer, "AddTime");
+		return Plugin_Continue;
+	}
+	else return Plugin_Stop;
 }
 
 public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
