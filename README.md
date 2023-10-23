@@ -54,8 +54,7 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 Need to Test:
 - retest trikz totally; need two players
 
-- Check sm_pt_projcollide; maybe fixed; test it in every scenario (annoying)
-    - for this, we may need to just completely remove sm_projectiles_ignore_teammates by setting it to 0 on map start
+- Check sm_pt_projcollide; test it in every scenario
 
 - Handoff should get triggered; test 2
 
