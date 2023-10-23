@@ -13,12 +13,13 @@ A mashup of fixes and features for Competitive 4v4 PASS Time.
 - Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball without respawning
 
 - Prints chat messages for the following:
-    - Scoring
+    - Scoring (with assists)
+    - Saving/blocking
     - Intercepting
     - Stealing
     - Panaceas
     - Catapults
-    - Ball airshots
+    - Ball carrier airshots
     - Handoffs
 
 - Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere
