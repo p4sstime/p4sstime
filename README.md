@@ -26,6 +26,8 @@ A mashup of fixes and features for Competitive 4v4 PASS Time.
 
 - Adds a mode to easily practice PASS Time bombs
 
+- Every command and its effect below
+
 ### Commands
 
 > [!IMPORTANT]
