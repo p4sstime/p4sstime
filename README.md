@@ -46,13 +46,13 @@ sm_pt_stats              0/1    # Toggles printing of passtime events to chat bo
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
 sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
 sm_pt_trikz            0/1/2/3  # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
-sm_pt_trikz_projcollide 0/1/2   # Set team projectile collision behavior. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.
+sm_pt_trikz_projcollide 2/1/0   # Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.
 sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
 ## TODO
 Need to Test:
-- retest trikz totally; projcollide is not setting to the right values, its going to 0 and staying there
+- retest trikz totally; should work now; testing methodology: test how projectiles collide w/ teammates by default (should never collide), then test how they function in the various trikz states, both with projcollide at its default value and then at 1 and then at 0
 
 - retest projcollide on its own since we switched to pre
 
@@ -109,3 +109,5 @@ Contains work from:
 [Fixed Friendly Fire](https://github.com/Mikusch/friendlyfire); Remove distance-based projectile blocking on teammates when mp_friendlyfire 1
 
 Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.
+
+Thanks to those in The Dunking Dojo and those in the Official 4v4 PASS Time Discord for being my guinea pigs.
