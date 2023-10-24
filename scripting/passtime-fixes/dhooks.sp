@@ -14,7 +14,7 @@ void DHooks_Initialize(GameData gamedata)
 
 void DHooks_OnEntityCreated(int entity, const char[] classname)
 {
-	if (!strncmp(classname, "tf_projectile_", 14))
+	if (!strncmp(classname, "tf_projectile_", 14) && ProjCollideValue() != 1) // if 1, just use default tf2 behavior
 	{						
 		// Fixes projectiles sometimes not colliding with teammates
 		DHooks_HookEntity(g_dhook_CBaseProjectile_CanCollideWithTeammates, Hook_Post, entity, DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post);
@@ -60,8 +60,6 @@ static MRESReturn DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post(int
 		ret.Value = false;
 		return MRES_Supercede;
 	}
-	if (ProjCollideValue() == 1) // projectiles will phase through teammates if you are too close)
-		return MRES_Ignored;
 	if (ProjCollideValue() == 2) // Always make projectiles collide with teammates
 	{
 		ret.Value = true;

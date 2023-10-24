@@ -37,8 +37,9 @@ int				plyDirecter;
 int				firstGrab;
 int  			ball;
 int  			handoffCheck;
-int  			trikzProjCollideSave;
+int  			trikzProjCollideSave = 2;
 int  			trikzProjCollideCurVal;
+bool  			playerChangetrikzProjCollideVal = false;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
@@ -96,7 +97,7 @@ public void OnPluginStart()
 	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
 	clearHud		 = CreateConVar("sm_pt_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
 	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
-	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with 'pa'", FCVAR_NOTIFY);
+	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
 	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
 	trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
@@ -147,10 +148,6 @@ public void OnMapStart() // getgoallocations
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", bluGoal);
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", redGoal);
 	}
-
-	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-		SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
-	trikzProjCollideSave = GetConVarInt(trikzProjCollide);
 }
 
 public bool IsValidClient(int client)
@@ -195,6 +192,11 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 
 public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
+	if (playerChangetrikzProjCollideVal)
+		trikzProjCollideSave = GetConVarInt(trikzProjCollide);
+	playerChangetrikzProjCollideVal = true;
+	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
+		SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
 	if (newValue[0] == '0') // never collide projectiles with teammates
 		trikzProjCollideCurVal = 0;
 	if (newValue[0] == '1') // projectiles will phase through teammates if you are too close
@@ -220,11 +222,10 @@ public OnClientCookiesCached(int client)
 {
 	char sValue[8];
 	GetClientCookie(client, g_ballhudHud, sValue, sizeof(sValue));
-	GetClientCookie(client, g_ballhudChat, sValue, sizeof(sValue));
-	GetClientCookie(client, g_ballhudSound, sValue, sizeof(sValue));
-	
 	playerBallHudSettings[client].hudText = (StringToInt(sValue) > 0);
+	GetClientCookie(client, g_ballhudChat, sValue, sizeof(sValue));
 	playerBallHudSettings[client].chat = (StringToInt(sValue) > 0);
+	GetClientCookie(client, g_ballhudSound, sValue, sizeof(sValue));
 	playerBallHudSettings[client].sound	= (StringToInt(sValue) > 0);
 }  
 
@@ -372,17 +373,20 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 		char team_attacker[12];
 		GetClientName(attacker, attackerName, sizeof(attackerName));
 		GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffffball carrier %s!", attackerName, victimName);
+		if (statsEnable.BoolValue)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffffball carrier %s!", attackerName, victimName);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_carrier_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
 	}
 	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || !IsValidClient(victim)) // should not damage
 	{
-		SetConVarInt(trikzProjCollide, trikzProjCollideSave); // reset
+		SetConVarInt(trikzProjCollide, 0); // reset
+		playerChangetrikzProjCollideVal = false;
 		return Plugin_Continue;	// end function early if attacker or victim is not legit player in game
 	}
 	if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && plyTakenDirectHit[victim])
 	{
-		SetConVarInt(trikzProjCollide, 2); // always collide
+		SetConVarInt(trikzProjCollide, trikzProjCollideSave);
+		playerChangetrikzProjCollideVal = false;
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		if (DistanceAboveGround(victim) > 200)
 		{
@@ -390,7 +394,8 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 			char team_attacker[12];
 			GetClientName(attacker, attackerName, sizeof(attackerName));
 			GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
+			if (statsEnable.BoolValue)
+				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
 			LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_friendly_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
 		}
 		plyTakenDirectHit[victim] = false;
@@ -399,24 +404,28 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 	else if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
 	{
 		SetConVarInt(trikzProjCollide, 0); // never collide
+		playerChangetrikzProjCollideVal = false;
 		damage = 0.0;
 		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND))
 	{
-		SetConVarInt(trikzProjCollide, 2); // always collide
+		SetConVarInt(trikzProjCollide, trikzProjCollideSave);
+		playerChangetrikzProjCollideVal = false;
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
 	else if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
 	{	
 		SetConVarInt(trikzProjCollide, 0); // never collide
+		playerChangetrikzProjCollideVal = false;
 		damage = 0.0;
 		return Plugin_Changed;
 	}
 	if (trikzEnable.IntValue == 3 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
 	{
-		SetConVarInt(trikzProjCollide, 2); // always collide
+		SetConVarInt(trikzProjCollide, trikzProjCollideSave);
+		playerChangetrikzProjCollideVal = false;
 		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
 		return Plugin_Changed;
 	}
@@ -543,7 +552,8 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	int passTarget = GetEntProp(catcher, Prop_Send, "m_bIsTargetedForPasstimePass");
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget == 0 && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		if (statsEnable.BoolValue)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
 		handoffCheck = 1;
 	}
 	return Plugin_Continue;
@@ -700,7 +710,7 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 		panaceaCheck = false;
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%b\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck);
 
 	if (assistor > 0)
 	{
@@ -740,16 +750,16 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	{ 
 		inAir = false;
 	}
-	if (panaceaCheck && TF2_GetPlayerClass(client) != TFClass_Medic)
+	if (panaceaCheck && TF2_GetPlayerClass(client) != TFClass_Medic && statsEnable.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}
-	else if (assistor > 0)
+	else if (assistor > 0 && statsEnable.BoolValue)
 	{
 		GetClientName(assistor, assistorName, sizeof(assistorName));
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistorName);
 	}
-	else
+	else if(statsEnable.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
@@ -801,7 +811,8 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 			team = "Spectator";
 		}
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (catapult \"1\")", plyGrab, GetClientUserId(plyGrab), steamid, team);
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
+		if (statsEnable.BoolValue)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
 	}
 }
 

@@ -42,7 +42,7 @@ sm_pt_whitelist          0/1    # Toggles ability to equip stock shotgun, sticki
 sm_pt_respawn            0/1    # Toggles class switch ability while dead to instantly respawn
 sm_pt_hud                1/0    # Toggles the blurry screen overlay after intercepting or stealing
 sm_pt_disable_collisions 1/0    # Toggles whether the jack will collide with dropped ammo packs or weapons
-sm_pt_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa"
+sm_pt_stats              0/1    # Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with "pa";  does not stop logging
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
 sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
 sm_pt_trikz            0/1/2/3  # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
@@ -52,11 +52,7 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 
 ## TODO
 Need to Test:
-- retest trikz totally; need two players
-
-- Check sm_pt_projcollide; test it in every scenario
-
-- Handoff should get triggered; test 2
+- retest trikz totally; projcollide is not setting to the right values, its going to 0 and staying there
 
 - Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
 
