@@ -54,8 +54,6 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 Need to Test:
 - retest trikz totally; should work now; testing methodology: test how projectiles collide w/ teammates by default (should never collide), then test how they function in the various trikz states, both with projcollide at its default value and then at 1 and then at 0
 
-- retest projcollide on its own since we switched to pre
-
 - need to retest practice mode since i changed it from only activating when OnHook5Minutes is called to anytime the cvar is changed. basically it should instantly add 5 minutes to the timer, then create a timer that adds another 5 to the timer for 5 minutes. let it repeat another time, thene turn it off and make sure game ends when it should.
 
 - Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
@@ -65,6 +63,7 @@ Need to Test:
 
 ## Eventual Additions
 
+- [ ] Make proj collide cvar change work outside of trikz (maybe another cvar lol)
 - [ ] Track distance for scores; add to logs and chat msg thing (dhooks somehow?); pass_free is an event that triggers whenever the ball is thrown
 - [ ] Spec hud that shows you who has ball, pass targets, etc
 

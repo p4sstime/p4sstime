@@ -30,7 +30,7 @@ Statistics		playerStatistics[MAXPLAYERS + 1];
 
 float			bluGoal[3], redGoal[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, trikzProjCollide, practiceMode;
+ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, trikzProjCollide, practiceMode, trikzProjDev;
 
 int				plyGrab;
 int				plyDirecter;
@@ -89,7 +89,6 @@ public void OnPluginStart()
 	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
-	HookEntityOutput("team_round_timer", "On5MinRemain", Hook_OnFiveMinutes);
 	AddCommandListener(OnChangeClass, "joinclass");
 
 	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons", FCVAR_NOTIFY);
@@ -195,14 +194,24 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 
 public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	trikzProjCollideSave = StringToInt(newValue[0]);
+	if (newValue[0] == '0')
+		trikzProjCollideSave = 0;
+	if (newValue[0] == '1')
+		trikzProjCollideSave = 1;
+	if (newValue[0] == '2')
+		trikzProjCollideSave = 2;
 }
 
 public void Hook_OnProjCollideDev(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
 		SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
-	trikzProjCollideCurVal = StringToInt(newValue[0]);
+	if (newValue[0] == '0')
+		trikzProjCollideCurVal = 0;
+	if (newValue[0] == '1')
+		trikzProjCollideCurVal = 1;
+	if (newValue[0] == '2')
+		trikzProjCollideCurVal = 2;
 }
 
 public int ProjCollideValue()
