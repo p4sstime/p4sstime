@@ -97,7 +97,7 @@ public void OnPluginStart()
 	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
 	clearHud		 = CreateConVar("sm_pt_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
 	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
-	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of players' total scores, saves, intercepts, and steals to chat after a game is over; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
+	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of passtime events to chat both during and after games; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
 	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
 	trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
