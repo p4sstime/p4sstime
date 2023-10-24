@@ -17,7 +17,7 @@ void DHooks_OnEntityCreated(int entity, const char[] classname)
 	if (!strncmp(classname, "tf_projectile_", 14) && ProjCollideValue() != 1) // if 1, just use default tf2 behavior
 	{						
 		// Fixes projectiles sometimes not colliding with teammates
-		DHooks_HookEntity(g_dhook_CBaseProjectile_CanCollideWithTeammates, Hook_Post, entity, DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post);
+		DHooks_HookEntity(g_dhook_CBaseProjectile_CanCollideWithTeammates, Hook_Pre, entity, DHookCallback_CBaseProjectile_CanCollideWithTeammates_Pre);
 		}
 }
 
@@ -53,7 +53,7 @@ public void DHookRemovalCB_OnHookRemoved(int hookid)
 	}
 }
 
-static MRESReturn DHookCallback_CBaseProjectile_CanCollideWithTeammates_Post(int entity, DHookReturn ret)
+static MRESReturn DHookCallback_CBaseProjectile_CanCollideWithTeammates_Pre(int entity, DHookReturn ret)
 {
 	if (ProjCollideValue() == 0) // never collide projectiles with teammates
 	{
