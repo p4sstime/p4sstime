@@ -54,6 +54,8 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 Need to Test:
 - retest trikz totally; projcollide is not setting to the right values, its going to 0 and staying there
 
+- need to retest practice mode since i changed it from only activating when OnHook5Minutes is called to anytime the cvar is changed. basically it should instantly add 5 minutes to the timer, then create a timer that adds another 5 to the timer for 5 minutes. let it repeat another time, thene turn it off and make sure game ends when it should.
+
 - Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
 
 - [ ] Send a pull request to EasyE passtime repo about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.

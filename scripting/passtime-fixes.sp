@@ -39,7 +39,7 @@ int  			ball;
 int  			handoffCheck;
 int  			trikzProjCollideSave = 2;
 int  			trikzProjCollideCurVal;
-bool  			playerChangetrikzProjCollideVal = false;
+bool  			playerChangetrikzProjCollideVal = true;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
@@ -106,6 +106,7 @@ public void OnPluginStart()
 
 	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
 	HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
+	HookConVarChange(practiceMode, Hook_OnPracticeModeChange);
 
 	ballHudMenu = new Menu(BallHudMenuHandler);
 	ballHudMenu.SetTitle("Jack Notifications");
@@ -181,7 +182,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
 }
 
-public void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod; also doesnt work rofl check again
+public void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod
 {
 	plyDirecter = other;
 	if (other > 0 && other <= MaxClients)
@@ -817,18 +818,18 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 }
 
 /*-------------------------------------------------- Game Events --------------------------------------------------*/
-public void Hook_OnFiveMinutes(const char[] output, int caller, int activator, float delay)
+public void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (practiceMode.BoolValue)
 	{
 		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
 		SetVariantInt(300);
 		AcceptEntityInput(entityTimer, "AddTime");
-		CreateTimer(300.0, FiveMinuteStateReset, TIMER_REPEAT); // 5 minutes
+		CreateTimer(300.0, AddFiveMinutes, TIMER_REPEAT); // 5 minutes
 	}
 }
 
-Action FiveMinuteStateReset(Handle timer)
+Action AddFiveMinutes(Handle timer)
 {
 	if (practiceMode.BoolValue)
 	{
