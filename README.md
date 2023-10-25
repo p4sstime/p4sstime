@@ -52,7 +52,7 @@ sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the roun
 
 ## TODO
 Need to Test:
-- retest trikz totally; should work now; testing methodology: test how projectiles collide w/ teammates by default (should never collide), then test how they function in the various trikz states, both with projcollide at its default value and then at 1 and then at 0
+- retest trikz totally; should work now; testing methodology: test how projectiles collide w/ teammates by default (should never collide), then test how they function in the various trikz states, both with projcollide at its default value and then at 1 and then at 0; does not work; need to reduce functionality back. if we get something that works well to have basic functions, we're good. if not done by Thursday after work, remove trikz, place it in a different file, and set it up to be included. then comment include out. will work on it later, first just ship out v1.4.0
 
 - need to retest practice mode since i changed it from only activating when OnHook5Minutes is called to anytime the cvar is changed. basically it should instantly add 5 minutes to the timer, then create a timer that adds another 5 to the timer for 5 minutes. let it repeat another time, thene turn it off and make sure game ends when it should.
 
