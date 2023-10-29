@@ -37,12 +37,13 @@ int				plyDirecter;
 int				firstGrab;
 int  			ball;
 int  			handoffCheck;
+int  			passTarget;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
-bool			inAir;
-bool			panaceaCheck = false;
+bool			b_BlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
+bool			panaceaCheck[MAXPLAYERS + 1];
 bool			plyTakenDirectHit[MAXPLAYERS + 1];
 Handle  		g_ballhudHud = INVALID_HANDLE;
 Handle  		g_ballhudChat = INVALID_HANDLE;
@@ -53,7 +54,7 @@ public Plugin myinfo =
 	name		= "Passtime Fixes",
 	author		= "czarchasm, Dr. Underscore (James), EasyE",
 	description = "A mashup of fixes and features for Competitive 4v4 PASS Time.",
-	version		= "1.4.0",
+	version		= "1.4.1",
 	url			= "https://github.com/czarchasm00/passtime-fixes"
 };
 
@@ -181,7 +182,7 @@ OnTakeDamageAlivePost -> After player has been damaged, period. Cannot change pa
 */
 /*public OnClientPutInServer(client)
 {
-	SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
+	//SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
 }*/
 
 // following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
@@ -344,27 +345,31 @@ public float DistanceAboveGround(int victim) // taken from mgemod
 	return distance;
 }
 
-public Action Event_RJ(Event event, const char[] name, bool dontBroadcast)
+public Action Event_RJ(Event event, const char[] name, bool dontBroadcast) // rj and sj not fired when lifted up by another player
 {
-	inAir = true;
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	b_BlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
 public Action Event_RJLand(Event event, const char[] name, bool dontBroadcast)
 {
-	inAir = false;
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	b_BlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
 public Action Event_SJ(Event event, const char[] name, bool dontBroadcast)
 {
-	inAir = true;
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	b_BlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
 public Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
 {
-	inAir = false;
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	b_BlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
@@ -493,11 +498,11 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
 	}
-
+	passTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget")); // use hungarian notation; b = boolean, h = handle
 	return Plugin_Handled;
 }
 
-public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw
+public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw, this is posthook tho
 {
 	plyGrab = event.GetInt("owner");
 
@@ -519,13 +524,13 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (firstGrab == 1 && inAir)
+	if (firstGrab == 1 && b_BlastJumpStatus[plyGrab])
 	{
-		panaceaCheck = true;
+		panaceaCheck[plyGrab] = true;
 	}
 	else
 	{
-		panaceaCheck = false;
+		panaceaCheck[plyGrab] = false;
 	}
 	firstGrab = 0;
 
@@ -545,10 +550,7 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
 		ClientCommand(plyGrab, "playgamesound Passtime.BallSmack");
 	}
 
-	if (GetEntityFlags(plyGrab) & FL_ONGROUND != FL_ONGROUND)
-	{ 
-		inAir = true;
-	}
+	
 
 	return Plugin_Handled;
 }
@@ -561,12 +563,12 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
 	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
-	int passTarget = GetEntProp(catcher, Prop_Send, "m_bIsTargetedForPasstimePass");
-	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget == 0 && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
 		if (statsEnable.BoolValue)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
 		handoffCheck = 1;
+		passTarget = 0;
 	}
 	return Plugin_Continue;
 }
@@ -627,14 +629,14 @@ public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBro
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (save \"1\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, dist, duration); // only do this for logs.tf; no need to put a variable on saves cuz if this if statement prints its always a save
 		playerStatistics[catcher].saves++;
 	}
-	else if (statsEnable.BoolValue) 
+	else if (statsEnable.BoolValue && intercept) 
 	{
-		if (intercept)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, handoffCheck, dist, duration);
+		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
 		playerStatistics[catcher].interceptions++;
 	}
-	panaceaCheck = false;
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, handoffCheck, dist, duration);
+	panaceaCheck[thrower] = false;
+	panaceaCheck[catcher] = false;
 
 	return Plugin_Handled;
 }
@@ -677,7 +679,8 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
 	}
 
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\"", thief, GetClientUserId(thief), steamid_thief, team_thief, victim, GetClientUserId(victim), steamid_victim, team_victim);
-	panaceaCheck = false;
+	panaceaCheck[victim] = false;
+	panaceaCheck[thief] = false;
 
 	if (playerBallHudSettings[victim].hudText)
 	{
@@ -717,12 +720,12 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 	else {
 		team_scorer = "Spectator";
 	}
-
-	if(TF2_GetPlayerClass(scorer) == TFClass_Medic){
-		panaceaCheck = false;
+	if (!(b_BlastJumpStatus))
+	{ 
+		panaceaCheck[scorer] = false;
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck[scorer]);
 
 	if (assistor > 0)
 	{
@@ -758,11 +761,7 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	if (!IsValidClient(client)) return Plugin_Handled;
 	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
 	GetClientName(client, playerName, sizeof(playerName));
-	if (GetEntityFlags(client) & FL_ONGROUND == FL_ONGROUND)
-	{ 
-		inAir = false;
-	}
-	if (panaceaCheck && TF2_GetPlayerClass(client) != TFClass_Medic && statsEnable.BoolValue)
+	if (panaceaCheck[client] && TF2_GetPlayerClass(client) != TFClass_Medic && statsEnable.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}

@@ -19,7 +19,6 @@ A mashup of fixes and features for Competitive 4v4 PASS Time.
     - Stealing
     - Panaceas
     - Catapults
-    - Ball carrier airshots
     - Handoffs
 
 - Adds a mode to easily practice PASS Time bombs
@@ -46,44 +45,7 @@ sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal t
 sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
-## TODO
-
-- Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
-
-- [ ] Send a pull request to EasyE passtime repo about putting his plugins on his repo in a deprecated folder; also his whitelist is not updated; we use his as CFG and whitelist repo, use mine as the plugin. link to each other.
-- [ ] Communicate with logs.tf owner to have PASS stats display on logs (need to talk to Arie or Underscore to see if they can get in contact?)
-
-## Eventual Additions
-
-- [ ] Make proj collide cvar change work outside of trikz (maybe another cvar lol)
-- [ ] Track distance for scores; add to logs and chat msg thing (dhooks somehow?); pass_free is an event that triggers whenever the ball is thrown
-- [ ] Spec hud that shows you who has ball, pass targets, etc
-
-The below unique bombs may require special map triggers that have not been added yet. Purely conceptual.
-
-### Easy:
-- Track mega-high bombs; send as logs and chat msg (if player reaches z level of 3000, it's a mega-high bomb) [Example](https://www.youtube.com/watch?v=WWJ2iuPBGTM); use map entities (using code would be unnecessarily taxing)
-- Track pull bombs; send as logs and chat msg; (if ball gets splashed within half of a second of spawning, and it's caught in the air/hits side surf and then player scores while in the air, it's a pull bomb) [Example](https://youtu.be/2CgDMvSvXAc?t=228)
-- Track push bombs; send as logs and chat msg; (if ball gets splashed from front or back leaf within half a second of spawning, and it's caught in the air then player scores while in the air, it's a push bomb)
-- Track deathbombs; send as logs and chat msg; (if ball goes into goal and player who last had it killbinded already in the air, it's a deathbomb)
-    - Use inAir and onPlayerDeath?
-- Track Stadium water syncs; go from in-air (off surf) to in water to hit certain height (using map entities just from water would make this super easy lol)
-- Track Griff bombs; send as logs and chat msg; (if loops are made around arena ramps at least once then score, it's a griff bomb)
-    - Needs map entities first to fire outputs we can hook onto, then count
-- Track Goblin/Gorblin bombs; send as logs and chat msg; (goblin has ball go through holes, gorblin has you go through holes with ball); use map entities
-
-### Hard:
-- Track splash defense; send as logs and chat msg?
-    - Use the same radius; if ball goes neutral within radius of goal due to splash, it's splash defense
-
-### Impossible:
-For these, I just don't know how I would track them. Could be easily possible, I just don't have knowledge.
-
-- Ball airshots ([AlliedMods says](https://discord.com/channels/335290997317697536/335290997317697536/1165720293684301866): SDKHooks cannot detect since ball uses collision hull, for proper accuracy you'd need a detour on the entity method that gets called on a collision, not home to check its name (extension called passfilter does that?). alternatively can do a trace hull iterator with entity bounds each frame to find entities inside)
-- Lobs (maybe somehow hook onto ball throw and see where viewangles are to determine lob?)
-- Demo instadets
-- Dribbledet
-- [Pretty much every other bomb not listed already](https://www.youtube.com/watch?v=TGivc75TSQI)
+## [Development Plants](https://trello.com/b/Juojhb4g/passtime-fixes)
 
 ## Credits
 
