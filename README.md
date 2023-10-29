@@ -45,7 +45,7 @@ sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal t
 sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
-## [Development Plants](https://trello.com/b/Juojhb4g/passtime-fixes)
+## [Development Plans](https://trello.com/b/Juojhb4g/passtime-fixes)
 
 ## Credits
 
