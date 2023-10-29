@@ -2,10 +2,10 @@
 #include <tf2_stocks>
 #include <sdkhooks>
 #include <sdktools>
-#include <dhooks>
+//#include <dhooks>
 #include <clientprefs>
 
-#include "passtime-fixes/dhooks.sp"
+//#include "passtime-fixes/dhooks.sp"
 
 #pragma semicolon 1	   // required for logs.tf
 
@@ -30,15 +30,15 @@ Statistics		playerStatistics[MAXPLAYERS + 1];
 
 float			bluGoal[3], redGoal[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, trikzEnable, trikzProjCollide, practiceMode, trikzProjDev;
+ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/practiceMode;
 
 int				plyGrab;
 int				plyDirecter;
 int				firstGrab;
 int  			ball;
 int  			handoffCheck;
-int  			trikzProjCollideCurVal;
-int  			trikzProjCollideSave = 2;
+//int  			trikzProjCollideCurVal;
+//int  			trikzProjCollideSave = 2;
 Menu			ballHudMenu;
 bool			deadPlayers[MAXPLAYERS + 1];
 bool			inAir;
@@ -59,12 +59,12 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	GameData gamedata = new GameData("passtime-fixes");
+	/*GameData gamedata = new GameData("passtime-fixes");
 	if (gamedata)
 	{
 		DHooks_Initialize(gamedata);
 		delete gamedata;
-	}
+	}*/
 
 	g_ballhudHud = RegClientCookie("ballhudHudSetting", "Passtime Fixes' sm_ballhud HUD Setting Value", CookieAccess_Public);
 	g_ballhudChat = RegClientCookie("ballhudChatSetting", "Passtime Fixes' sm_ballhud Chat Setting Value", CookieAccess_Public);
@@ -98,15 +98,15 @@ public void OnPluginStart()
 	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of passtime events to chat both during and after games; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
 	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
-	trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
-	trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
+	//trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
+	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
 	practiceMode	 = CreateConVar("sm_pt_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
-	trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
+	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
-	HookConVarChange(trikzEnable, Hook_OnTrikzChange);
-	HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
-	HookConVarChange(trikzProjDev, Hook_OnProjCollideDev);
+	//HookConVarChange(trikzEnable, Hook_OnTrikzChange);
+	//HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
+	//HookConVarChange(trikzProjDev, Hook_OnProjCollideDev);
 	HookConVarChange(practiceMode, Hook_OnPracticeModeChange);
 
 	ballHudMenu = new Menu(BallHudMenuHandler);
@@ -119,13 +119,13 @@ public void OnPluginStart()
 	GetCurrentMap(mapPrefix, sizeof(mapPrefix));
 	statsEnable.BoolValue = StrEqual("pa", mapPrefix);
 
-	for (int client = 1; client <= MaxClients; client++)
+	/*for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
 		{
 			OnClientPutInServer(client);
 		}
-	}
+	}*/
 	for (new i = MaxClients; i > 0; --i)
 	{
 		if (!AreClientCookiesCached(i))
@@ -162,6 +162,15 @@ public bool IsValidClient(int client)
 	return true;
 }
 
+public bool IsValidClient2(int client) { // should allow you to test with robots per eaasye
+	if (client > 4096) client = EntRefToEntIndex(client);
+	if (client < 1 || client > MaxClients) return false;
+	if (!IsClientInGame(client)) return false;
+	//if (IsFakeClient(client)) return false;
+	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
+	return true;
+}
+
 /*
 https://sourcemod.dev/#/sdkhooks/typeset.SDKHookCB for parameters
 
@@ -170,15 +179,15 @@ OnTakeDamagePost -> After a player has been damaged, cannot change parameters
 OnTakeDamageAlive -> After player has been damaged, but before damage bonuses e.g. crits are applied, can also change parameters here
 OnTakeDamageAlivePost -> After player has been damaged, period. Cannot change parameters here
 */
-public OnClientPutInServer(client)
+/*public OnClientPutInServer(client)
 {
 	SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
-}
+}*/
 
 // following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	DHooks_OnEntityCreated(entity, classname);
+	//DHooks_OnEntityCreated(entity, classname);
 	if (StrEqual(classname, "tf_projectile_rocket") || StrEqual(classname, "tf_projectile_pipe"))
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
 }
@@ -192,7 +201,7 @@ public void OnProjectileTouch(int entity, int other) // direct hit detector, tak
 	}
 }
 
-public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
+/*public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (newValue[0] == '0')
 		trikzProjCollideSave = 0;
@@ -225,7 +234,7 @@ public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[
 		SetConVarInt(FindConVar("mp_friendlyfire"), 0);
 	if (newValue[0] == '1' || newValue[0] == '2' || newValue[0] == '3')
 		SetConVarInt(FindConVar("mp_friendlyfire"), 1);
-}
+}*/
 
 public OnClientCookiesCached(int client)
 {
@@ -369,7 +378,7 @@ public Action OnChangeClass(int client, const char[] strCommand, int args)
 	return Plugin_Continue;
 }
 
-public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+/*public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
 	char victimName[MAX_NAME_LENGTH], attackerName[MAX_NAME_LENGTH];
 	char steamid_victim[16];
@@ -433,7 +442,7 @@ public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, floa
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;	
-}
+}*/
 
 public void TF2_OnConditionAdded(int client, TFCond condition)
 {

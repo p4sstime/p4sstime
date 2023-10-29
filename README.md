@@ -22,8 +22,6 @@ A mashup of fixes and features for Competitive 4v4 PASS Time.
     - Ball carrier airshots
     - Handoffs
 
-- Adds a custom variant of 4v4 PASS Time called PASS Time Trikz where friendly knockback (no damage) is added and can be controlled to be based on airshots only, damage in air only, or everywhere
-
 - Adds a mode to easily practice PASS Time bombs
 
 - Every command and its effect below
@@ -45,16 +43,10 @@ sm_pt_disable_collisions 1/0    # Toggles whether the jack will collide with dro
 sm_pt_stats              0/1    # Toggles printing of passtime events to chat both during and after games; automatically set to 1 if a map name starts with 'pa'; does not stop logging
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat
 sm_pt_stats_save_radius  200    # Set the radius in hammer units from the goal that an intercept is considered a save
-sm_pt_trikz            0/1/2/3  # Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere
-sm_pt_trikz_projcollide 2/1/0   # Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.
 sm_pt_practice           0/1    # Toggle practice mode. If 1, then when the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 
 ## TODO
-Need to Test:
-- retest trikz totally; should work now; testing methodology: test how projectiles collide w/ teammates by default (should never collide), then test how they function in the various trikz states, both with projcollide at its default value and then at 1 and then at 0; does not work; need to reduce functionality back. if we get something that works well to have basic functions, we're good. if not done by Thursday after work, remove trikz, place it in a different file, and set it up to be included. then comment include out. will work on it later, first just ship out v1.4.0
-
-- need to retest practice mode since i changed it from only activating when OnHook5Minutes is called to anytime the cvar is changed. basically it should instantly add 5 minutes to the timer, then create a timer that adds another 5 to the timer for 5 minutes. let it repeat another time, thene turn it off and make sure game ends when it should.
 
 - Make sure everything still goes to logs as expected; Do saves, friendly airshots, ball carrier airshots, handoffs send to logs.tf? Do friendly player airshots count towards airshot counter on logs.tf?
 
