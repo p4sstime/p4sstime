@@ -1,10 +1,8 @@
-# passtime-fixes
+# passtime
 
-A mashup of fixes and features for Competitive 4v4 PASS Time.
+Competitive 4v4 PASStime plugins and configs.
 
 [Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
-
-[Check out the 4v4 PASS Time settings repository here.](https://github.com/eaasye/passtime)
 
 ## Plugin Features
 
