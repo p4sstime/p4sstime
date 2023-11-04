@@ -31,7 +31,7 @@ CLIENT
 sm_ballhud               cmd    # Open menu to toggle hud text, chat text, or sound notifications when picking up the ball
 
 SERVER
-sm_pt_whitelist          1/0    # If 1, disables ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.
+sm_pt_whitelist          0/1    # If 1, disables ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.
 sm_pt_respawn            0/1    # If 1, disables ability to switch classes while dead to instantly respawn.
 sm_pt_hud                1/0    # If 1, disables the blurry screen overlay after intercepting or stealing.
 sm_pt_drop_collision     1/0    # If 1, disables the jack colliding with dropped ammo packs or weapons.

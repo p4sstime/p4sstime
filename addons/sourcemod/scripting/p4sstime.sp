@@ -92,7 +92,7 @@ public void OnPluginStart()
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	stockEnable		 = CreateConVar("sm_pt_whitelist", "1", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
+	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
 	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
 	clearHud		 = CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
 	collisionDisable = CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
@@ -500,6 +500,8 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 		ShowHudText(owner, 1, "");
 	}
 	passTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget")); // use hungarian notation; b = boolean, h = handle
+	if (!(b_BlastJumpStatus[owner]))
+		panaceaCheck[owner] = false;
 	return Plugin_Handled;
 }
 
@@ -720,10 +722,6 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 	}
 	else {
 		team_scorer = "Spectator";
-	}
-	if (!(b_BlastJumpStatus))
-	{ 
-		panaceaCheck[scorer] = false;
 	}
 
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck[scorer]);
