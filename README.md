@@ -1,6 +1,6 @@
 # passtime
 
-Competitive 4v4 PASStime plugins and configs.
+Competitive 4v4 PASS Time plugins and configs.
 
 [Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
 
