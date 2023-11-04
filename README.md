@@ -1,4 +1,4 @@
-# passtime
+# p4sstime
 
 Competitive 4v4 PASS Time plugins and configs.
 
