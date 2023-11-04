@@ -92,17 +92,17 @@ public void OnPluginStart()
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "Toggles ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons", FCVAR_NOTIFY);
-	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Toggles class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
-	clearHud		 = CreateConVar("sm_pt_hud", "1", "Toggles the blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
-	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Toggles whether the jack will collide with dropped ammo packs or weapons", FCVAR_NOTIFY);
-	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Toggles printing of passtime events to chat both during and after games; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
+	stockEnable		 = CreateConVar("sm_pt_whitelist", "1", "Disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons", FCVAR_NOTIFY);
+	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "Enable class switch ability while dead to instantly respawn", FCVAR_NOTIFY);
+	clearHud		 = CreateConVar("sm_pt_hud", "1", "Disable blurry screen overlay after intercepting or stealing", FCVAR_NOTIFY);
+	collisionDisable = CreateConVar("sm_pt_collision_disable", "1", "Disables the jack colliding with dropped ammo packs or weapons", FCVAR_NOTIFY);
+	statsEnable		 = CreateConVar("sm_pt_stats", "0", "Enables printing of passtime events to chat both during and after games; automatically set to 1 if a map name starts with 'pa'; does not stop logging", FCVAR_NOTIFY);
 	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_stats_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save", FCVAR_NOTIFY);
 	//trikzEnable		 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
-	practiceMode	 = CreateConVar("sm_pt_practice", "0", "Toggle practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	catapultToggle	 = CreateConVar("sm_pt_catapultstat", "0", "Toggle catapults printing to chat.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	practiceMode	 = CreateConVar("sm_pt_practice", "0", "Enable practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	catapultToggle	 = CreateConVar("sm_pt_catapultstat", "0", "Enable catapults printing to chat.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
