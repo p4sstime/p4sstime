@@ -44,7 +44,7 @@ sm_pt_catapultstat       0/1    # Enable catapults printing to chat; temporary c
 
 ## Maps
 
-pass_arena2 ([Not yet on TF2maps.net](http://laxson.site.nfoservers.com/server/maps/pass_arena2_b8.bsp.bz2))\
+[pass_arena2](https://tf2maps.net/downloads/pass_arena2.16840/)\
 [pass_stadium](https://tf2maps.net/downloads/pass_stadium.15102/)\
 [pass_stonework](https://tf2maps.net/downloads/pass_stonework.15974/)\
 [pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796/)\

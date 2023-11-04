@@ -51,11 +51,11 @@ Handle  		g_ballhudSound = INVALID_HANDLE;
 
 public Plugin myinfo =
 {
-	name		= "Passtime Fixes",
+	name		= "4v4 PASS Time Extension",
 	author		= "czarchasm, Dr. Underscore (James), EasyE",
-	description = "A mashup of fixes and features for Competitive 4v4 PASS Time.",
-	version		= "1.4.1",
-	url			= "https://github.com/czarchasm00/passtime-fixes"
+	description = "The main plugin for 4v4 Competitive PASS Time.",
+	version		= "1.4.0",
+	url			= "https://github.com/czarchasm00/p4sstime"
 };
 
 public void OnPluginStart()
@@ -836,7 +836,7 @@ public void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, cons
 		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
 		SetVariantInt(300);
 		AcceptEntityInput(entityTimer, "AddTime");
-		CreateTimer(300.0, AddFiveMinutes, TIMER_REPEAT); // 5 minutes
+		CreateTimer(300.0, AddFiveMinutes, _, TIMER_REPEAT); // 5 minutes
 	}
 }
 
