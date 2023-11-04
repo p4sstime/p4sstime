@@ -5,7 +5,7 @@
 //#include <dhooks>
 #include <clientprefs>
 
-//#include "passtime-fixes/dhooks.sp"
+//#include "p4sstime-fixes/dhooks.sp"
 
 #pragma semicolon 1	   // required for logs.tf
 
