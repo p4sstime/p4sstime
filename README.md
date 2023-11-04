@@ -7,20 +7,16 @@ Competitive 4v4 PASS Time plugins and configs.
 ## Plugin Features
 
 - Uploads PASS Time specific data to logs.tf for (hopefully) eventual display by logs.tf
-
 - Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball without respawning
-
 - Prints chat messages for the following PASS Time events:
     - Scoring (with assists)
     - Saving/blocking
     - Intercepting
     - Stealing
     - Panaceas
-    - Catapults
+    - Catapults (optional)
     - Handoffs
-
 - Adds a mode to easily practice PASS Time bombs
-
 - Every command and its effect below
 
 ### Commands
@@ -46,18 +42,23 @@ sm_pt_catapultstat       0/1    # Enable catapults printing to chat; temporary c
 
 ## [Development Plans](https://trello.com/b/Juojhb4g/passtime-fixes)
 
+## Maps
+
+pass_arena2 ([Not yet on TF2maps.net](http://laxson.site.nfoservers.com/server/maps/pass_arena2_b8.bsp.bz2))\
+[pass_stadium](https://tf2maps.net/downloads/pass_stadium.15102/)\
+[pass_stonework](https://tf2maps.net/downloads/pass_stonework.15974/)\
+[pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796/)\
+[pass_park](https://tf2maps.net/downloads/park.16805/)
+
+[4v4 PASS Time Map Archive](http://laxson.site.nfoservers.com/server/maps/)
+
 ## Credits
 
 Contains work from:
 
-[eaasye](https://github.com/eaasye/passtime/tree/master/addons/sourcemod/plugins)
-
-[drunderscore](https://github.com/drunderscore/SourcemodPlugins/blob/master/fix_uber_wearoff_condition.sp)
-
-[muddy](https://github.com/SirBlockles/pass-tweaks/blob/main/passtweaks.sp)
-
-[MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp#L546-L562); Direct hit detector
-
-Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.
-
-Thanks to those in The Dunking Dojo and those in the Official 4v4 PASS Time Discord for being my guinea pigs.
+[eaasye](https://github.com/eaasye/passtime/tree/master/addons/sourcemod/plugins)\
+[drunderscore](https://github.com/drunderscore/SourcemodPlugins/blob/master/fix_uber_wearoff_condition.sp)\
+[muddy](https://github.com/SirBlockles/pass-tweaks/blob/main/passtweaks.sp)\
+[MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp#L546-L562); Direct hit detector\
+Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.\
+Thanks to those in The Dunking Dojo and those in the Official 4v4 PASS Time Discord for being my guinea pigs.\
