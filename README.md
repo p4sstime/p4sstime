@@ -19,6 +19,8 @@ Competitive 4v4 PASS Time plugins and configs.
 - Adds a mode to easily practice PASS Time bombs
 - Every command and its effect below
 
+[Development Plans](https://trello.com/b/Juojhb4g/passtime-fixes)
+
 ### Commands
 
 > [!IMPORTANT]
@@ -39,8 +41,6 @@ sm_pt_save_radius        200    # Set the radius in hammer units from the goal t
 sm_pt_practice           0/1    # If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.
 sm_pt_catapultprint      0/1    # If 1, enables catapult events printing to chat; temporary cvar until I have a better system for this
 ```
-
-## [Development Plans](https://trello.com/b/Juojhb4g/passtime-fixes)
 
 ## Maps
 
