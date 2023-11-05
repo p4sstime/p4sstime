@@ -10,7 +10,7 @@ This hud element is really intrusive, but luckily for us, we can remove it.
 
 If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-removing-power-meter).
 
-If you are using the default HUD or a custom HUD that does not have the file, simply download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
+If you are using the default HUD or a custom HUD that does not have the file, simply download the [pt-hudmod](https://github.com/czarchasm00/p4sstime/raw/main/%5BClient%20Mods%5D/pt-hudmod.7z) archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
 
 ## Removing or Modifying PASS Time HUD Labels
 
@@ -26,7 +26,7 @@ Not a fan of the default PASS Time ball reticle?
 ![PASS Time Ball Reticle Example](https://i.imgur.com/sWvgo0R.png)
 As long as you're in a server with sv_pure set to 0, you can use these. Otherwise, it'll just go back to the default crosshair.
 
-Simply place one of the folders inside the `passtime-crosshairs` archive into your `custom` folder.
+Simply place one of the folders inside the [passtime-crosshairs](https://github.com/czarchasm00/p4sstime/raw/main/%5BClient%20Mods%5D/passtime-crosshairs.7z) archive into your `custom` folder.
 
 The crosshairs are originally created by slamborghini and can be found in the Official 4v4 PASS Time Discord. I just wanted to archive them in another place.
 
@@ -73,7 +73,7 @@ If you wish to add a totally new font that isn't installed in your HUD, [follow 
 
 ### Custom HUD & File Not Found OR Default HUD (Changing Labels)
 
-Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`. Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
+Download the [pt-hudmod](https://github.com/czarchasm00/p4sstime/raw/main/%5BClient%20Mods%5D/pt-hudmod.7z) archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`. Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
 To remove, for any `Event____Label`:\
 Change the `tall` value to `0`.
