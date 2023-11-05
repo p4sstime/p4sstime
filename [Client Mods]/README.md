@@ -56,7 +56,7 @@ Should look something like this:
 Change the `wide` value from `f0` to `0`.
 Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Custom HUD & File Exists (Changing Labels)
 
@@ -79,6 +79,8 @@ Change the `tall` value to `0`.
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-changing-labels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Change the Font for PASS Time HUD Labels (Changing Labels)
 
