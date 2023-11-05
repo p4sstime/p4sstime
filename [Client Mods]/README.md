@@ -56,7 +56,7 @@ Should look something like this:
 Change the `wide` value from `f0` to `0`.
 Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Custom HUD & File Exists (Changing Labels)
 
@@ -69,7 +69,7 @@ If you wish to change the positioning of any elements, [use this reference docum
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-changing-labels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Custom HUD & File Not Found OR Default HUD (Changing Labels)
 
@@ -82,7 +82,7 @@ If you wish to change the positioning of any elements, [use this reference docum
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-changing-labels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Change the Font for PASS Time HUD Labels (Changing Labels)
 
@@ -101,5 +101,3 @@ See what font you are currently using for the label you'd like to change the fon
 
 > [!IMPORTANT]  
 > After you are satisfied with your customization, be sure to turn `vgui_cache_res_files 1` or you **will** have worse performance.
-
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
