@@ -19,8 +19,6 @@ Competitive 4v4 PASS Time plugins and configs.
 - Adds a mode to easily practice PASS Time bombs
 - Every command and its effect below
 
-[Development Plans](https://trello.com/b/Juojhb4g/passtime-fixes)
-
 ### Commands
 
 > [!IMPORTANT]
