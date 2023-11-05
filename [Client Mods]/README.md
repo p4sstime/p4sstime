@@ -8,7 +8,7 @@ These are a small collection of PASS Time specific modifications clients can do 
 
 This hud element is really intrusive, but luckily for us, we can remove it.
 
-If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-pt-powermeter-remover).
+If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-removing-power-meter).
 
 If you are using the default HUD or a custom HUD that does not have the file, simply download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
 
@@ -16,9 +16,9 @@ If you are using the default HUD or a custom HUD that does not have the file, si
 
 Sometimes the PASS Time ball HUD text for events can be intrusive or even useless (for example, +CRIT does not apply to 4v4 PASS Time). Thankfully, we can also modify these elements (although it's a bit more difficult than removing the power meter).
 ![PASS Time Event Hud Text Example](https://i.imgur.com/c9YAXXG.png)
-If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-pt-hudeventlabels).
+If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-changing-labels).
 
-Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-pt-hudeventlabels).
+Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labels).
 
 ## Custom PASS Time Reticles
 
@@ -33,7 +33,7 @@ The crosshairs are originally created by slamborghini and can be found in the Of
 # END OF FILE
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-### Custom HUD & File Exists (pt-powermeter-remover)
+### Custom HUD & File Exists (Removing Power Meter)
 
 Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and open up `hudpasstimeballstatus.res`. CTRL + F for `BallPowerCluster`.
 
@@ -58,7 +58,7 @@ Click save and now you can run `hud_reloadscheme` in console (if that doesn't wo
 
 <br><br><br><br><br><br><br><br><br><br><br><br>
 
-### Custom HUD & File Exists (pt-hudeventlabels)
+### Custom HUD & File Exists (Changing Labels)
 
 Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
@@ -66,10 +66,10 @@ To remove, for any `Event____Label`:\
 Change the `tall` value to `0`.
 
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
-If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-pt-hudeventlabels).\
+If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-changing-labels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
 
-### Custom HUD & File Not Found OR Default HUD (pt-hudeventlabels)
+### Custom HUD & File Not Found OR Default HUD (Changing Labels)
 
 Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`. Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
@@ -77,10 +77,10 @@ To remove, for any `Event____Label`:\
 Change the `tall` value to `0`.
 
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
-If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-pt-hudeventlabels).\
+If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-changing-labels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
 
-### Change the Font for PASS Time HUD Labels (pt-hudeventlabels)
+### Change the Font for PASS Time HUD Labels (Changing Labels)
 
 Only follow this guide if your HUD has this font installed.
 > [!WARNING]  
