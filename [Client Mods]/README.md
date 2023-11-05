@@ -1,7 +1,7 @@
 # pt-powermeter-remover
 ## Removing the PASS Time Power Meter from your HUD
 
-https://i.imgur.com/LbQj0Ur.jpeg
+![PASS Time Power Meter Example](https://i.imgur.com/LbQj0Ur.jpeg)
 
 This hud element is really intrusive, but luckily for us, we can remove it.
 
@@ -60,7 +60,7 @@ Download the "passtime-powermeter-remover" folder and put it in "D:\SteamLibrary
 ## Custom PASS Time Reticles
 
 Not a fan of the default PASS Time ball reticle?
-https://i.imgur.com/iyfqqyG.png
+![PASS Time Ball Reticle Example](https://i.imgur.com/sWvgo0R.png)
 As long as you're in a server with sv_pure set to 0, you can use these. Otherwise, it'll just go back to the default crosshair.
 
 Simply place one of the folders inside the "passtime-crosshairs" folder into your custom folder.
