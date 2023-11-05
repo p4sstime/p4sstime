@@ -52,7 +52,7 @@ Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` an
 
 ### If you're using the default HUD...
 
-Download the `pt-powermeter-remover` folder and put it in `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom`.
+Download the `pt-powermeter-remover` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom`.
 
 ---
 
@@ -63,6 +63,6 @@ Not a fan of the default PASS Time ball reticle?
 ![PASS Time Ball Reticle Example](https://i.imgur.com/sWvgo0R.png)
 As long as you're in a server with sv_pure set to 0, you can use these. Otherwise, it'll just go back to the default crosshair.
 
-Simply place one of the folders inside the "passtime-crosshairs" folder into your custom folder.
+Simply place one of the folders inside the `passtime-crosshairs` archive into your `custom` folder.
 
 The crosshairs are originally created by slamborghini and can be found in the Official 4v4 PASS Time Discord. I just wanted to archive them in another place.
