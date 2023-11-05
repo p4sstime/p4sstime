@@ -12,8 +12,7 @@ Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` an
 Click on the following case that applies to you.\
 I am using:\
 [Custom HUD & File Exists](#custom-hud--file-exists-pt-powermeter-remover)\
-[Custom HUD & File Not Found](#custom-hud--file-not-found-pt-powermeter-remover)\
-[Default HUD](#default-hud-pt-powermeter-remover)
+[Custom HUD & File Not Found OR Default HUD](#custom-hud--file-not-found-or-default-hud-pt-powermeter-remover)
 
 ## Removing or Modifying PASS Time HUD Labels
 
@@ -24,8 +23,7 @@ Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` an
 Click on the following case that applies to you.\
 I am using:\
 [Custom HUD & File Exists](#custom-hud--file-exists-pt-hudeventlabels)\
-[Custom HUD & File Not Found](#custom-hud--file-not-found-pt-hudeventlabels)\
-[Default HUD](#default-hud-pt-hudeventlabels)
+[Custom HUD & File Not Found OR Default HUD](#custom-hud--file-not-found-or-default-hud-pt-hudeventlabels)
 
 ## Custom PASS Time Reticles
 
@@ -63,31 +61,10 @@ Should look something like this:
 Change the `wide` value from `f0` to `0`.
 Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
-### Custom HUD & File Not Found (pt-powermeter-remover)
+### Custom HUD & File Not Found OR Default HUD (pt-powermeter-remover)
 
-Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and create a file named `hudpasstimeballstatus.res`. Paste in the following code and hit save.
+Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
 
-```
-"Resource/UI/HudPasstimeBallStatus.res"
-{
-	"BallPowerCluster"
-	{
-		"ControlName"								"EditablePanel"
-		"fieldName"									"BallPowerCluster"
-		"xpos"										"0"
-		"ypos"										"0"
-		"zpos"										"5"
-		"wide"										"0"
-		"tall"										"f0"
-		"visible"									"1"
-		"enabled"									"1"
-	}
-}
-```
-
-### Default HUD (pt-powermeter-remover)
-
-Download the `pt-powermeter-remover` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom`.
 
 ### Custom HUD & File Exists (pt-hudeventlabels)
 
@@ -106,84 +83,22 @@ If you wish to change the positioning of any elements, [use this reference docum
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-pt-hudeventlabels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
 
-### Custom HUD & File Not Found (pt-hudeventlabels)
+### Custom HUD & File Not Found OR Default HUD (pt-hudeventlabels)
 
-Create a file named `hudpasstimeballstatus.res` and copy paste the following code. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
+Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`. Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
-```
-"Resource/UI/HudPasstimeBallStatus.res"
-{
-// IF YOU ALREADY REMOVED THE POWER METER, COPY FROM HERE
-	"EventTitleLabel"
-	{
-		"ControlName"	"CExLabel"
-		"fieldName"		"EventTitleLabel"
-		"dropshadow"	"1"
-		"font"			"HudFontBiggerBold"
-		"xpos"			0
-		"ypos"			c100
-		"zpos"			"3"
-		"wide"			"f"
-		"tall"			"25"
-		"visible"		"1"
-		"enabled"		"1"
-		"textAlignment"	"center"
-		"labelText"		"A TEAM STOLE THE BALL"
-		fgcolor_override	"224 217 197 255"
-	}
+For `EventBonusLabel`:\
+Change the `tall` value to `0`.
 
-	"EventBonusLabel"
-	{
-		"ControlName"	"CExLabel"
-		"fieldName"		"EventBonusLabel"
-		"font"			"HudFontMediumSmallBold"
-		"dropshadow"	"1"
-		"xpos"			0
-		"ypos"			0
-		"zpos"			"3"
-		"wide"			"f"
-		"tall"			"20"
-		"visible"		"1"
-		"enabled"		"1"
-		"textAlignment"	"center"
-		"labelText"		""
-		fgcolor_override	"255 235 35 200"
-		pin_to_sibling			EventTitleLabel
-		pin_corner_to_sibling	6
-		pin_to_sibling_corner	4
-	}
+For `EventTitleLabel`:\
+Change the `tall` value to `0`.
 
-	"EventDetailLabel"
-	{
-		"ControlName"	"CExLabel"
-		"fieldName"		"EventDetailLabel"
-		"font"			"HudFontMediumSmallBold"
-		"dropshadow"	"1"
-		"xpos"			0
-		"ypos"			0
-		"zpos"			"3"
-		"wide"			"f"
-		"tall"			"24"
-		"visible"		"1"
-		"enabled"		"1"
-		"textAlignment"	"center"
-		"labelText"		"A TEAM STOLE THE BALL"
-		fgcolor_override	"224 217 197 255"
-		pin_to_sibling			EventTitleLabel
-		pin_corner_to_sibling	4
-		pin_to_sibling_corner	6
-	}
-// IF YOU ALREADY REMOVED THE POWER METER, COPY TO HERE
-// IT WILL LOOK LIKE pt-hudmod.7z's hudpasstimeballstatus.res
-}
-```
-
+For `EventDetailLabel`:\
+Change the `tall` value to `0`.
 
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-pt-hudeventlabels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
-
-### Default HUD (pt-hudeventlabels)
 
 ### Change the Font for PASS Time HUD Labels (pt-hudeventlabels)
 
