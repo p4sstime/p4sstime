@@ -108,6 +108,77 @@ If you wish to add a totally new font that isn't installed in your HUD, [follow 
 
 ### Custom HUD & File Not Found (pt-hudeventlabels)
 
+Create a file named `hudpasstimeballstatus.res` and copy paste the following code. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
+
+```
+"Resource/UI/HudPasstimeBallStatus.res"
+{
+// IF YOU ALREADY REMOVED THE POWER METER, COPY FROM HERE
+	"EventTitleLabel"
+	{
+		"ControlName"	"CExLabel"
+		"fieldName"		"EventTitleLabel"
+		"dropshadow"	"1"
+		"font"			"HudFontBiggerBold"
+		"xpos"			0
+		"ypos"			c100
+		"zpos"			"3"
+		"wide"			"f"
+		"tall"			"25"
+		"visible"		"1"
+		"enabled"		"1"
+		"textAlignment"	"center"
+		"labelText"		"A TEAM STOLE THE BALL"
+		fgcolor_override	"224 217 197 255"
+	}
+
+	"EventBonusLabel"
+	{
+		"ControlName"	"CExLabel"
+		"fieldName"		"EventBonusLabel"
+		"font"			"HudFontMediumSmallBold"
+		"dropshadow"	"1"
+		"xpos"			0
+		"ypos"			0
+		"zpos"			"3"
+		"wide"			"f"
+		"tall"			"20"
+		"visible"		"1"
+		"enabled"		"1"
+		"textAlignment"	"center"
+		"labelText"		""
+		fgcolor_override	"255 235 35 200"
+		pin_to_sibling			EventTitleLabel
+		pin_corner_to_sibling	6
+		pin_to_sibling_corner	4
+	}
+
+	"EventDetailLabel"
+	{
+		"ControlName"	"CExLabel"
+		"fieldName"		"EventDetailLabel"
+		"font"			"HudFontMediumSmallBold"
+		"dropshadow"	"1"
+		"xpos"			0
+		"ypos"			0
+		"zpos"			"3"
+		"wide"			"f"
+		"tall"			"24"
+		"visible"		"1"
+		"enabled"		"1"
+		"textAlignment"	"center"
+		"labelText"		"A TEAM STOLE THE BALL"
+		fgcolor_override	"224 217 197 255"
+		pin_to_sibling			EventTitleLabel
+		pin_corner_to_sibling	4
+		pin_to_sibling_corner	6
+	}
+// IF YOU ALREADY REMOVED THE POWER METER, COPY TO HERE
+// IT WILL LOOK LIKE pt-hudmod.7z's hudpasstimeballstatus.res
+}
+```
+
+
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
 If you wish to change the font to a different one, [follow this guide](#change-the-font-for-pass-time-hud-labels-pt-hudeventlabels).\
 If you wish to add a totally new font that isn't installed in your HUD, [follow this guide](https://github.com/rbjaxter/budhud/wiki/Adding---Replacing-Custom-Fonts#guide).
@@ -128,6 +199,8 @@ HUDs will usually structure their fonts where they have the name of the font (ex
 See what font you are currently using for the label you'd like to change the font on (look at the `font` field), and use that as a reference point. If I'm using `m0refont12` and I want to go bigger, I might use `m0refont20`, provided that it exists in my `fonts_scheme.res`/`client_scheme.res`.\
 > [!NOTE]  
 > If you change to a bigger or smaller font, you may have to modify the label's values for `tall` or its positioning. Use `vgui_cache_res_files 0` and `hud_reloadscheme` to test this out while running TF2. If the font does not change, it may require a game restart in between font changes.
+
 > [!IMPORTANT]  
 > After you are satisfied with your customization, be sure to turn `vgui_cache_res_files 1` or you **will** have worse performance.
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
