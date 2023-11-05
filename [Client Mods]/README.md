@@ -1,4 +1,7 @@
-# pt-powermeter-remover
+# Client Mods
+
+These are a small collection of PASS Time specific modifications clients can do to their game that they can use in pugs/tournaments.
+
 ## Removing the PASS Time Power Meter from your HUD
 
 ![PASS Time Power Meter Example](https://i.imgur.com/LbQj0Ur.jpeg)
@@ -56,7 +59,6 @@ Download the `pt-powermeter-remover` archive and put the folder inside into `YOU
 
 ---
 
-# passtime_crosshairs
 ## Custom PASS Time Reticles
 
 Not a fan of the default PASS Time ball reticle?
