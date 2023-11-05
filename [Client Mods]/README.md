@@ -6,24 +6,19 @@ These are a small collection of PASS Time specific modifications clients can do 
 
 ![PASS Time Power Meter Example](https://i.imgur.com/LbQj0Ur.jpeg)
 
-This hud element is really intrusive, but luckily for us, we can remove it.\
-Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`.
+This hud element is really intrusive, but luckily for us, we can remove it.
 
-Click on the following case that applies to you.\
-I am using:\
-[Custom HUD & File Exists](#custom-hud--file-exists-pt-powermeter-remover)\
-[Custom HUD & File Not Found OR Default HUD](#custom-hud--file-not-found-or-default-hud-pt-powermeter-remover)
+If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-pt-powermeter-remover).
+
+If you are using the default HUD or a custom HUD that does not have the file, simply download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
 
 ## Removing or Modifying PASS Time HUD Labels
 
 Sometimes the PASS Time ball HUD text for events can be intrusive or even useless (for example, +CRIT does not apply to 4v4 PASS Time). Thankfully, we can also modify these elements (although it's a bit more difficult than removing the power meter).
 ![PASS Time Event Hud Text Example](https://i.imgur.com/c9YAXXG.png)
-Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`.
+If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-pt-hudeventlabels).
 
-Click on the following case that applies to you.\
-I am using:\
-[Custom HUD & File Exists](#custom-hud--file-exists-pt-hudeventlabels)\
-[Custom HUD & File Not Found OR Default HUD](#custom-hud--file-not-found-or-default-hud-pt-hudeventlabels)
+Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-pt-hudeventlabels).
 
 ## Custom PASS Time Reticles
 
@@ -61,22 +56,13 @@ Should look something like this:
 Change the `wide` value from `f0` to `0`.
 Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
-### Custom HUD & File Not Found OR Default HUD (pt-powermeter-remover)
-
-Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`.
-
+<br><br><br><br><br><br><br><br><br><br><br><br>
 
 ### Custom HUD & File Exists (pt-hudeventlabels)
 
 Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
-For `EventBonusLabel`:\
-Change the `tall` value to `0`.
-
-For `EventTitleLabel`:\
-Change the `tall` value to `0`.
-
-For `EventDetailLabel`:\
+To remove, for any `Event____Label`:\
 Change the `tall` value to `0`.
 
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
@@ -87,13 +73,7 @@ If you wish to add a totally new font that isn't installed in your HUD, [follow 
 
 Download the `pt-hudmod` archive and put the folder inside into `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom\`. Open up the `hudpasstimeballstatus.res` file and CTRL + F for the text you want. As shown in the example before, the +CRIT message is `EventBonusLabel`, the event name (RED SCORE) is `EventTitleLabel`, and the person who caused the event is `EventDetailLabel`.
 
-For `EventBonusLabel`:\
-Change the `tall` value to `0`.
-
-For `EventTitleLabel`:\
-Change the `tall` value to `0`.
-
-For `EventDetailLabel`:\
+To remove, for any `Event____Label`:\
 Change the `tall` value to `0`.
 
 If you wish to change the positioning of any elements, [use this reference document](https://github.com/rbjaxter/budhud/wiki/Element-Positioning).\
