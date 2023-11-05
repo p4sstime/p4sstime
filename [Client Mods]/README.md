@@ -5,9 +5,9 @@
 
 This hud element is really intrusive, but luckily for us, we can remove it.
 
-## If you're using a custom HUD...
+### If you're using a custom HUD...
 
-Go to your custom folder where you put the HUD and open the HUD folder. Then go to resource/ui/ and open up hudpasstimeballstatus.res. CTRL + F for "BallPowerCluster".
+Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and open up `hudpasstimeballstatus.res`. CTRL + F for `BallPowerCluster`.
 
 Should look something like this:
 ```
@@ -25,12 +25,12 @@ Should look something like this:
 
         ...
 ```
-Change the "wide" value to "0".
-Done! Click save and now you can run hud_reloadscheme in console (if that doesn't work just restart your game), and you will be able to see the changes!
+Change the `wide` value from `f0` to `0`.
+Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
-## If you're using a custom HUD that doesn't have the file...
+### If you're using a custom HUD that doesn't have the file...
 
-Go to your custom folder and create a folder called and open the HUD folder. Then go to resource/ui/ and create a file named hudpasstimeballstatus.res. Paste in the following code and hit save.
+Go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and create a file named `hudpasstimeballstatus.res`. Paste in the following code and hit save.
 
 ```
 "Resource/UI/HudPasstimeBallStatus.res"
@@ -50,9 +50,9 @@ Go to your custom folder and create a folder called and open the HUD folder. The
 }
 ```
 
-## If you're using the default HUD...
+### If you're using the default HUD...
 
-Download the "passtime-powermeter-remover" folder and put it in "D:\SteamLibrary\steamapps\common\Team Fortress 2\tf\custom".
+Download the `pt-powermeter-remover` folder and put it in `YOUR_STEAM_LIBRARY\steamapps\common\Team Fortress 2\tf\custom`.
 
 ---
 
