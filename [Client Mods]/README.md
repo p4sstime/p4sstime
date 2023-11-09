@@ -53,7 +53,7 @@ Should look something like this:
 
         ...
 ```
-Change the `wide` value from `f0` to `0`.
+Change the `tall` value from `f0` to `0`.
 Click save and now you can run `hud_reloadscheme` in console (if that doesn't work just restart your game). The meter should now be removed!
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
