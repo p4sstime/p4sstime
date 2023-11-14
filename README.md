@@ -2,7 +2,7 @@
 
 Competitive 4v4 PASS Time plugins and configs.
 
-[Join the Official 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
+[Join the 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
 
 ## Plugin Features
 
