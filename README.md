@@ -50,6 +50,19 @@ sm_pt_catapultprint      0/1    # If 1, enables catapult events printing to chat
 
 [4v4 PASS Time Map Archive](http://laxson.site.nfoservers.com/server/maps/)
 
+## For Mappers
+
+Certain entities and properties need to be named certain things for them to work with the plugin's logging capabilities.
+
+- All map catapults need to have a classname of `trigger_catapult` and an output named `OnCatapulted`.
+- All ball spawners need to have a classname of `info_passtime_ball_spawn` and an output named `OnSpawnBall`.
+
+When in doubt, mirror arena2's names and outputs, as they are the standard I'll be using.
+
+## Recommended Plugins
+
+[JumpQOL](https://github.com/chrb22/jumpqol/) - Fixes a lot of issues with blastjumping mechanics in TF2
+
 ## Credits
 
 Contains work from:
