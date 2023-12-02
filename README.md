@@ -50,7 +50,7 @@ L 12/02/2023 - 00:11:02: "blake++<5><[U:1:95447021]><Blue>" triggered "pass_scor
 L 12/02/2023 - 00:11:02: "jollypresents94<4><[U:1:177956067]><Blue>" triggered "pass_score_assist" (position "-41 -786 0")
 L 12/02/2023 - 00:07:30: "jollypresents94<4><[U:1:177956067]><Red>" triggered "pass_pass_caught" against "blake++<2><[U:1:95447021]><Red>" (interception "0") (save "0") (handoff "0") (dist "55.343") (duration "0.780") (thrower_position "156 617 0") (catcher_position "-257 1200 0")
 L 12/02/2023 - 00:10:20: "blake++<5><[U:1:95447021]><Blue>" triggered "pass_ball_stolen" against "jollypresents94<4><[U:1:177956067]><Red>" (thief_position "337 -502 0") (victim_position "385 -492 0")
-L 12/02/2023 - 00:00:05: "blake++<2><[U:1:95447021]><Red>" triggered "pass_trigger_catapult" with the jack (catapult "1") (position "-593 -1012 0")
+L 12/02/2023 - 00:00:05: "blake++<2><[U:1:95447021]><Red>" triggered "pass_trigger_catapult" with the jack (position "-593 -1012 0")
 L 12/02/2023 - 00:12:00: "blake++<5><[U:1:95447021]><Red>" triggered "pass_ball_blocked" against "jollypresents94<4><[U:1:177956067]><Blue>" (thrower_position "348 870 0") (blocker_position "210 799 475")
 ```
 
