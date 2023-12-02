@@ -1,0 +1,1 @@
+## These require [RGL's Server Resources Updater](https://github.com/RGLgg/server-resources-updater), or you can merely just download the CFGs and place them into your server's CFG folder.
