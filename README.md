@@ -6,7 +6,7 @@ Competitive 4v4 PASS Time plugins, configs, and more.
 
 ## Plugin Features
 
-- Uploads PASS Time specific data to logs.tf for (hopefully) eventual display by logs.tf
+- Uploads PASS Time specific data to logs.tf for display by [more.tf](https://more.tf)
 - Fixes "uber bug" where medics who use ubercharge are not able to pick up the ball without respawning
 - Prints chat messages for the following PASS Time events:
     - Scoring (with assists)
@@ -38,6 +38,20 @@ sm_pt_stats_delay        7.5    # Set the delay between round end and the stats 
 sm_pt_save_radius        200    # Set the radius in hammer units from the goal that an intercept is considered a save.
 sm_pt_practice           0/1    # If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.
 sm_pt_catapultprint      0/1    # If 1, enables catapult events printing to chat; temporary cvar until I have a better system for this
+```
+
+### Logs Example
+
+Here are examples of each of the logs that the plugin will produce.
+```
+L 12/02/2023 - 00:05:32: "blake++<2><[U:1:95447021]><Red>" triggered "pass_get" (firstcontact "0") (position "531 -1486 392")
+L 12/02/2023 - 00:05:38: "blake++<2><[U:1:95447021]><Red>" triggered "pass_free" (position "-733 -539 33")
+L 12/02/2023 - 00:11:02: "blake++<5><[U:1:95447021]><Blue>" triggered "pass_score" (points "1") (panacea "0") (position "-8 1141 0")
+L 12/02/2023 - 00:11:02: "jollypresents94<4><[U:1:177956067]><Blue>" triggered "pass_score_assist" (position "-41 -786 0")
+L 12/02/2023 - 00:07:30: "jollypresents94<4><[U:1:177956067]><Red>" triggered "pass_pass_caught" against "blake++<2><[U:1:95447021]><Red>" (interception "0") (save "0") (handoff "0") (dist "55.343") (duration "0.780") (thrower_position "156 617 0") (catcher_position "-257 1200 0")
+L 12/02/2023 - 00:10:20: "blake++<5><[U:1:95447021]><Blue>" triggered "pass_ball_stolen" against "jollypresents94<4><[U:1:177956067]><Red>" (thief_position "337 -502 0") (victim_position "385 -492 0")
+L 12/02/2023 - 00:00:05: "blake++<2><[U:1:95447021]><Red>" triggered "pass_trigger_catapult" with the jack (catapult "1") (position "-593 -1012 0")
+L 12/02/2023 - 00:12:00: "blake++<5><[U:1:95447021]><Red>" triggered "pass_ball_blocked" against "jollypresents94<4><[U:1:177956067]><Blue>" (thrower_position "348 870 0") (blocker_position "210 799 475")
 ```
 
 ## Maps

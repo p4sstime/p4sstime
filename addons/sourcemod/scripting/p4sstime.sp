@@ -917,7 +917,7 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 		{	  
 			team = "Spectator";
 		}
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (catapult \"1\") (position \"%.0f %.0f %.0f\")", 
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (position \"%.0f %.0f %.0f\")", 
 			plyGrab, GetClientUserId(plyGrab), steamid, team,
 			position[0], position[1], position[2]);
 		if (statsEnable.BoolValue && catapultToggle.BoolValue)
