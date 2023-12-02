@@ -52,10 +52,10 @@ Handle  		g_ballhudSound = INVALID_HANDLE;
 public Plugin myinfo =
 {
 	name		= "4v4 PASS Time Extension",
-	author		= "czarchasm, Dr. Underscore (James), EasyE",
+	author		= "blake++, Dr. Underscore, EasyE, sappho (MGEMod), muddy",
 	description = "The main plugin for 4v4 Competitive PASS Time.",
-	version		= "1.4.0",
-	url			= "https://github.com/czarchasm00/p4sstime"
+	version		= "1.5.0",
+	url			= "https://github.com/blakeplusplus/p4sstime"
 };
 
 public void OnPluginStart()
@@ -76,6 +76,7 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
+	HookEvent("player_askedforball", Event_PlayerAskedForBall, EventHookMode_Post);
 	HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
 	HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
 	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
@@ -83,6 +84,7 @@ public void OnPluginStart()
 	HookEvent("pass_score", Event_PassScorePost, EventHookMode_Post);
 	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
 	HookEvent("pass_pass_caught", Event_PassCaughtPost, EventHookMode_Post);
+	HookEvent("pass_ball_blocked", Event_PassBallBlocked, EventHookMode_Post);
 	HookEvent("rocket_jump", Event_RJ, EventHookMode_Post);
 	HookEvent("rocket_jump_landed", Event_RJLand, EventHookMode_Post);
 	HookEvent("sticky_jump", Event_SJ, EventHookMode_Post);
@@ -494,6 +496,22 @@ public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float
 public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 {
 	int owner = event.GetInt("owner");
+
+	// log formatting
+	char steamid[16];
+	char team[12];
+	float position[3];
+	GetClientAuthId(owner, AuthId_Steam3, steamid, sizeof(steamid));
+	if (GetClientTeam(owner) == 2)
+	{
+		team = "Red";
+	}
+	else if (GetClientTeam(owner) == 3) {
+		team = "Blue";
+	}
+	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
+		team = "Spectator";
+	}
 	if (playerBallHudSettings[owner].hudText)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
@@ -502,6 +520,83 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	passTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget")); // use hungarian notation; b = boolean, h = handle
 	if (!(b_BlastJumpStatus[owner]))
 		panaceaCheck[owner] = false;
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_free\" (position \"%i %i %i\")",
+		owner, GetClientUserId(owner), steamid, team,
+		position[0], position[1], position[2]);
+	return Plugin_Handled;
+}
+
+public Action Event_PlayerAskedForBall(Event event, const char[] name, bool dontBroadcast)
+{
+	int caller = event.GetInt("userid");
+
+	// log formatting
+	char steamid[16];
+	char team[12];
+	float caller_position[3];
+
+	GetClientAbsAngles(caller, caller_position);
+	GetClientAuthId(caller, AuthId_Steam3, steamid, sizeof(steamid));
+
+	if (GetClientTeam(caller) == 2)
+	{
+		team = "Red";
+	}
+	else if (GetClientTeam(caller) == 3) {
+		team = "Blue";
+	}
+	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
+		team = "Spectator";
+	}
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"player_askedforball\" (position \"%i %i %i\")",
+		caller, GetClientUserId(caller), steamid, team,
+		caller_position[0], caller_position[1], caller_position[2]);
+	return Plugin_Handled;
+}
+
+public Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast) // When an enemy player blocks a thrown ball without picking it up, via uber or rocket/sticky jumpers
+{
+	int thrower = event.GetInt("owner");
+	int blocker = event.GetInt("blocker");
+
+	// log formatting
+	char steamid_thrower[16];
+	char steamid_blocker[16];
+	char team_thrower[12];
+	char team_blocker[12];
+	float thrower_position[3], blocker_position[3];
+
+	GetClientAbsAngles(thrower, thrower_position);
+	GetClientAbsAngles(blocker, blocker_position);
+	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
+	GetClientAuthId(blocker, AuthId_Steam3, steamid_blocker, sizeof(steamid_blocker));
+
+	if (GetClientTeam(thrower) == 2)
+	{
+		team_thrower = "Red";
+	}
+	else if (GetClientTeam(thrower) == 3) {
+		team_thrower = "Blue";
+	}
+	else {
+		team_thrower = "Spectator";
+	}
+
+	if (GetClientTeam(blocker) == 2)
+	{
+		team_blocker = "Red";
+	}
+	else if (GetClientTeam(blocker) == 3) {
+		team_blocker = "Blue";
+	}
+	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
+		team_blocker = "Spectator";
+	}
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_blocked\" against \"%N<%i><%s><%s>\" (thrower_position \"%i %i %i\") (blocker_position \"%i %i %i\")",
+		blocker, GetClientUserId(blocker), steamid_blocker, team_blocker,
+		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
+		thrower_position[0], thrower_position[1], thrower_position[2], 
+		blocker_position[0], blocker_position[1], blocker_position[2]);
 	return Plugin_Handled;
 }
 
@@ -512,8 +607,10 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
 	// log formatting
 	char steamid[16];
 	char team[12];
+	float plyGrab_position[3];
 
 	GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
+	GetClientAbsAngles(plyGrab, plyGrab_position);
 
 	if (GetClientTeam(plyGrab) == 2)
 	{
@@ -525,7 +622,9 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\")", plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (position \"%i %i %i\")",
+		plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab,
+		plyGrab_position[0], plyGrab_position[1], plyGrab_position[2]);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
 	if (firstGrab == 1 && b_BlastJumpStatus[plyGrab])
 	{
@@ -582,27 +681,43 @@ public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBro
 	int	catcher	= GetEventInt(event, "catcher");
 	float dist = GetEventFloat(event, "dist");
 	float duration = GetEventFloat(event, "duration");
-	int intercept = true;
+	int intercept = false;
+	int bSave = false;
 	plyGrab = catcher;
-
-	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
-
-	if (GetClientTeam(thrower) == GetClientTeam(catcher))
-	{
-		intercept = false;
-	}
-
-	// log formatting
 	char steamid_thrower[16];
 	char steamid_catcher[16];
 	char team_thrower[12];
 	char team_catcher[12];
 	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
+	float thrower_position[3], catcher_position[3];
 
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
 	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
 	GetClientAuthId(catcher, AuthId_Steam3, steamid_catcher, sizeof(steamid_catcher));
+	GetClientAbsAngles(thrower, thrower_position);
+	GetClientAbsAngles(catcher, catcher_position);
+
+
+	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
+
+	if (GetClientTeam(thrower) != GetClientTeam(catcher))
+	{
+		intercept = true;
+		if(InGoalieZone(catcher))
+		{
+			bSave = true;
+			playerStatistics[catcher].saves++;
+			if(statsEnable.BoolValue)
+				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
+		}
+		else
+		{
+			playerStatistics[catcher].interceptions++;
+			if(statsEnable.BoolValue)
+				PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+		}
+	}
 
 	if (GetClientTeam(thrower) == 2)
 	{
@@ -625,19 +740,12 @@ public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBro
 	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
 		team_catcher = "Spectator";
 	}
-	
-	if (InGoalieZone(catcher) && statsEnable.BoolValue)
-	{
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (save \"1\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, dist, duration); // only do this for logs.tf; no need to put a variable on saves cuz if this if statement prints its always a save
-		playerStatistics[catcher].saves++;
-	}
-	else if (statsEnable.BoolValue && intercept) 
-	{
-		PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
-		playerStatistics[catcher].interceptions++;
-	}
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\")", catcher, GetClientUserId(catcher), steamid_catcher, team_catcher, thrower, GetClientUserId(thrower), steamid_thrower, team_thrower, intercept, handoffCheck, dist, duration);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (save \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\") (thrower_position \"%i %i %i\") (catcher_position \"%i %i %i\")",
+		catcher, GetClientUserId(catcher), steamid_catcher, team_catcher,
+		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
+		intercept, bSave, handoffCheck, dist, duration,
+		thrower_position[0], thrower_position[1], thrower_position[2],
+		catcher_position[0], catcher_position[1], catcher_position[2]);
 	panaceaCheck[thrower] = false;
 	panaceaCheck[catcher] = false;
 
@@ -655,7 +763,10 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
 	char steamid_victim[16];
 	char team_thief[12];
 	char team_victim[12];
+	float victim_position[3], thief_position[3];
 
+	GetClientAbsAngles(thief, thief_position);
+	GetClientAbsAngles(victim, victim_position);
 	GetClientAuthId(thief, AuthId_Steam3, steamid_thief, sizeof(steamid_thief));
 	GetClientAuthId(victim, AuthId_Steam3, steamid_victim, sizeof(steamid_victim));
 
@@ -681,7 +792,11 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
 		team_victim = "Spectator";
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\"", thief, GetClientUserId(thief), steamid_thief, team_thief, victim, GetClientUserId(victim), steamid_victim, team_victim);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\" (thief_position \"%i %i %i\") (victim_position \"%i %i %i\")",
+		thief, GetClientUserId(thief), steamid_thief, team_thief,
+		victim, GetClientUserId(victim), steamid_victim, team_victim,
+		thief_position[0], thief_position[1], thief_position[2],
+		victim_position[0], victim_position[1], victim_position[2]);
 	panaceaCheck[victim] = false;
 	panaceaCheck[thief] = false;
 
@@ -710,6 +825,10 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 	// log formatting
 	char steamid_scorer[16];
 	char team_scorer[12];
+	float scorer_position[3], assistor_position[3];
+
+	GetClientAbsAngles(scorer, scorer_position);
+	GetClientAbsAngles(assistor, assistor_position);
 
 	GetClientAuthId(scorer, AuthId_Steam3, steamid_scorer, sizeof(steamid_scorer));
 
@@ -724,7 +843,9 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 		team_scorer = "Spectator";
 	}
 
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\")", scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck[scorer]);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%i %i %i\")", 
+		scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck[scorer],
+		scorer_position[0], scorer_position[1], scorer_position[2]);
 
 	if (assistor > 0)
 	{
@@ -744,7 +865,9 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 			team_assistor = "Spectator";
 		}
 
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\"", assistor, GetClientUserId(assistor), steamid_assistor, team_assistor);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%i %i %i\")", 
+			assistor, GetClientUserId(assistor), steamid_assistor, team_assistor,
+			assistor_position[0], assistor_position[1], assistor_position[2]);
 		playerStatistics[assistor].assists++;
 
 	}
@@ -803,11 +926,12 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 	char steamid[16];
 	char team[12];
 	char plyName[MAX_NAME_LENGTH];
+	float plyGrab_position[3];
 	if(activator == ball && firstGrab == 0 && IsClientConnected(plyGrab))
 	{
 		GetClientName(plyGrab, plyName, sizeof(plyName));
 		GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
-
+		GetClientAbsAngles(plyGrab, plyGrab_position);
 		if (GetClientTeam(plyGrab) == 2)
 		{
 			team = "Red";
@@ -820,7 +944,9 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 		{	  
 			team = "Spectator";
 		}
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (catapult \"1\")", plyGrab, GetClientUserId(plyGrab), steamid, team);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (catapult \"1\") (position \"%i %i %i\")", 
+			plyGrab, GetClientUserId(plyGrab), steamid, team,
+			plyGrab_position[0], plyGrab_position[1], plyGrab_position[2]);
 		if (statsEnable.BoolValue && catapultToggle.BoolValue)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
 	}
