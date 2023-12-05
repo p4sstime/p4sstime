@@ -1,3 +1,5 @@
+## This config relies on RGL's CFGs. Specifically, [rgl_base](https://github.com/RGLgg/server-resources-updater/blob/master/cfg/rgl_base.cfg) and [rgl_pt_base](https://github.com/RGLgg/server-resources-updater/blob/master/cfg/rgl_pt_base.cfg). I recommend also grabbing [rgl_off](https://github.com/RGLgg/server-resources-updater/blob/master/cfg/rgl_off.cfg).
+
 > [!WARNING]  
 > **Using [RGL's Server Resources Updater](https://github.com/RGLgg/server-resources-updater) & this config unedited will cause the server to repeatedly change map.**
 > - This is due to the rglqol.smx plugin seeing that we're changing `sv_pure`. Move that file from `tf/addons/sourcemod/plugins/rglqol.smx` to `.../plugins/disabled/rglqol.smx` (move to disabled folder) so it won't load.
