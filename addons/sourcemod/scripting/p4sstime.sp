@@ -54,7 +54,7 @@ public Plugin myinfo =
 	name		= "4v4 PASS Time Extension",
 	author		= "blake++, Dr. Underscore, EasyE, sappho (MGEMod), muddy",
 	description = "The main plugin for 4v4 Competitive PASS Time.",
-	version		= "1.5.0",
+	version		= "1.5.1",
 	url			= "https://github.com/blakeplusplus/p4sstime"
 };
 
@@ -637,6 +637,7 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
+	handoffCheck = 0;
 	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
