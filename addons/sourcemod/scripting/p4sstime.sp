@@ -155,21 +155,12 @@ public void OnMapStart() // getgoallocations
 	}
 }
 
-public bool IsValidClient(int client)
+bool IsValidClient(int client)
 {
 	if (client > 4096) client = EntRefToEntIndex(client);
 	if (client <= 0 || client > MaxClients) return false;
 	if (!IsClientInGame(client)) return false;
-	if (IsFakeClient(client)) return false;
-	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
-	return true;
-}
-
-public bool IsValidClient2(int client) { // should allow you to test with robots per eaasye
-	if (client > 4096) client = EntRefToEntIndex(client);
-	if (client < 1 || client > MaxClients) return false;
-	if (!IsClientInGame(client)) return false;
-	//if (IsFakeClient(client)) return false;
+	if (IsFakeClient(client)) return false; // comment this to test with bots per easye
 	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
 	return true;
 }
@@ -195,7 +186,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
 }
 
-public void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod
+void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod
 {
 	plyDirecter = other;
 	if (other > 0 && other <= MaxClients)
@@ -250,13 +241,13 @@ public OnClientCookiesCached(int client)
 	playerBallHudSettings[client].sound	= (StringToInt(sValue) > 0);
 }  
 
-public Action Command_BallHud(int client, int args)
+Action Command_BallHud(int client, int args)
 {
 	if (IsValidClient(client)) ballHudMenu.Display(client, MENU_TIME_FOREVER);
 	return Plugin_Handled;
 }
 
-public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
+int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_Select)
 	{
@@ -304,7 +295,7 @@ public int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int para
 }
 
 /*-------------------------------------------------- Player Events --------------------------------------------------*/
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	deadPlayers[client] = false;
@@ -313,7 +304,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
-public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
+Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	RemoveShotty(client);
@@ -321,12 +312,12 @@ public Action Event_PlayerResup(Event event, const char[] name, bool dontBroadca
 	return Plugin_Handled;
 }
 
-public bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
+bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
 {
 	return entity > MaxClients || !entity;
 }
 
-public float DistanceAboveGround(int victim) // taken from mgemod
+float DistanceAboveGround(int victim) // taken from mgemod
 {
 	float vStart[3];
 	float vEnd[3];
@@ -347,35 +338,35 @@ public float DistanceAboveGround(int victim) // taken from mgemod
 	return distance;
 }
 
-public Action Event_RJ(Event event, const char[] name, bool dontBroadcast) // rj and sj not fired when lifted up by another player
+Action Event_RJ(Event event, const char[] name, bool dontBroadcast) // rj and sj not fired when lifted up by another player
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	b_BlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
-public Action Event_RJLand(Event event, const char[] name, bool dontBroadcast)
+Action Event_RJLand(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	b_BlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
-public Action Event_SJ(Event event, const char[] name, bool dontBroadcast)
+Action Event_SJ(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	b_BlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
-public Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
+Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	b_BlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
-public Action OnChangeClass(int client, const char[] strCommand, int args)
+Action OnChangeClass(int client, const char[] strCommand, int args)
 {
 	if(deadPlayers[client] == true && respawnEnable.BoolValue)
 	{
@@ -385,7 +376,7 @@ public Action OnChangeClass(int client, const char[] strCommand, int args)
 	return Plugin_Continue;
 }
 
-/*public Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+/*Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
 	char victimName[MAX_NAME_LENGTH], attackerName[MAX_NAME_LENGTH];
 	char steamid_victim[16];
@@ -460,13 +451,13 @@ public void TF2_OnConditionAdded(int client, TFCond condition)
 }
 
 // the below function is dr underscore's fix. thanks!
-public TF2_OnConditionRemoved(client, TFCond condition)
+public void TF2_OnConditionRemoved(client, TFCond condition)
 {
 	if (condition == TFCond_Ubercharged)
 		TF2_RemoveCondition(client, TFCond_UberchargeFading);
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	deadPlayers[client] = true;
 
@@ -485,14 +476,14 @@ public void OnClientDisconnect(int client)
 }
 
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
-public void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
+void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
 	ball = FindEntityByClassname(-1, "passtime_ball");
 	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
 	firstGrab = 1;
 }
 
-public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
+Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 {
 	int owner = event.GetInt("owner");
 
@@ -526,7 +517,7 @@ public Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-public Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast) // When an enemy player blocks a thrown ball without picking it up, via uber or rocket/sticky jumpers
+Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast) // When an enemy player blocks a thrown ball without picking it up, via uber or rocket/sticky jumpers
 {
 	int thrower = event.GetInt("owner");
 	int blocker = event.GetInt("blocker");
@@ -572,7 +563,7 @@ public Action Event_PassBallBlocked(Event event, const char[] name, bool dontBro
 	return Plugin_Handled;
 }
 
-public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw, this is posthook tho
+Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw, this is posthook tho
 {
 	plyGrab = event.GetInt("owner");
 
@@ -629,7 +620,7 @@ public Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) 
 	return Plugin_Handled;
 }
 
-public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
+Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
 {
 	int	thrower	= GetEventInt(event, "passer");
 	int	catcher	= GetEventInt(event, "catcher");
@@ -648,7 +639,7 @@ public Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroa
 	return Plugin_Continue;
 }
 
-public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
+Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 {
 	int	thrower	= GetEventInt(event, "passer");
 	int	catcher	= GetEventInt(event, "catcher");
@@ -725,7 +716,7 @@ public Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBro
 	return Plugin_Handled;
 }
 
-public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
+Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = event.GetInt("victim");
 	int thief  = event.GetInt("attacker");
@@ -789,7 +780,7 @@ public Action Event_PassStolen(Event event, const char[] name, bool dontBroadcas
 	return Plugin_Handled;
 }
 
-public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
+Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 {
 	int	scorer = event.GetInt("scorer");
 	int	points = event.GetInt("points");
@@ -847,7 +838,7 @@ public Action Event_PassScorePre(Event event, const char[] name, bool dontBroadc
 	return Plugin_Continue;
 }
 
-public Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
+Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!statsEnable.BoolValue) return Plugin_Handled;
 
@@ -874,7 +865,7 @@ public Action Event_PassScorePost(Event event, const char[] name, bool dontBroad
 	return Plugin_Handled;
 }
 
-public bool InGoalieZone(int client)
+bool InGoalieZone(int client)
 {
 	int	  team = GetClientTeam(client);
 	float position[3];
@@ -894,7 +885,7 @@ public bool InGoalieZone(int client)
 	return false;
 }
 
-public void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
+void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
 {
 	char steamid[16];
 	char team[12];
@@ -924,7 +915,7 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 }
 
 /*-------------------------------------------------- Game Events --------------------------------------------------*/
-public void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[] newValue)
+void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (practiceMode.BoolValue)
 	{
@@ -947,7 +938,7 @@ Action AddFiveMinutes(Handle timer)
 	else return Plugin_Stop;
 }
 
-public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
+Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!statsEnable.BoolValue) return Plugin_Handled;
 	CreateTimer(statsDelay.FloatValue, Timer_DisplayStats);
@@ -955,7 +946,7 @@ public Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 }
 
 // this is really fucking sloppy but shrug
-public Action Timer_DisplayStats(Handle timer)
+Action Timer_DisplayStats(Handle timer)
 {
 	int redTeam[16], bluTeam[16];
 	int redCursor, bluCursor = 0;
@@ -1021,7 +1012,7 @@ public Action Timer_DisplayStats(Handle timer)
 	return Plugin_Stop;
 }
 
-public void RemoveShotty(int client)
+void RemoveShotty(int client)
 {
 	if (stockEnable.BoolValue)
 	{
