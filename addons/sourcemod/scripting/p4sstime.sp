@@ -30,7 +30,7 @@ Statistics		playerStatistics[MAXPLAYERS + 1];
 
 float			bluGoal[3], redGoal[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/practiceMode, catapultToggle;
+ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/practiceMode;
 
 int				plyGrab;
 int				plyDirecter;
@@ -104,7 +104,6 @@ public void OnPluginStart()
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
 	practiceMode	 = CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	catapultToggle	 = CreateConVar("sm_pt_catapultprint", "0", "If 1, enables catapult events printing to chat.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
@@ -921,8 +920,6 @@ public void Hook_OnCatapult(const char[] output, int caller, int activator, floa
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (position \"%.0f %.0f %.0f\")", 
 			plyGrab, GetClientUserId(plyGrab), steamid, team,
 			position[0], position[1], position[2]);
-		if (statsEnable.BoolValue && catapultToggle.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ff3434catapulted \x0700ffffthe jack!", plyName);
 	}
 }
 

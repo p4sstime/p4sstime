@@ -37,7 +37,6 @@ sm_pt_stats              0/1    # If 1, enables printing of passtime events to c
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat.
 sm_pt_save_radius        200    # Set the radius in hammer units from the goal that an intercept is considered a save.
 sm_pt_practice           0/1    # If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.
-sm_pt_catapultprint      0/1    # If 1, enables catapult events printing to chat; temporary cvar until I have a better system for this
 ```
 
 ### Logs Example
