@@ -9,14 +9,14 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-enum struct BallHudSettings
+enum struct enubPlyJackSettings
 {
 	bool hudText;
 	bool chat;
 	bool sound;
 }
 
-enum struct Statistics
+enum struct enuiPlyRoundStats
 {
 	int scores;
 	int assists;
@@ -25,10 +25,10 @@ enum struct Statistics
 	int steals;
 }
 
-BallHudSettings playerBallHudSettings[MAXPLAYERS + 1];
-Statistics		playerStatistics[MAXPLAYERS + 1];
+enubPlyJackSettings arrbJackAcqSettings[MAXPLAYERS + 1];
+enuiPlyRoundStats	arriPlyRoundPassStats[MAXPLAYERS + 1];
 
-float			bluGoal[3], redGoal[3];
+float			fBluGoalPos[3], fRedGoalPos[3];
 
 ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/practiceMode;
 
@@ -146,12 +146,12 @@ public void OnMapStart() // getgoallocations
 	int team1 = GetEntProp(goal1, Prop_Send, "m_iTeamNum");
 	if (team1 == 2)
 	{
-		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", bluGoal);
-		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", redGoal);
+		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fBluGoalPos);
+		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
 	else {
-		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", bluGoal);
-		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", redGoal);
+		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fBluGoalPos);
+		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
 }
 
@@ -234,11 +234,11 @@ public OnClientCookiesCached(int client)
 {
 	char sValue[8];
 	GetClientCookie(client, g_ballhudHud, sValue, sizeof(sValue));
-	playerBallHudSettings[client].hudText = (StringToInt(sValue) > 0);
+	arrbJackAcqSettings[client].hudText = (StringToInt(sValue) > 0);
 	GetClientCookie(client, g_ballhudChat, sValue, sizeof(sValue));
-	playerBallHudSettings[client].chat = (StringToInt(sValue) > 0);
+	arrbJackAcqSettings[client].chat = (StringToInt(sValue) > 0);
 	GetClientCookie(client, g_ballhudSound, sValue, sizeof(sValue));
-	playerBallHudSettings[client].sound	= (StringToInt(sValue) > 0);
+	arrbJackAcqSettings[client].sound	= (StringToInt(sValue) > 0);
 }  
 
 Action Command_BallHud(int client, int args)
@@ -256,38 +256,38 @@ int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 		ballHudMenu.GetItem(param2, info, sizeof(info));
 		if (StrEqual(info, "hudtext"))
 		{
-			playerBallHudSettings[param1].hudText = !playerBallHudSettings[param1].hudText;
+			arrbJackAcqSettings[param1].hudText = !arrbJackAcqSettings[param1].hudText;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (playerBallHudSettings[param1].hudText) 
+			if (arrbJackAcqSettings[param1].hudText) 
 				SetClientCookie(param1, g_ballhudHud, "1");
 			else
 				SetClientCookie(param1, g_ballhudHud, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", playerBallHudSettings[param1].hudText ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[param1].hudText ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 		if (StrEqual(info, "chattext"))
 		{
-			playerBallHudSettings[param1].chat = !playerBallHudSettings[param1].chat;
+			arrbJackAcqSettings[param1].chat = !arrbJackAcqSettings[param1].chat;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (playerBallHudSettings[param1].chat) 
+			if (arrbJackAcqSettings[param1].chat) 
 				SetClientCookie(param1, g_ballhudChat, "1");
 			else
 				SetClientCookie(param1, g_ballhudChat, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", playerBallHudSettings[param1].chat ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[param1].chat ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 		if (StrEqual(info, "sound"))
 		{
-			playerBallHudSettings[param1].sound = !playerBallHudSettings[param1].sound;
+			arrbJackAcqSettings[param1].sound = !arrbJackAcqSettings[param1].sound;
 			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (playerBallHudSettings[param1].sound) 
+			if (arrbJackAcqSettings[param1].sound) 
 				SetClientCookie(param1, g_ballhudSound, "1");
 			else
 				SetClientCookie(param1, g_ballhudSound, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", playerBallHudSettings[param1].sound ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[param1].sound ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 	}
@@ -468,11 +468,11 @@ public void OnClientDisconnect(int client)
 {
 	deadPlayers[client] = false;
 
-	playerStatistics[client].scores		   = 0;
-	playerStatistics[client].assists	   = 0;
-	playerStatistics[client].saves		   = 0;
-	playerStatistics[client].interceptions = 0;
-	playerStatistics[client].steals		   = 0;
+	arriPlyRoundPassStats[client].scores		   = 0;
+	arriPlyRoundPassStats[client].assists	   = 0;
+	arriPlyRoundPassStats[client].saves		   = 0;
+	arriPlyRoundPassStats[client].interceptions = 0;
+	arriPlyRoundPassStats[client].steals		   = 0;
 }
 
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
@@ -503,7 +503,7 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	if (playerBallHudSettings[owner].hudText)
+	if (arrbJackAcqSettings[owner].hudText)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
@@ -599,18 +599,18 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 	}
 	firstGrab = 0;
 
-	if (playerBallHudSettings[plyGrab].hudText)
+	if (arrbJackAcqSettings[plyGrab].hudText)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(plyGrab, 1, "YOU HAVE THE JACK");
 	}
 
-	if (playerBallHudSettings[plyGrab].chat)
+	if (arrbJackAcqSettings[plyGrab].chat)
 	{
 		PrintToChat(plyGrab, "\x07ffff00[PASS]\x0700ff00 YOU HAVE THE JACK!!!");
 	}
 
-	if (playerBallHudSettings[plyGrab].sound)
+	if (arrbJackAcqSettings[plyGrab].sound)
 	{
 		ClientCommand(plyGrab, "playgamesound Passtime.BallSmack");
 	}
@@ -671,13 +671,13 @@ Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 		if(InGoalieZone(catcher))
 		{
 			bSave = true;
-			playerStatistics[catcher].saves++;
+			arriPlyRoundPassStats[catcher].saves++;
 			if(statsEnable.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
 		}
 		else
 		{
-			playerStatistics[catcher].interceptions++;
+			arriPlyRoundPassStats[catcher].interceptions++;
 			if(statsEnable.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
 		}
@@ -764,7 +764,7 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 	panaceaCheck[victim] = false;
 	panaceaCheck[thief] = false;
 
-	if (playerBallHudSettings[victim].hudText)
+	if (arrbJackAcqSettings[victim].hudText)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(victim, 1, "");
@@ -775,7 +775,7 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 		GetClientName(thief, thiefName, sizeof(thiefName));
 		GetClientName(victim, victimName, sizeof(victimName));
 		PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
-		playerStatistics[thief].steals++;
+		arriPlyRoundPassStats[thief].steals++;
 	}
 	return Plugin_Handled;
 }
@@ -832,7 +832,7 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
 			assistor, GetClientUserId(assistor), steamid_assistor, team_assistor,
 			assistor_position[0], assistor_position[1], assistor_position[2]);
-		playerStatistics[assistor].assists++;
+		arriPlyRoundPassStats[assistor].assists++;
 
 	}
 	return Plugin_Continue;
@@ -860,7 +860,7 @@ Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
-	playerStatistics[client].scores++;
+	arriPlyRoundPassStats[client].scores++;
 
 	return Plugin_Handled;
 }
@@ -873,13 +873,13 @@ bool InGoalieZone(int client)
 
 	if (team == view_as<int>(TFTeam_Blue))
 	{
-		float distance = GetVectorDistance(position, bluGoal, false);
+		float distance = GetVectorDistance(position, fBluGoalPos, false);
 		if (distance < saveRadius.FloatValue) return true;
 	}
 
 	if (team == view_as<int>(TFTeam_Red))
 	{
-		float distance = GetVectorDistance(position, redGoal, false);
+		float distance = GetVectorDistance(position, fRedGoalPos, false);
 		if (distance < saveRadius.FloatValue) return true;
 	}
 	return false;
@@ -975,14 +975,14 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].assists, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].scores, arriPlyRoundPassStats[bluTeam[i]].assists, arriPlyRoundPassStats[bluTeam[i]].saves, arriPlyRoundPassStats[bluTeam[i]].interceptions, arriPlyRoundPassStats[bluTeam[i]].steals);
 			}
 
 			for (int i = 0; i < redCursor; i++)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].assists, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].scores, arriPlyRoundPassStats[redTeam[i]].assists, arriPlyRoundPassStats[redTeam[i]].saves, arriPlyRoundPassStats[redTeam[i]].interceptions, arriPlyRoundPassStats[redTeam[i]].steals);
 			}
 		}
 
@@ -991,14 +991,14 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[redTeam[i]].scores, playerStatistics[redTeam[i]].assists, playerStatistics[redTeam[i]].saves, playerStatistics[redTeam[i]].interceptions, playerStatistics[redTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].scores, arriPlyRoundPassStats[redTeam[i]].assists, arriPlyRoundPassStats[redTeam[i]].saves, arriPlyRoundPassStats[redTeam[i]].interceptions, arriPlyRoundPassStats[redTeam[i]].steals);
 			}
 
 			for (int i = 0; i < bluCursor; i++)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, playerStatistics[bluTeam[i]].scores, playerStatistics[bluTeam[i]].assists, playerStatistics[bluTeam[i]].saves, playerStatistics[bluTeam[i]].interceptions, playerStatistics[bluTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].scores, arriPlyRoundPassStats[bluTeam[i]].assists, arriPlyRoundPassStats[bluTeam[i]].saves, arriPlyRoundPassStats[bluTeam[i]].interceptions, arriPlyRoundPassStats[bluTeam[i]].steals);
 			}
 		}
 	}
@@ -1006,7 +1006,7 @@ Action Timer_DisplayStats(Handle timer)
 	// clear stats
 	for (int i = 0; i < MaxClients + 1; i++)
 	{
-		playerStatistics[i].scores = 0, playerStatistics[i].assists = 0, playerStatistics[i].saves = 0, playerStatistics[i].interceptions = 0, playerStatistics[i].steals = 0;
+		arriPlyRoundPassStats[i].scores = 0, arriPlyRoundPassStats[i].assists = 0, arriPlyRoundPassStats[i].saves = 0, arriPlyRoundPassStats[i].interceptions = 0, arriPlyRoundPassStats[i].steals = 0;
 	}
 
 	return Plugin_Stop;
