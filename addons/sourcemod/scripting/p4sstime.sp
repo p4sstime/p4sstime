@@ -11,18 +11,18 @@
 
 enum struct enubPlyJackSettings
 {
-	bool hudText;
-	bool chat;
-	bool sound;
+	bool bPlyHudTextSetting;
+	bool bPlyChatPrintSetting;
+	bool bPlySoundSetting;
 }
 
 enum struct enuiPlyRoundStats
 {
-	int scores;
-	int assists;
-	int saves;
-	int interceptions;
-	int steals;
+	int iPlyScores;
+	int iPlyAssists;
+	int iPlySaves;
+	int iPlyIntercepts;
+	int iPlySteals;
 }
 
 enubPlyJackSettings arrbJackAcqSettings[MAXPLAYERS + 1];
@@ -30,24 +30,24 @@ enuiPlyRoundStats	arriPlyRoundPassStats[MAXPLAYERS + 1];
 
 float			fBluGoalPos[3], fRedGoalPos[3];
 
-ConVar			stockEnable, respawnEnable, clearHud, collisionDisable, statsEnable, statsDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/practiceMode;
+ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
 
-int				plyGrab;
-int				plyDirecter;
-int				firstGrab;
-int  			ball;
-int  			handoffCheck;
-int  			passTarget;
+int				iPlyWhoGotJack;
+// int				plyDirecter;
+int				ibFirstGrabCheck;
+int  			eiJack;
+int  			ibHandoffCheck;
+int  			eiPassTarget;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
-Menu			ballHudMenu;
-bool			deadPlayers[MAXPLAYERS + 1];
-bool			b_BlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
-bool			panaceaCheck[MAXPLAYERS + 1];
-bool			plyTakenDirectHit[MAXPLAYERS + 1];
-Handle  		g_ballhudHud = INVALID_HANDLE;
-Handle  		g_ballhudChat = INVALID_HANDLE;
-Handle  		g_ballhudSound = INVALID_HANDLE;
+Menu			mBallHudMenu;
+bool			arrbPlyIsDead[MAXPLAYERS + 1];
+bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
+bool			arrbPanaceaCheck[MAXPLAYERS + 1];
+// bool			plyTakenDirectHit[MAXPLAYERS + 1];
+Handle  		cookieBallHudHud = INVALID_HANDLE;
+Handle  		cookieBallHudChat = INVALID_HANDLE;
+Handle  		cookieBallHudSound = INVALID_HANDLE;
 
 public Plugin myinfo =
 {
@@ -67,9 +67,9 @@ public void OnPluginStart()
 		delete gamedata;
 	}*/
 
-	g_ballhudHud = RegClientCookie("ballhudHudSetting", "Passtime Fixes' sm_ballhud HUD Setting Value", CookieAccess_Public);
-	g_ballhudChat = RegClientCookie("ballhudChatSetting", "Passtime Fixes' sm_ballhud Chat Setting Value", CookieAccess_Public);
-	g_ballhudSound = RegClientCookie("ballhudSoundSetting", "Passtime Fixes' sm_ballhud Sounds Setting Value", CookieAccess_Public);
+	cookieBallHudHud = RegClientCookie("ballhudHudSetting", "Passtime Fixes' sm_ballhud HUD Setting Value", CookieAccess_Public);
+	cookieBallHudChat = RegClientCookie("ballhudChatSetting", "Passtime Fixes' sm_ballhud Chat Setting Value", CookieAccess_Public);
+	cookieBallHudSound = RegClientCookie("ballhudSoundSetting", "Passtime Fixes' sm_ballhud Sounds Setting Value", CookieAccess_Public);
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
@@ -94,33 +94,33 @@ public void OnPluginStart()
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	stockEnable		 = CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
-	respawnEnable	 = CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
-	clearHud		 = CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
-	collisionDisable = CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
-	statsEnable		 = CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
-	statsDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
+	bEquipStockWeapons		 = CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
+	bSwitchDuringRespawn	 = CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
+	bStealBlurryOverlay		 = CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
+	bDroppedItemsCollision = CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
+	bPrintStats		 = CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
+	fStatsPrintDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
 	saveRadius		 = CreateConVar("sm_pt_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save.", FCVAR_NOTIFY);
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
-	practiceMode	 = CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	bPracticeMode	 = CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
 	//HookConVarChange(trikzEnable, Hook_OnTrikzChange);
 	//HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
 	//HookConVarChange(trikzProjDev, Hook_OnProjCollideDev);
-	HookConVarChange(practiceMode, Hook_OnPracticeModeChange);
+	HookConVarChange(bPracticeMode, Hook_OnPracticeModeChange);
 
-	ballHudMenu = new Menu(BallHudMenuHandler);
-	ballHudMenu.SetTitle("Jack Notifications");
-	ballHudMenu.AddItem("hudtext", "Toggle HUD notification");
-	ballHudMenu.AddItem("chattext", "Toggle chat notification");
-	ballHudMenu.AddItem("sound", "Toggle sound notification");
+	mBallHudMenu = new Menu(BallHudMenuHandler);
+	mBallHudMenu.SetTitle("Jack Notifications");
+	mBallHudMenu.AddItem("hudtext", "Toggle HUD notification");
+	mBallHudMenu.AddItem("chattext", "Toggle chat notification");
+	mBallHudMenu.AddItem("sound", "Toggle sound notification");
 
 	char mapPrefix[3];
 	GetCurrentMap(mapPrefix, sizeof(mapPrefix));
-	statsEnable.BoolValue = StrEqual("pa", mapPrefix);
+	bPrintStats.BoolValue = StrEqual("pa", mapPrefix);
 
 	/*for (int client = 1; client <= MaxClients; client++)
 	{
@@ -176,7 +176,7 @@ OnTakeDamageAlivePost -> After player has been damaged, period. Cannot change pa
 /*public OnClientPutInServer(client)
 {
 	//SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
-}*/
+}
 
 // following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
 public void OnEntityCreated(int entity, const char[] classname)
@@ -195,7 +195,7 @@ void OnProjectileTouch(int entity, int other) // direct hit detector, taken from
 	}
 }
 
-/*public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
+public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (newValue[0] == '0')
 		trikzProjCollideSave = 0;
@@ -233,17 +233,17 @@ public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[
 public OnClientCookiesCached(int client)
 {
 	char sValue[8];
-	GetClientCookie(client, g_ballhudHud, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].hudText = (StringToInt(sValue) > 0);
-	GetClientCookie(client, g_ballhudChat, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].chat = (StringToInt(sValue) > 0);
-	GetClientCookie(client, g_ballhudSound, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].sound	= (StringToInt(sValue) > 0);
+	GetClientCookie(client, cookieBallHudHud, sValue, sizeof(sValue));
+	arrbJackAcqSettings[client].bPlyHudTextSetting = (StringToInt(sValue) > 0);
+	GetClientCookie(client, cookieBallHudChat, sValue, sizeof(sValue));
+	arrbJackAcqSettings[client].bPlyChatPrintSetting = (StringToInt(sValue) > 0);
+	GetClientCookie(client, cookieBallHudSound, sValue, sizeof(sValue));
+	arrbJackAcqSettings[client].bPlySoundSetting	= (StringToInt(sValue) > 0);
 }  
 
 Action Command_BallHud(int client, int args)
 {
-	if (IsValidClient(client)) ballHudMenu.Display(client, MENU_TIME_FOREVER);
+	if (IsValidClient(client)) mBallHudMenu.Display(client, MENU_TIME_FOREVER);
 	return Plugin_Handled;
 }
 
@@ -253,41 +253,41 @@ int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 	{
 		char info[32];
 		char status[64];
-		ballHudMenu.GetItem(param2, info, sizeof(info));
+		mBallHudMenu.GetItem(param2, info, sizeof(info));
 		if (StrEqual(info, "hudtext"))
 		{
-			arrbJackAcqSettings[param1].hudText = !arrbJackAcqSettings[param1].hudText;
-			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].hudText) 
-				SetClientCookie(param1, g_ballhudHud, "1");
+			arrbJackAcqSettings[param1].bPlyHudTextSetting = !arrbJackAcqSettings[param1].bPlyHudTextSetting;
+			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (arrbJackAcqSettings[param1].bPlyHudTextSetting) 
+				SetClientCookie(param1, cookieBallHudHud, "1");
 			else
-				SetClientCookie(param1, g_ballhudHud, "0");
+				SetClientCookie(param1, cookieBallHudHud, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[param1].hudText ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[param1].bPlyHudTextSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 		if (StrEqual(info, "chattext"))
 		{
-			arrbJackAcqSettings[param1].chat = !arrbJackAcqSettings[param1].chat;
-			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].chat) 
-				SetClientCookie(param1, g_ballhudChat, "1");
+			arrbJackAcqSettings[param1].bPlyChatPrintSetting = !arrbJackAcqSettings[param1].bPlyChatPrintSetting;
+			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (arrbJackAcqSettings[param1].bPlyChatPrintSetting) 
+				SetClientCookie(param1, cookieBallHudChat, "1");
 			else
-				SetClientCookie(param1, g_ballhudChat, "0");
+				SetClientCookie(param1, cookieBallHudChat, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[param1].chat ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[param1].bPlyChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 		if (StrEqual(info, "sound"))
 		{
-			arrbJackAcqSettings[param1].sound = !arrbJackAcqSettings[param1].sound;
-			ballHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].sound) 
-				SetClientCookie(param1, g_ballhudSound, "1");
+			arrbJackAcqSettings[param1].bPlySoundSetting = !arrbJackAcqSettings[param1].bPlySoundSetting;
+			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
+			if (arrbJackAcqSettings[param1].bPlySoundSetting) 
+				SetClientCookie(param1, cookieBallHudSound, "1");
 			else
-				SetClientCookie(param1, g_ballhudSound, "0");
+				SetClientCookie(param1, cookieBallHudSound, "0");
 
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[param1].sound ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[param1].bPlySoundSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 	}
@@ -298,7 +298,7 @@ int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	deadPlayers[client] = false;
+	arrbPlyIsDead[client] = false;
 	RemoveShotty(client);
 
 	return Plugin_Handled;
@@ -341,34 +341,34 @@ float DistanceAboveGround(int victim) // taken from mgemod
 Action Event_RJ(Event event, const char[] name, bool dontBroadcast) // rj and sj not fired when lifted up by another player
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	b_BlastJumpStatus[client] = true;
+	arrbBlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
 Action Event_RJLand(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	b_BlastJumpStatus[client] = false;
+	arrbBlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
 Action Event_SJ(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	b_BlastJumpStatus[client] = true;
+	arrbBlastJumpStatus[client] = true;
 	return Plugin_Handled;
 }
 
 Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	b_BlastJumpStatus[client] = false;
+	arrbBlastJumpStatus[client] = false;
 	return Plugin_Handled;
 }
 
 Action OnChangeClass(int client, const char[] strCommand, int args)
 {
-	if(deadPlayers[client] == true && respawnEnable.BoolValue)
+	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
 	{
 		PrintCenterText(client, "You can't change class yet.");
 		return Plugin_Handled;
@@ -389,7 +389,7 @@ Action OnChangeClass(int client, const char[] strCommand, int args)
 		char team_attacker[12];
 		GetClientName(attacker, attackerName, sizeof(attackerName));
 		GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-		if (statsEnable.BoolValue)
+		if (bPrintStats.BoolValue)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffffball carrier %s!", attackerName, victimName);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_carrier_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
 	}
@@ -408,7 +408,7 @@ Action OnChangeClass(int client, const char[] strCommand, int args)
 			char team_attacker[12];
 			GetClientName(attacker, attackerName, sizeof(attackerName));
 			GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-			if (statsEnable.BoolValue)
+			if (bPrintStats.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
 			LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_friendly_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
 		}
@@ -444,7 +444,7 @@ Action OnChangeClass(int client, const char[] strCommand, int args)
 
 public void TF2_OnConditionAdded(int client, TFCond condition)
 {
-	if (condition == TFCond_PasstimeInterception && clearHud.BoolValue)
+	if (condition == TFCond_PasstimeInterception && bStealBlurryOverlay.BoolValue)
 	{
 		ClientCommand(client, "r_screenoverlay \"\"");
 	}
@@ -459,28 +459,28 @@ public void TF2_OnConditionRemoved(client, TFCond condition)
 
 Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	deadPlayers[client] = true;
+	arrbPlyIsDead[client] = true;
 
 	return Plugin_Handled;
 }
 
 public void OnClientDisconnect(int client)
 {
-	deadPlayers[client] = false;
+	arrbPlyIsDead[client] = false;
 
-	arriPlyRoundPassStats[client].scores		   = 0;
-	arriPlyRoundPassStats[client].assists	   = 0;
-	arriPlyRoundPassStats[client].saves		   = 0;
-	arriPlyRoundPassStats[client].interceptions = 0;
-	arriPlyRoundPassStats[client].steals		   = 0;
+	arriPlyRoundPassStats[client].iPlyScores		   = 0;
+	arriPlyRoundPassStats[client].iPlyAssists	   = 0;
+	arriPlyRoundPassStats[client].iPlySaves		   = 0;
+	arriPlyRoundPassStats[client].iPlyIntercepts = 0;
+	arriPlyRoundPassStats[client].iPlySteals		   = 0;
 }
 
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
 void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
-	ball = FindEntityByClassname(-1, "passtime_ball");
-	if (collisionDisable.BoolValue) SetEntityCollisionGroup(ball, 4);
-	firstGrab = 1;
+	eiJack = FindEntityByClassname(-1, "passtime_ball");
+	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
+	ibFirstGrabCheck = 1;
 }
 
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
@@ -503,14 +503,14 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
-	if (arrbJackAcqSettings[owner].hudText)
+	if (arrbJackAcqSettings[owner].bPlyHudTextSetting)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
 	}
-	passTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget")); // use hungarian notation; b = boolean, h = handle
-	if (!(b_BlastJumpStatus[owner]))
-		panaceaCheck[owner] = false;
+	eiPassTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimeeiPassTarget"));
+	if (!(arrbBlastJumpStatus[owner]))
+		arrbPanaceaCheck[owner] = false;
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_free\" (position \"%.0f %.0f %.0f\")",
 		owner, GetClientUserId(owner), steamid, team,
 		position[0], position[1], position[2]);
@@ -565,54 +565,54 @@ Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast)
 
 Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw, this is posthook tho
 {
-	plyGrab = event.GetInt("owner");
+	iPlyWhoGotJack = event.GetInt("owner");
 
 	// log formatting
 	char steamid[16];
 	char team[12];
 	float position[3];
 
-	GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
-	GetClientAbsOrigin(plyGrab, position);
+	GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
+	GetClientAbsOrigin(iPlyWhoGotJack, position);
 
-	if (GetClientTeam(plyGrab) == 2)
+	if (GetClientTeam(iPlyWhoGotJack) == 2)
 	{
 		team = "Red";
 	}
-	else if (GetClientTeam(plyGrab) == 3) {
+	else if (GetClientTeam(iPlyWhoGotJack) == 3) {
 		team = "Blue";
 	}
 	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
 		team = "Spectator";
 	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (position \"%.0f %.0f %.0f\")",
-		plyGrab, GetClientUserId(plyGrab), steamid, team, firstGrab,
+		iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team, ibFirstGrabCheck,
 		position[0], position[1], position[2]);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (firstGrab == 1 && b_BlastJumpStatus[plyGrab])
+	if (ibFirstGrabCheck == 1 && arrbBlastJumpStatus[iPlyWhoGotJack])
 	{
-		panaceaCheck[plyGrab] = true;
+		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 	}
 	else
 	{
-		panaceaCheck[plyGrab] = false;
+		arrbPanaceaCheck[iPlyWhoGotJack] = false;
 	}
-	firstGrab = 0;
+	ibFirstGrabCheck = 0;
 
-	if (arrbJackAcqSettings[plyGrab].hudText)
+	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlyHudTextSetting)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
-		ShowHudText(plyGrab, 1, "YOU HAVE THE JACK");
+		ShowHudText(iPlyWhoGotJack, 1, "YOU HAVE THE JACK");
 	}
 
-	if (arrbJackAcqSettings[plyGrab].chat)
+	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlyChatPrintSetting)
 	{
-		PrintToChat(plyGrab, "\x07ffff00[PASS]\x0700ff00 YOU HAVE THE JACK!!!");
+		PrintToChat(iPlyWhoGotJack, "\x07ffff00[PASS]\x0700ff00 YOU HAVE THE JACK!!!");
 	}
 
-	if (arrbJackAcqSettings[plyGrab].sound)
+	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlySoundSetting)
 	{
-		ClientCommand(plyGrab, "playgamesound Passtime.BallSmack");
+		ClientCommand(iPlyWhoGotJack, "playgamesound Passtime.BallSmack");
 	}
 
 	
@@ -627,14 +627,14 @@ Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
 	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
-	handoffCheck = 0;
+	ibHandoffCheck = 0;
 	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
-	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && passTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
-		if (statsEnable.BoolValue)
+		if (bPrintStats.BoolValue)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
-		handoffCheck = 1;
-		passTarget = 0;
+		ibHandoffCheck = 1;
+		eiPassTarget = 0;
 	}
 	return Plugin_Continue;
 }
@@ -647,7 +647,7 @@ Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 	float duration = GetEventFloat(event, "duration");
 	int intercept = false;
 	int bSave = false;
-	plyGrab = catcher;
+	iPlyWhoGotJack = catcher;
 	char steamid_thrower[16];
 	char steamid_catcher[16];
 	char team_thrower[12];
@@ -671,14 +671,14 @@ Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 		if(InGoalieZone(catcher))
 		{
 			bSave = true;
-			arriPlyRoundPassStats[catcher].saves++;
-			if(statsEnable.BoolValue)
+			arriPlyRoundPassStats[catcher].iPlySaves++;
+			if(bPrintStats.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
 		}
 		else
 		{
-			arriPlyRoundPassStats[catcher].interceptions++;
-			if(statsEnable.BoolValue)
+			arriPlyRoundPassStats[catcher].iPlyIntercepts++;
+			if(bPrintStats.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
 		}
 	}
@@ -707,11 +707,11 @@ Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (save \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\") (thrower_position \"%.0f %.0f %.0f\") (catcher_position \"%.0f %.0f %.0f\")",
 		catcher, GetClientUserId(catcher), steamid_catcher, team_catcher,
 		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
-		intercept, bSave, handoffCheck, dist, duration,
+		intercept, bSave, ibHandoffCheck, dist, duration,
 		thrower_position[0], thrower_position[1], thrower_position[2],
 		catcher_position[0], catcher_position[1], catcher_position[2]);
-	panaceaCheck[thrower] = false;
-	panaceaCheck[catcher] = false;
+	arrbPanaceaCheck[thrower] = false;
+	arrbPanaceaCheck[catcher] = false;
 
 	return Plugin_Handled;
 }
@@ -720,7 +720,7 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = event.GetInt("victim");
 	int thief  = event.GetInt("attacker");
-	plyGrab = thief;
+	iPlyWhoGotJack = thief;
 
 	// log formatting
 	char steamid_thief[16];
@@ -761,21 +761,21 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 		victim, GetClientUserId(victim), steamid_victim, team_victim,
 		thief_position[0], thief_position[1], thief_position[2],
 		victim_position[0], victim_position[1], victim_position[2]);
-	panaceaCheck[victim] = false;
-	panaceaCheck[thief] = false;
+	arrbPanaceaCheck[victim] = false;
+	arrbPanaceaCheck[thief] = false;
 
-	if (arrbJackAcqSettings[victim].hudText)
+	if (arrbJackAcqSettings[victim].bPlyHudTextSetting)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(victim, 1, "");
 	}
-	if (statsEnable.BoolValue)
+	if (bPrintStats.BoolValue)
 	{
 		char thiefName[MAX_NAME_LENGTH], victimName[MAX_NAME_LENGTH];
 		GetClientName(thief, thiefName, sizeof(thiefName));
 		GetClientName(victim, victimName, sizeof(victimName));
 		PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
-		arriPlyRoundPassStats[thief].steals++;
+		arriPlyRoundPassStats[thief].iPlySteals++;
 	}
 	return Plugin_Handled;
 }
@@ -807,7 +807,7 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 	}
 
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%.0f %.0f %.0f\")", 
-		scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, panaceaCheck[scorer],
+		scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, arrbPanaceaCheck[scorer],
 		scorer_position[0], scorer_position[1], scorer_position[2]);
 
 	if (assistor > 0)
@@ -832,7 +832,7 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
 			assistor, GetClientUserId(assistor), steamid_assistor, team_assistor,
 			assistor_position[0], assistor_position[1], assistor_position[2]);
-		arriPlyRoundPassStats[assistor].assists++;
+		arriPlyRoundPassStats[assistor].iPlyAssists++;
 
 	}
 	return Plugin_Continue;
@@ -840,27 +840,27 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 
 Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!statsEnable.BoolValue) return Plugin_Handled;
+	if (!bPrintStats.BoolValue) return Plugin_Handled;
 
 	int client = event.GetInt("scorer");
 	int	assistor = event.GetInt("assister");
 	if (!IsValidClient(client)) return Plugin_Handled;
 	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
 	GetClientName(client, playerName, sizeof(playerName));
-	if (panaceaCheck[client] && TF2_GetPlayerClass(client) != TFClass_Medic && statsEnable.BoolValue)
+	if (arrbPanaceaCheck[client] && TF2_GetPlayerClass(client) != TFClass_Medic && bPrintStats.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}
-	else if (assistor > 0 && statsEnable.BoolValue)
+	else if (assistor > 0 && bPrintStats.BoolValue)
 	{
 		GetClientName(assistor, assistorName, sizeof(assistorName));
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistorName);
 	}
-	else if(statsEnable.BoolValue)
+	else if(bPrintStats.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
-	arriPlyRoundPassStats[client].scores++;
+	arriPlyRoundPassStats[client].iPlyScores++;
 
 	return Plugin_Handled;
 }
@@ -891,16 +891,16 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 	char team[12];
 	char plyName[MAX_NAME_LENGTH];
 	float position[3];
-	if(activator == ball && firstGrab == 0 && IsClientConnected(plyGrab))
+	if(activator == eiJack && ibFirstGrabCheck == 0 && IsClientConnected(iPlyWhoGotJack))
 	{
-		GetClientName(plyGrab, plyName, sizeof(plyName));
-		GetClientAuthId(plyGrab, AuthId_Steam3, steamid, sizeof(steamid));
-		GetClientAbsOrigin(plyGrab, position);
-		if (GetClientTeam(plyGrab) == 2)
+		GetClientName(iPlyWhoGotJack, plyName, sizeof(plyName));
+		GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
+		GetClientAbsOrigin(iPlyWhoGotJack, position);
+		if (GetClientTeam(iPlyWhoGotJack) == 2)
 		{
 			team = "Red";
 		}
-		else if (GetClientTeam(plyGrab) == 3) 
+		else if (GetClientTeam(iPlyWhoGotJack) == 3) 
 		{
 			team = "Blue";
 		}
@@ -909,7 +909,7 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 			team = "Spectator";
 		}
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (position \"%.0f %.0f %.0f\")", 
-			plyGrab, GetClientUserId(plyGrab), steamid, team,
+			iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team,
 			position[0], position[1], position[2]);
 	}
 }
@@ -917,7 +917,7 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 /*-------------------------------------------------- Game Events --------------------------------------------------*/
 void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if (practiceMode.BoolValue)
+	if (bPracticeMode.BoolValue)
 	{
 		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
 		SetVariantInt(300);
@@ -928,7 +928,7 @@ void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[
 
 Action AddFiveMinutes(Handle timer)
 {
-	if (practiceMode.BoolValue)
+	if (bPracticeMode.BoolValue)
 	{
 		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
 		SetVariantInt(300);
@@ -940,8 +940,8 @@ Action AddFiveMinutes(Handle timer)
 
 Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!statsEnable.BoolValue) return Plugin_Handled;
-	CreateTimer(statsDelay.FloatValue, Timer_DisplayStats);
+	if (!bPrintStats.BoolValue) return Plugin_Handled;
+	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
 	return Plugin_Handled;
 }
 
@@ -975,14 +975,14 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].scores, arriPlyRoundPassStats[bluTeam[i]].assists, arriPlyRoundPassStats[bluTeam[i]].saves, arriPlyRoundPassStats[bluTeam[i]].interceptions, arriPlyRoundPassStats[bluTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 			}
 
 			for (int i = 0; i < redCursor; i++)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].scores, arriPlyRoundPassStats[redTeam[i]].assists, arriPlyRoundPassStats[redTeam[i]].saves, arriPlyRoundPassStats[redTeam[i]].interceptions, arriPlyRoundPassStats[redTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
 			}
 		}
 
@@ -991,14 +991,14 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].scores, arriPlyRoundPassStats[redTeam[i]].assists, arriPlyRoundPassStats[redTeam[i]].saves, arriPlyRoundPassStats[redTeam[i]].interceptions, arriPlyRoundPassStats[redTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
 			}
 
 			for (int i = 0; i < bluCursor; i++)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].scores, arriPlyRoundPassStats[bluTeam[i]].assists, arriPlyRoundPassStats[bluTeam[i]].saves, arriPlyRoundPassStats[bluTeam[i]].interceptions, arriPlyRoundPassStats[bluTeam[i]].steals);
+				PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d", playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 			}
 		}
 	}
@@ -1006,7 +1006,7 @@ Action Timer_DisplayStats(Handle timer)
 	// clear stats
 	for (int i = 0; i < MaxClients + 1; i++)
 	{
-		arriPlyRoundPassStats[i].scores = 0, arriPlyRoundPassStats[i].assists = 0, arriPlyRoundPassStats[i].saves = 0, arriPlyRoundPassStats[i].interceptions = 0, arriPlyRoundPassStats[i].steals = 0;
+		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0;
 	}
 
 	return Plugin_Stop;
@@ -1014,7 +1014,7 @@ Action Timer_DisplayStats(Handle timer)
 
 void RemoveShotty(int client)
 {
-	if (stockEnable.BoolValue)
+	if (bEquipStockWeapons.BoolValue)
 	{
 		TFClassType class = TF2_GetPlayerClass(client);
 		int iWep;
