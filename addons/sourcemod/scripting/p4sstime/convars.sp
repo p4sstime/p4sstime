@@ -5,7 +5,7 @@ Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	arrbPlyIsDead[client] = false;
 	RemoveShotty(client);
-	if(TF2_GetPlayerClass(client)==TFClass_DemoMan){QueryClientConVar(client, "m_filter", FilterCheck, 0);}
+	if(TF2_GetPlayerClass(client)==TFClass_DemoMan){QueryClientConVar(client, "m_filter", FilterCheck, false);}
 
 	return Plugin_Handled;
 }
@@ -28,7 +28,7 @@ public void TF2_OnConditionAdded(int client, TFCond condition)
 	}
 	if (condition == TFCond_Charging && TF2_GetPlayerClass(client)==TFClass_DemoMan)
 	{
-		QueryClientConVar(client, "m_filter", FilterCheck, 1);
+		CreateTimer(0.1, TimedFilterCheck, client);
 	}
 }
 

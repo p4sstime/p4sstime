@@ -97,8 +97,8 @@ public void OnPluginStart()
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
-	AddCommandListener(TurnBindRight, "+right");
-	AddCommandListener(TurnBindLeft, "+left");
+	AddCommandListener(TurnBindRight, "+right"); // doesnt work
+	AddCommandListener(TurnBindLeft, "+left"); // doesnt work
 
 	bEquipStockWeapons		= CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
 	bSwitchDuringRespawn	= CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
@@ -170,7 +170,11 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 	{
 		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0;
 	}
-
+	if(bPracticeMode)
+	{
+		SetConVarInt(bPracticeMode, 0);
+		PrintToChatAll("\x0700ffff[PASS] Game started; practice mode disabled.");
+	}
 	return Plugin_Handled;
 }
 
