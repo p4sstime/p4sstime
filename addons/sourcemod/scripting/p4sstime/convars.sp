@@ -12,9 +12,13 @@ Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 
 Action OnChangeClass(int client, const char[] strCommand, int args)
 {
+	char sChosenClass[12];
 	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
 	{
-		PrintCenterText(client, "You can't change class yet.");
+		GetCmdArg(1, sChosenClass, sizeof(sChosenClass));
+		PrintCenterText(client, "You can't change class yet.\nClass when spawned will be %s.", sChosenClass);
+		TFClassType class = TF2_GetClass(sChosenClass);
+		if (class != TFClass_Unknown) SetEntProp(client, Prop_Send, "m_iDesiredPlayerClass", class);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;

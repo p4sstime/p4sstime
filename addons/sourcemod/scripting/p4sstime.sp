@@ -66,16 +66,16 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	/*GameData gamedata = new GameData("passtime-fixes");
+	/*GameData gamedata = new GameData("passtime");
 	if (gamedata)
 	{
 		DHooks_Initialize(gamedata);
 		delete gamedata;
 	}*/
 
-	cookieBallHudHud = RegClientCookie("ballhudHudSetting", "Passtime Fixes' sm_ballhud HUD Setting Value", CookieAccess_Public);
-	cookieBallHudChat = RegClientCookie("ballhudChatSetting", "Passtime Fixes' sm_ballhud Chat Setting Value", CookieAccess_Public);
-	cookieBallHudSound = RegClientCookie("ballhudSoundSetting", "Passtime Fixes' sm_ballhud Sounds Setting Value", CookieAccess_Public);
+	cookieBallHudHud = RegClientCookie("ballhudHudSetting", "p4sstime's sm_ballhud HUD Setting Value", CookieAccess_Public);
+	cookieBallHudChat = RegClientCookie("ballhudChatSetting", "p4sstime's sm_ballhud Chat Setting Value", CookieAccess_Public);
+	cookieBallHudSound = RegClientCookie("ballhudSoundSetting", "p4sstime's sm_ballhud Sounds Setting Value", CookieAccess_Public);
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
