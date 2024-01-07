@@ -93,6 +93,7 @@ public void OnPluginStart()
 	HookEvent("sticky_jump", Event_SJ);
 	HookEvent("sticky_jump_landed", Event_SJLand);
 	HookEvent("teamplay_round_win", Event_TeamWin);
+	HookEvent("stats_resetround", Event_RoundReset);
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
@@ -161,6 +162,16 @@ public void OnMapStart() // getgoallocations
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fBluGoalPos);
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
+}
+
+Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
+{
+	for (int i = 0; i < MaxClients + 1; i++) // clear stats
+	{
+		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0;
+	}
+
+	return Plugin_Handled;
 }
 
 Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
