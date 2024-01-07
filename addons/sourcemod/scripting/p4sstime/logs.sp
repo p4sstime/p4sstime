@@ -1,5 +1,6 @@
 // This file relates to all logging features and will contain the functions for them
-void SetLogInfo(int p1, int p2 = 0){
+void SetLogInfo(int p1, int p2 = 0)
+{
 	GetClientAbsOrigin(p1, user1position);
 	GetClientAuthId(p1, AuthId_Steam3, user1steamid, sizeof(user1steamid));
 	if (GetClientTeam(p1) == 2)

@@ -141,9 +141,13 @@ public void OnPluginStart()
 	}
 }
 
-//#include <p4sstime/dhooks.sp>
-#include <p4sstime/trikz.sp>
+//#include <p4sstime/trikz.sp>
 #include <p4sstime/logs.sp>
+#include <p4sstime/pass_menu.sp>
+#include <p4sstime/practice.sp>
+#include <p4sstime/anticheat.sp>
+#include <p4sstime/caber_regen.sp>
+#include <p4sstime/convars.sp>
 
 public void OnMapStart() // getgoallocations
 {
@@ -161,6 +165,13 @@ public void OnMapStart() // getgoallocations
 	}
 }
 
+Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
+{
+	if (!bPrintStats.BoolValue) return Plugin_Handled;
+	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
+	return Plugin_Handled;
+}
+
 bool IsValidClient(int client)
 {
 	if (client > 4096) client = EntRefToEntIndex(client);
@@ -171,87 +182,7 @@ bool IsValidClient(int client)
 	return true;
 }
 
-public OnClientCookiesCached(int client)
-{
-	char sValue[8];
-	GetClientCookie(client, cookieBallHudHud, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].bPlyHudTextSetting = (StringToInt(sValue) > 0);
-	GetClientCookie(client, cookieBallHudChat, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].bPlyChatPrintSetting = (StringToInt(sValue) > 0);
-	GetClientCookie(client, cookieBallHudSound, sValue, sizeof(sValue));
-	arrbJackAcqSettings[client].bPlySoundSetting	= (StringToInt(sValue) > 0);
-}  
-
-Action Command_BallHud(int client, int args)
-{
-	if (IsValidClient(client)) mBallHudMenu.Display(client, MENU_TIME_FOREVER);
-	return Plugin_Handled;
-}
-
-int BallHudMenuHandler(Menu menu, MenuAction action, int param1, int param2)
-{
-	if (action == MenuAction_Select)
-	{
-		char info[32];
-		char status[64];
-		mBallHudMenu.GetItem(param2, info, sizeof(info));
-		if (StrEqual(info, "hudtext"))
-		{
-			arrbJackAcqSettings[param1].bPlyHudTextSetting = !arrbJackAcqSettings[param1].bPlyHudTextSetting;
-			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].bPlyHudTextSetting) 
-				SetClientCookie(param1, cookieBallHudHud, "1");
-			else
-				SetClientCookie(param1, cookieBallHudHud, "0");
-
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[param1].bPlyHudTextSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-			PrintToChat(param1, status);
-		}
-		if (StrEqual(info, "chattext"))
-		{
-			arrbJackAcqSettings[param1].bPlyChatPrintSetting = !arrbJackAcqSettings[param1].bPlyChatPrintSetting;
-			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].bPlyChatPrintSetting) 
-				SetClientCookie(param1, cookieBallHudChat, "1");
-			else
-				SetClientCookie(param1, cookieBallHudChat, "0");
-
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[param1].bPlyChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-			PrintToChat(param1, status);
-		}
-		if (StrEqual(info, "sound"))
-		{
-			arrbJackAcqSettings[param1].bPlySoundSetting = !arrbJackAcqSettings[param1].bPlySoundSetting;
-			mBallHudMenu.Display(param1, MENU_TIME_FOREVER);
-			if (arrbJackAcqSettings[param1].bPlySoundSetting) 
-				SetClientCookie(param1, cookieBallHudSound, "1");
-			else
-				SetClientCookie(param1, cookieBallHudSound, "0");
-
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[param1].bPlySoundSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-			PrintToChat(param1, status);
-		}
-	}
-	return 0; // just do this to get rid of warning
-}
-
 /*-------------------------------------------------- Player Events --------------------------------------------------*/
-Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	arrbPlyIsDead[client] = false;
-	RemoveShotty(client);
-
-	return Plugin_Handled;
-}
-
-Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	RemoveShotty(client);
-
-	return Plugin_Handled;
-}
 
 bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
 {
@@ -307,24 +238,6 @@ Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-Action OnChangeClass(int client, const char[] strCommand, int args)
-{
-	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
-	{
-		PrintCenterText(client, "You can't change class yet.");
-		return Plugin_Handled;
-	}
-	return Plugin_Continue;
-}
-
-public void TF2_OnConditionAdded(int client, TFCond condition)
-{
-	if (condition == TFCond_PasstimeInterception && bStealBlurryOverlay.BoolValue)
-	{
-		ClientCommand(client, "r_screenoverlay \"\"");
-	}
-}
-
 // the below function is dr underscore's fix. thanks!
 public void TF2_OnConditionRemoved(client, TFCond condition)
 {
@@ -332,7 +245,8 @@ public void TF2_OnConditionRemoved(client, TFCond condition)
 		TF2_RemoveCondition(client, TFCond_UberchargeFading);
 }
 
-Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast) 
+{
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	arrbPlyIsDead[client] = true;
 
@@ -589,35 +503,8 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 }
 
 /*-------------------------------------------------- Game Events --------------------------------------------------*/
-void Hook_OnPracticeModeChange(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (bPracticeMode.BoolValue)
-	{
-		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
-		SetVariantInt(300);
-		AcceptEntityInput(entityTimer, "AddTime");
-		CreateTimer(300.0, AddFiveMinutes, _, TIMER_REPEAT); // 5 minutes
-	}
-}
 
-Action AddFiveMinutes(Handle timer)
-{
-	if (bPracticeMode.BoolValue)
-	{
-		int entityTimer = FindEntityByClassname(-1, "team_round_timer");
-		SetVariantInt(300);
-		AcceptEntityInput(entityTimer, "AddTime");
-		return Plugin_Continue;
-	}
-	else return Plugin_Stop;
-}
 
-Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
-{
-	if (!bPrintStats.BoolValue) return Plugin_Handled;
-	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
-	return Plugin_Handled;
-}
 
 // this is really fucking sloppy but shrug
 Action Timer_DisplayStats(Handle timer)
@@ -684,33 +571,4 @@ Action Timer_DisplayStats(Handle timer)
 	}
 
 	return Plugin_Stop;
-}
-
-void RemoveShotty(int client)
-{
-	if (bEquipStockWeapons.BoolValue)
-	{
-		TFClassType class = TF2_GetPlayerClass(client);
-		int iWep;
-		if (class == TFClass_DemoMan || class == TFClass_Soldier) iWep = GetPlayerWeaponSlot(client, 1);
-		else if (class == TFClass_Medic) iWep = GetPlayerWeaponSlot(client, 0);
-
-		if (iWep >= 0)
-		{
-			char classname[64];
-			GetEntityClassname(iWep, classname, sizeof(classname));
-
-			if (StrEqual(classname, "tf_weapon_shotgun_soldier") || StrEqual(classname, "tf_weapon_pipebomblauncher"))
-			{
-				PrintToChat(client, "\x07ff0000 [PASS] Shotgun/Stickies equipped");
-				TF2_RemoveWeaponSlot(client, 1);
-			}
-
-			if (StrEqual(classname, "tf_weapon_syringegun_medic"))
-			{
-				PrintToChat(client, "\x07ff0000 [PASS] Syringe Gun equipped");
-				TF2_RemoveWeaponSlot(client, 0);
-			}
-		}
-	}
 }
