@@ -168,7 +168,7 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 	{
 		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0;
 	}
-	if(bPracticeMode)
+	if(GetConVarInt(bPracticeMode) == 1)
 	{
 		SetConVarInt(bPracticeMode, 0);
 		PrintToChatAll("\x0700ffff[PASS] Game started; practice mode disabled.");
