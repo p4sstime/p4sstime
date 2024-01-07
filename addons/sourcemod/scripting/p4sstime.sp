@@ -5,8 +5,6 @@
 //#include <dhooks>
 #include <clientprefs>
 
-//#include "p4sstime-fixes/dhooks.sp"
-
 #pragma semicolon 1	   // required for logs.tf
 
 enum struct enubPlyJackSettings
@@ -47,6 +45,15 @@ bool			arrbPanaceaCheck[MAXPLAYERS + 1];
 Handle  		cookieBallHudHud = INVALID_HANDLE;
 Handle  		cookieBallHudChat = INVALID_HANDLE;
 Handle  		cookieBallHudSound = INVALID_HANDLE;
+
+int user1;
+char user1steamid[16];
+char user1team[12];
+float user1position[3];
+int user2;
+char user2steamid[16];
+char user2team[12];
+float user2position[3];
 
 public Plugin myinfo =
 {
@@ -134,7 +141,9 @@ public void OnPluginStart()
 	}
 }
 
+//#include <p4sstime/dhooks.sp>
 #include <p4sstime/trikz.sp>
+#include <p4sstime/logs.sp>
 
 public void OnMapStart() // getgoallocations
 {
@@ -352,23 +361,6 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 {
 	int owner = event.GetInt("owner");
-
-	// log formatting
-	char steamid[16];
-	char team[12];
-	float position[3];
-	GetClientAbsOrigin(owner, position);
-	GetClientAuthId(owner, AuthId_Steam3, steamid, sizeof(steamid));
-	if (GetClientTeam(owner) == 2)
-	{
-		team = "Red";
-	}
-	else if (GetClientTeam(owner) == 3) {
-		team = "Blue";
-	}
-	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
-		team = "Spectator";
-	}
 	if (arrbJackAcqSettings[owner].bPlyHudTextSetting)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
@@ -377,55 +369,25 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	eiPassTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimeeiPassTarget"));
 	if (!(arrbBlastJumpStatus[owner]))
 		arrbPanaceaCheck[owner] = false;
+	SetLogInfo(owner);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_free\" (position \"%.0f %.0f %.0f\")",
-		owner, GetClientUserId(owner), steamid, team,
-		position[0], position[1], position[2]);
+		user1, GetClientUserId(user1), user1steamid, user1team,
+		user1position[0], user1position[1], user1position[2]);
 	return Plugin_Handled;
 }
 
 Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast) // When an enemy player blocks a thrown ball without picking it up, via uber or rocket/sticky jumpers
 {
-	int thrower = event.GetInt("owner");
 	int blocker = event.GetInt("blocker");
-
-	// log formatting
-	char steamid_thrower[16];
-	char steamid_blocker[16];
-	char team_thrower[12];
-	char team_blocker[12];
-	float thrower_position[3], blocker_position[3];
-
-	GetClientAbsOrigin(thrower, thrower_position);
-	GetClientAbsOrigin(blocker, blocker_position);
-	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
-	GetClientAuthId(blocker, AuthId_Steam3, steamid_blocker, sizeof(steamid_blocker));
-
-	if (GetClientTeam(thrower) == 2)
-	{
-		team_thrower = "Red";
-	}
-	else if (GetClientTeam(thrower) == 3) {
-		team_thrower = "Blue";
-	}
-	else {
-		team_thrower = "Spectator";
-	}
-
-	if (GetClientTeam(blocker) == 2)
-	{
-		team_blocker = "Red";
-	}
-	else if (GetClientTeam(blocker) == 3) {
-		team_blocker = "Blue";
-	}
-	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
-		team_blocker = "Spectator";
-	}
+	int thrower = event.GetInt("owner");
+	
+	SetLogInfo(blocker, thrower);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_blocked\" against \"%N<%i><%s><%s>\" (thrower_position \"%.0f %.0f %.0f\") (blocker_position \"%.0f %.0f %.0f\")",
-		blocker, GetClientUserId(blocker), steamid_blocker, team_blocker,
-		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
-		thrower_position[0], thrower_position[1], thrower_position[2], 
-		blocker_position[0], blocker_position[1], blocker_position[2]);
+		user1, GetClientUserId(user1), user1steamid, user1team,
+		user2, GetClientUserId(user2), user2steamid, user2team,
+		user1position[0], user1position[1], user1position[2], 
+		user2position[0], user2position[1], user2position[2]);
+	user2 = 0;
 	return Plugin_Handled;
 }
 
@@ -433,27 +395,10 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 {
 	iPlyWhoGotJack = event.GetInt("owner");
 
-	// log formatting
-	char steamid[16];
-	char team[12];
-	float position[3];
-
-	GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
-	GetClientAbsOrigin(iPlyWhoGotJack, position);
-
-	if (GetClientTeam(iPlyWhoGotJack) == 2)
-	{
-		team = "Red";
-	}
-	else if (GetClientTeam(iPlyWhoGotJack) == 3) {
-		team = "Blue";
-	}
-	else {	  // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
-		team = "Spectator";
-	}
+	SetLogInfo(iPlyWhoGotJack);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (position \"%.0f %.0f %.0f\")",
-		iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team, ibFirstGrabCheck,
-		position[0], position[1], position[2]);
+		user1, GetClientUserId(user1), user1steamid, user1team, ibFirstGrabCheck,
+		user1position[0], user1position[1], user1position[2]);
 	if (ibFirstGrabCheck && arrbBlastJumpStatus[iPlyWhoGotJack])
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
@@ -480,8 +425,6 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		ClientCommand(iPlyWhoGotJack, "playgamesound Passtime.BallSmack");
 	}
 
-	
-
 	return Plugin_Handled;
 }
 
@@ -495,20 +438,10 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	int bSave = false;
 	int ibHandoffCheck = false;
 	iPlyWhoGotJack = catcher;
-	char steamid_thrower[16];
-	char steamid_catcher[16];
-	char team_thrower[12];
-	char team_catcher[12];
-	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
-	float thrower_position[3], catcher_position[3];
 
+	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
-	GetClientAuthId(thrower, AuthId_Steam3, steamid_thrower, sizeof(steamid_thrower));
-	GetClientAuthId(catcher, AuthId_Steam3, steamid_catcher, sizeof(steamid_catcher));
-	GetClientAbsOrigin(thrower, thrower_position);
-	GetClientAbsOrigin(catcher, catcher_position);
-
 
 	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Handled;
 
@@ -530,29 +463,6 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 		}
 	}
 
-	if (GetClientTeam(thrower) == 2)
-	{
-		team_thrower = "Red";
-	}
-	else if (GetClientTeam(thrower) == 3) {
-		team_thrower = "Blue";
-	}
-	else {
-		team_thrower = "Spectator";
-	}
-
-	if (GetClientTeam(catcher) == 2)
-	{
-		team_catcher = "Red";
-	}
-	else if (GetClientTeam(catcher) == 3) {
-		team_catcher = "Blue";
-	}
-	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
-		team_catcher = "Spectator";
-	}
-	GetClientName(thrower, throwerName, sizeof(throwerName));
-	GetClientName(catcher, catcherName, sizeof(catcherName));
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
 		if (bPrintStats.BoolValue)
@@ -560,12 +470,14 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 		ibHandoffCheck = true;
 		eiPassTarget = 0;
 	}
+	SetLogInfo(catcher, thrower);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (save \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\") (thrower_position \"%.0f %.0f %.0f\") (catcher_position \"%.0f %.0f %.0f\")",
-		catcher, GetClientUserId(catcher), steamid_catcher, team_catcher,
-		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
+		user1, GetClientUserId(user1), user1steamid, user1team,
+		user2, GetClientUserId(user2), user2steamid, user2team,
 		intercept, bSave, ibHandoffCheck, dist, duration,
-		thrower_position[0], thrower_position[1], thrower_position[2],
-		catcher_position[0], catcher_position[1], catcher_position[2]);
+		user1position[0], user1position[1], user1position[2], 
+		user2position[0], user2position[1], user2position[2]);
+	user2 = 0;
 	arrbPanaceaCheck[thrower] = false;
 	arrbPanaceaCheck[catcher] = false;
 
@@ -574,51 +486,19 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 
 Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 {
-	int victim = event.GetInt("victim");
 	int thief  = event.GetInt("attacker");
+	int victim = event.GetInt("victim");
 	iPlyWhoGotJack = thief;
 
-	// log formatting
-	char steamid_thief[16];
-	char steamid_victim[16];
-	char team_thief[12];
-	char team_victim[12];
-	float victim_position[3], thief_position[3];
-
-	GetClientAbsOrigin(thief, thief_position);
-	GetClientAbsOrigin(victim, victim_position);
-	GetClientAuthId(thief, AuthId_Steam3, steamid_thief, sizeof(steamid_thief));
-	GetClientAuthId(victim, AuthId_Steam3, steamid_victim, sizeof(steamid_victim));
-
-	if (GetClientTeam(thief) == 2)
-	{
-		team_thief = "Red";
-	}
-	else if (GetClientTeam(thief) == 3) {
-		team_thief = "Blue";
-	}
-	else {
-		team_thief = "Spectator";
-	}
-
-	if (GetClientTeam(victim) == 2)
-	{
-		team_victim = "Red";
-	}
-	else if (GetClientTeam(victim) == 3) {
-		team_victim = "Blue";
-	}
-	else {
-		team_victim = "Spectator";
-	}
-
+	SetLogInfo(thief, victim);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_ball_stolen\" against \"%N<%i><%s><%s>\" (thief_position \"%.0f %.0f %.0f\") (victim_position \"%.0f %.0f %.0f\")",
-		thief, GetClientUserId(thief), steamid_thief, team_thief,
-		victim, GetClientUserId(victim), steamid_victim, team_victim,
-		thief_position[0], thief_position[1], thief_position[2],
-		victim_position[0], victim_position[1], victim_position[2]);
-	arrbPanaceaCheck[victim] = false;
+		user1, GetClientUserId(user1), user1steamid, user1team,
+		user2, GetClientUserId(user2), user2steamid, user2team,
+		user1position[0], user1position[1], user1position[2], 
+		user2position[0], user2position[1], user2position[2]);
+	user2 = 0;
 	arrbPanaceaCheck[thief] = false;
+	arrbPanaceaCheck[victim] = false;
 
 	if (arrbJackAcqSettings[victim].bPlyHudTextSetting)
 	{
@@ -640,72 +520,39 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 {
 	int	scorer = event.GetInt("scorer");
 	int	points = event.GetInt("points");
-	int assistor = event.GetInt("assister");
-
-	// log formatting
-	char steamid_scorer[16];
-	char team_scorer[12];
-	float scorer_position[3], assistor_position[3];
-	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
-
-	GetClientAbsOrigin(scorer, scorer_position);
-
-	GetClientAuthId(scorer, AuthId_Steam3, steamid_scorer, sizeof(steamid_scorer));
-
-	if (GetClientTeam(scorer) == 2)
-	{
-		team_scorer = "Red";
-	}
-	else if (GetClientTeam(scorer) == 3) {
-		team_scorer = "Blue";
-	}
-	else {
-		team_scorer = "Spectator";
-	}
-
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%.0f %.0f %.0f\")", 
-		scorer, GetClientUserId(scorer), steamid_scorer, team_scorer, points, arrbPanaceaCheck[scorer],
-		scorer_position[0], scorer_position[1], scorer_position[2]);
-
-	if (assistor > 0)
-	{
-		char steamid_assistor[16];
-		char team_assistor[12];
-
-		GetClientAbsOrigin(assistor, assistor_position);
-		GetClientAuthId(assistor, AuthId_Steam3, steamid_assistor, sizeof(steamid_assistor));
-
-		if (GetClientTeam(assistor) == 2)
-		{
-			team_assistor = "Red";
-		}
-		else if (GetClientTeam(assistor) == 3) {
-			team_assistor = "Blue";
-		}
-		else {
-			team_assistor = "Spectator";
-		}
-
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
-			assistor, GetClientUserId(assistor), steamid_assistor, team_assistor,
-			assistor_position[0], assistor_position[1], assistor_position[2]);
-		arriPlyRoundPassStats[assistor].iPlyAssists++;
-	}
+	int assistant = event.GetInt("assister");
+	char playerName[MAX_NAME_LENGTH], assistantName[MAX_NAME_LENGTH];
 	GetClientName(scorer, playerName, sizeof(playerName));
+	GetClientName(assistant, assistantName, sizeof(assistantName));
+
+	SetLogInfo(scorer);
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%.0f %.0f %.0f\")", 
+		user1, GetClientUserId(user1), user1steamid, user1team,
+		points, arrbPanaceaCheck[scorer],
+		user1position[0], user1position[1], user1position[2]);
+	arriPlyRoundPassStats[scorer].iPlyScores++;
+
 	if (arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic && bPrintStats.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
-	}
-	else if (assistor > 0 && bPrintStats.BoolValue)
-	{
-		GetClientName(assistor, assistorName, sizeof(assistorName));
-		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistorName);
 	}
 	else if(bPrintStats.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
-	arriPlyRoundPassStats[scorer].iPlyScores++;
+
+	if (assistant > 0)
+	{
+		SetLogInfo(assistant);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
+			user1, GetClientUserId(user1), user1steamid, user1team,
+			user1position[0], user1position[1], user1position[2]);
+		arriPlyRoundPassStats[assistant].iPlyAssists++;
+		if(bPrintStats.BoolValue)
+		{
+			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
+		}
+	}
 
 	return Plugin_Handled;
 }
@@ -732,30 +579,12 @@ bool InGoalieZone(int client)
 
 void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
 {
-	char steamid[16];
-	char team[12];
-	char plyName[MAX_NAME_LENGTH];
-	float position[3];
 	if(activator == eiJack && !ibFirstGrabCheck && IsClientConnected(iPlyWhoGotJack))
 	{
-		GetClientName(iPlyWhoGotJack, plyName, sizeof(plyName));
-		GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
-		GetClientAbsOrigin(iPlyWhoGotJack, position);
-		if (GetClientTeam(iPlyWhoGotJack) == 2)
-		{
-			team = "Red";
-		}
-		else if (GetClientTeam(iPlyWhoGotJack) == 3) 
-		{
-			team = "Blue";
-		}
-		else // players shouldn't ever be able to grab the ball in spec but if they get manually spawned, maybe...
-		{	  
-			team = "Spectator";
-		}
+		SetLogInfo(iPlyWhoGotJack);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (position \"%.0f %.0f %.0f\")", 
-			iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team,
-			position[0], position[1], position[2]);
+			user1, GetClientUserId(user1), user1steamid, user1team,
+			user1position[0], user1position[1], user1position[2]);
 	}
 }
 

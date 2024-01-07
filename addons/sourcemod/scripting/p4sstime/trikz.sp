@@ -1,3 +1,5 @@
+// This file relates to the planned "trikz" mode
+
 /*public OnClientPutInServer(client)
 {
 	//SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
