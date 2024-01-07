@@ -35,7 +35,6 @@ sm_pt_hud                1/0    # If 1, disables the blurry screen overlay after
 sm_pt_drop_collision     1/0    # If 1, disables the jack colliding with dropped ammo packs or weapons.
 sm_pt_stats              0/1    # If 1, enables printing of passtime events to chat both during and after games. If map begins with "pa", stats is enabled automatically. Does not affect logging.
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat.
-sm_pt_save_radius        200    # Set the radius in hammer units from the goal that an intercept is considered a save.
 sm_pt_practice           0/1    # If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.
 ```
 

@@ -30,7 +30,7 @@ enuiPlyRoundStats	arriPlyRoundPassStats[MAXPLAYERS + 1];
 
 float			fBluGoalPos[3], fRedGoalPos[3];
 
-ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, saveRadius, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
+ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
 
 int				iPlyWhoGotJack;
 // int				plyDirecter;
@@ -91,16 +91,15 @@ public void OnPluginStart()
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
 
-	bEquipStockWeapons		 = CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
-	bSwitchDuringRespawn	 = CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
-	bStealBlurryOverlay		 = CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
-	bDroppedItemsCollision = CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
-	bPrintStats		 = CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
-	fStatsPrintDelay		 = CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
-	saveRadius		 = CreateConVar("sm_pt_save_radius", "200", "Set the radius in hammer units from the goal that an intercept is considered a save.", FCVAR_NOTIFY);
+	bEquipStockWeapons		= CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
+	bSwitchDuringRespawn	= CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
+	bStealBlurryOverlay		= CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
+	bDroppedItemsCollision 	= CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
+	bPrintStats		 		= CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
+	fStatsPrintDelay		= CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
-	bPracticeMode	 = CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	bPracticeMode	 		= CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
@@ -477,7 +476,7 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
-	ibFirstGrabCheck = 1;
+	ibFirstGrabCheck = true;
 }
 
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
@@ -586,7 +585,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 		iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team, ibFirstGrabCheck,
 		position[0], position[1], position[2]);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (ibFirstGrabCheck == 1 && arrbBlastJumpStatus[iPlyWhoGotJack])
+	if (ibFirstGrabCheck && arrbBlastJumpStatus[iPlyWhoGotJack])
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 	}
@@ -594,7 +593,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = false;
 	}
-	ibFirstGrabCheck = 0;
+	ibFirstGrabCheck = false;
 
 	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlyHudTextSetting)
 	{
@@ -851,13 +850,13 @@ bool InGoalieZone(int client)
 	if (team == view_as<int>(TFTeam_Blue))
 	{
 		float distance = GetVectorDistance(position, fBluGoalPos, false);
-		if (distance < saveRadius.FloatValue) return true;
+		if (distance < 200) return true;
 	}
 
 	if (team == view_as<int>(TFTeam_Red))
 	{
 		float distance = GetVectorDistance(position, fRedGoalPos, false);
-		if (distance < saveRadius.FloatValue) return true;
+		if (distance < 200) return true;
 	}
 	return false;
 }
@@ -868,7 +867,7 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 	char team[12];
 	char plyName[MAX_NAME_LENGTH];
 	float position[3];
-	if(activator == eiJack && ibFirstGrabCheck == 0 && IsClientConnected(iPlyWhoGotJack))
+	if(activator == eiJack && !ibFirstGrabCheck && IsClientConnected(iPlyWhoGotJack))
 	{
 		GetClientName(iPlyWhoGotJack, plyName, sizeof(plyName));
 		GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
