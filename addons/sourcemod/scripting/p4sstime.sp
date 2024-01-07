@@ -81,8 +81,7 @@ public void OnPluginStart()
 	HookEvent("pass_free", Event_PassFree);
 	HookEvent("pass_ball_stolen", Event_PassStolen);
 	HookEvent("pass_score", Event_PassScore);
-	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
-	HookEvent("pass_pass_caught", Event_PassCaughtPost);
+	HookEvent("pass_pass_caught", Event_PassCaught);
 	HookEvent("pass_ball_blocked", Event_PassBallBlocked);
 	HookEvent("rocket_jump", Event_RJ);
 	HookEvent("rocket_jump_landed", Event_RJLand);
@@ -619,26 +618,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 	return Plugin_Handled;
 }
 
-Action Event_PassCaughtPre(Handle event, const char[] name, bool dontBroadcast)
-{
-	int	thrower	= GetEventInt(event, "passer");
-	int	catcher	= GetEventInt(event, "catcher");
-	char throwerName[MAX_NAME_LENGTH], catcherName[MAX_NAME_LENGTH];
-	GetClientName(thrower, throwerName, sizeof(throwerName));
-	GetClientName(catcher, catcherName, sizeof(catcherName));
-	ibHandoffCheck = 0;
-	if (TF2_GetClientTeam(thrower) == TFTeam_Spectator || TF2_GetClientTeam(catcher) == TFTeam_Spectator) return Plugin_Stop;
-	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
-	{
-		if (bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
-		ibHandoffCheck = 1;
-		eiPassTarget = 0;
-	}
-	return Plugin_Continue;
-}
-
-Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
+Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 {
 	int	thrower	= GetEventInt(event, "passer");
 	int	catcher	= GetEventInt(event, "catcher");
@@ -711,6 +691,17 @@ Action Event_PassCaughtPost(Handle event, const char[] name, bool dontBroadcast)
 		catcher_position[0], catcher_position[1], catcher_position[2]);
 	arrbPanaceaCheck[thrower] = false;
 	arrbPanaceaCheck[catcher] = false;
+
+	GetClientName(thrower, throwerName, sizeof(throwerName));
+	GetClientName(catcher, catcherName, sizeof(catcherName));
+	ibHandoffCheck = 0;
+	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+	{
+		if (bPrintStats.BoolValue)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		ibHandoffCheck = 1;
+		eiPassTarget = 0;
+	}
 
 	return Plugin_Handled;
 }
