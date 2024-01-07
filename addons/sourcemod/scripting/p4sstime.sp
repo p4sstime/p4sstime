@@ -74,22 +74,22 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
 	// player_askedforball is NOT a real event; https://discord.com/channels/335290997317697536/335290997317697536/1180394803020693565 sourcemod discord server
-	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
-	HookEvent("post_inventory_application", Event_PlayerResup, EventHookMode_Post);
-	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
-	HookEvent("pass_get", Event_PassGet, EventHookMode_Post);
-	HookEvent("pass_free", Event_PassFree, EventHookMode_Post);
-	HookEvent("pass_ball_stolen", Event_PassStolen, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("post_inventory_application", Event_PlayerResup);
+	HookEvent("player_death", Event_PlayerDeath);
+	HookEvent("pass_get", Event_PassGet);
+	HookEvent("pass_free", Event_PassFree);
+	HookEvent("pass_ball_stolen", Event_PassStolen);
 	HookEvent("pass_score", Event_PassScorePre, EventHookMode_Pre);
-	HookEvent("pass_score", Event_PassScorePost, EventHookMode_Post);
+	HookEvent("pass_score", Event_PassScorePost);
 	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
-	HookEvent("pass_pass_caught", Event_PassCaughtPost, EventHookMode_Post);
-	HookEvent("pass_ball_blocked", Event_PassBallBlocked, EventHookMode_Post);
-	HookEvent("rocket_jump", Event_RJ, EventHookMode_Post);
-	HookEvent("rocket_jump_landed", Event_RJLand, EventHookMode_Post);
-	HookEvent("sticky_jump", Event_SJ, EventHookMode_Post);
-	HookEvent("sticky_jump_landed", Event_SJLand, EventHookMode_Post);
-	HookEvent("teamplay_round_win", Event_TeamWin, EventHookMode_Post);
+	HookEvent("pass_pass_caught", Event_PassCaughtPost);
+	HookEvent("pass_ball_blocked", Event_PassBallBlocked);
+	HookEvent("rocket_jump", Event_RJ);
+	HookEvent("rocket_jump_landed", Event_RJLand);
+	HookEvent("sticky_jump", Event_SJ);
+	HookEvent("sticky_jump_landed", Event_SJLand);
+	HookEvent("teamplay_round_win", Event_TeamWin);
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
