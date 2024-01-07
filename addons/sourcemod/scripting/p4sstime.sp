@@ -122,10 +122,6 @@ public void OnPluginStart()
 	mBallHudMenu.AddItem("chattext", "Toggle chat notification");
 	mBallHudMenu.AddItem("sound", "Toggle sound notification");
 
-	char mapPrefix[3];
-	GetCurrentMap(mapPrefix, sizeof(mapPrefix));
-	bPrintStats.BoolValue = StrEqual("pa", mapPrefix);
-
 	/*for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
