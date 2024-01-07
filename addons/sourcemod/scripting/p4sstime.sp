@@ -80,8 +80,7 @@ public void OnPluginStart()
 	HookEvent("pass_get", Event_PassGet);
 	HookEvent("pass_free", Event_PassFree);
 	HookEvent("pass_ball_stolen", Event_PassStolen);
-	HookEvent("pass_score", Event_PassScorePre, EventHookMode_Pre);
-	HookEvent("pass_score", Event_PassScorePost);
+	HookEvent("pass_score", Event_PassScore);
 	HookEvent("pass_pass_caught", Event_PassCaughtPre, EventHookMode_Pre);
 	HookEvent("pass_pass_caught", Event_PassCaughtPost);
 	HookEvent("pass_ball_blocked", Event_PassBallBlocked);
@@ -780,7 +779,7 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
+Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 {
 	int	scorer = event.GetInt("scorer");
 	int	points = event.GetInt("points");
@@ -790,6 +789,7 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 	char steamid_scorer[16];
 	char team_scorer[12];
 	float scorer_position[3], assistor_position[3];
+	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
 
 	GetClientAbsOrigin(scorer, scorer_position);
 
@@ -833,21 +833,9 @@ Action Event_PassScorePre(Event event, const char[] name, bool dontBroadcast)
 			assistor, GetClientUserId(assistor), steamid_assistor, team_assistor,
 			assistor_position[0], assistor_position[1], assistor_position[2]);
 		arriPlyRoundPassStats[assistor].iPlyAssists++;
-
 	}
-	return Plugin_Continue;
-}
-
-Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
-{
-	if (!bPrintStats.BoolValue) return Plugin_Handled;
-
-	int client = event.GetInt("scorer");
-	int	assistor = event.GetInt("assister");
-	if (!IsValidClient(client)) return Plugin_Handled;
-	char playerName[MAX_NAME_LENGTH], assistorName[MAX_NAME_LENGTH];
-	GetClientName(client, playerName, sizeof(playerName));
-	if (arrbPanaceaCheck[client] && TF2_GetPlayerClass(client) != TFClass_Medic && bPrintStats.BoolValue)
+	GetClientName(scorer, playerName, sizeof(playerName));
+	if (arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic && bPrintStats.BoolValue)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
 	}
@@ -860,7 +848,7 @@ Action Event_PassScorePost(Event event, const char[] name, bool dontBroadcast)
 	{
 		PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
-	arriPlyRoundPassStats[client].iPlyScores++;
+	arriPlyRoundPassStats[scorer].iPlyScores++;
 
 	return Plugin_Handled;
 }
