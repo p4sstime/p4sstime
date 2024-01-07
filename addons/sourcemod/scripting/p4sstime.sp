@@ -36,7 +36,6 @@ int				iPlyWhoGotJack;
 // int				plyDirecter;
 int				ibFirstGrabCheck;
 int  			eiJack;
-int  			ibHandoffCheck;
 int  			eiPassTarget;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
@@ -626,6 +625,7 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	float duration = GetEventFloat(event, "duration");
 	int intercept = false;
 	int bSave = false;
+	int ibHandoffCheck = false;
 	iPlyWhoGotJack = catcher;
 	char steamid_thrower[16];
 	char steamid_catcher[16];
@@ -683,6 +683,16 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
 		team_catcher = "Spectator";
 	}
+	ibHandoffCheck = false;
+	GetClientName(thrower, throwerName, sizeof(throwerName));
+	GetClientName(catcher, catcherName, sizeof(catcherName));
+	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
+	{
+		if (bPrintStats.BoolValue)
+			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		ibHandoffCheck = true;
+		eiPassTarget = 0;
+	}
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_pass_caught\" against \"%N<%i><%s><%s>\" (interception \"%i\") (save \"%i\") (handoff \"%i\") (dist \"%.3f\") (duration \"%.3f\") (thrower_position \"%.0f %.0f %.0f\") (catcher_position \"%.0f %.0f %.0f\")",
 		catcher, GetClientUserId(catcher), steamid_catcher, team_catcher,
 		thrower, GetClientUserId(thrower), steamid_thrower, team_thrower,
@@ -691,18 +701,7 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 		catcher_position[0], catcher_position[1], catcher_position[2]);
 	arrbPanaceaCheck[thrower] = false;
 	arrbPanaceaCheck[catcher] = false;
-
-	GetClientName(thrower, throwerName, sizeof(throwerName));
-	GetClientName(catcher, catcherName, sizeof(catcherName));
-	ibHandoffCheck = 0;
-	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
-	{
-		if (bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
-		ibHandoffCheck = 1;
-		eiPassTarget = 0;
-	}
-
+	
 	return Plugin_Handled;
 }
 
