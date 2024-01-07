@@ -477,7 +477,7 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
-	ibFirstGrabCheck = 1;
+	ibFirstGrabCheck = true;
 }
 
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
@@ -586,7 +586,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 		iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team, ibFirstGrabCheck,
 		position[0], position[1], position[2]);
 		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
-	if (ibFirstGrabCheck == 1 && arrbBlastJumpStatus[iPlyWhoGotJack])
+	if (ibFirstGrabCheck && arrbBlastJumpStatus[iPlyWhoGotJack])
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 	}
@@ -594,7 +594,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = false;
 	}
-	ibFirstGrabCheck = 0;
+	ibFirstGrabCheck = false;
 
 	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlyHudTextSetting)
 	{
@@ -868,7 +868,7 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 	char team[12];
 	char plyName[MAX_NAME_LENGTH];
 	float position[3];
-	if(activator == eiJack && ibFirstGrabCheck == 0 && IsClientConnected(iPlyWhoGotJack))
+	if(activator == eiJack && !ibFirstGrabCheck && IsClientConnected(iPlyWhoGotJack))
 	{
 		GetClientName(iPlyWhoGotJack, plyName, sizeof(plyName));
 		GetClientAuthId(iPlyWhoGotJack, AuthId_Steam3, steamid, sizeof(steamid));
