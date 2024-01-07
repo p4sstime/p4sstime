@@ -278,7 +278,7 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
 	}
-	eiPassTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimeeiPassTarget"));
+	eiPassTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget"));
 	if (!(arrbBlastJumpStatus[owner]))
 		arrbPanaceaCheck[owner] = false;
 	SetLogInfo(owner);
