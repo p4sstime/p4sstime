@@ -72,7 +72,6 @@ public void OnPluginStart()
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 
-	// player_askedforball is NOT a real event; https://discord.com/channels/335290997317697536/335290997317697536/1180394803020693565 sourcemod discord server
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("post_inventory_application", Event_PlayerResup);
 	HookEvent("player_death", Event_PlayerDeath);
@@ -97,10 +96,10 @@ public void OnPluginStart()
 	bDroppedItemsCollision 	= CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
 	bPrintStats		 		= CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
 	fStatsPrintDelay		= CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
-	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
-	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
 	bPracticeMode	 		= CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
+	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
+	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
 	//trikzProjDev = CreateConVar("sm_pt_trikz_projcollide_dev", "0", "DONOTUSE; This command is used solely by the plugin to change values. Changing this manually may cause issues.", FCVAR_HIDDEN, true, 0.0, true, 2.0);
 
 	//HookConVarChange(trikzEnable, Hook_OnTrikzChange);
@@ -135,6 +134,8 @@ public void OnPluginStart()
 	}
 }
 
+#include <p4sstime/trikz.sp>
+
 public void OnMapStart() // getgoallocations
 {
 	int goal1 = FindEntityByClassname(-1, "func_passtime_goal");
@@ -160,71 +161,6 @@ bool IsValidClient(int client)
 	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
 	return true;
 }
-
-/*
-https://sourcemod.dev/#/sdkhooks/typeset.SDKHookCB for parameters
-
-OnTakeDamage -> When a player is damaged, you can change parameters here like modifying damage
-OnTakeDamagePost -> After a player has been damaged, cannot change parameters
-OnTakeDamageAlive -> After player has been damaged, but before damage bonuses e.g. crits are applied, can also change parameters here
-OnTakeDamageAlivePost -> After player has been damaged, period. Cannot change parameters here
-*/
-/*public OnClientPutInServer(client)
-{
-	//SDKHook(client, SDKHook_OnTakeDamage, Event_OnTakeDamage);
-}
-
-// following classnames are taken from here: https://developer.valvesoftware.com/w/index.php?title=Category:Point_Entities&pagefrom=Prop+glass+futbol#mw-pages
-public void OnEntityCreated(int entity, const char[] classname)
-{
-	//DHooks_OnEntityCreated(entity, classname);
-	if (StrEqual(classname, "tf_projectile_rocket") || StrEqual(classname, "tf_projectile_pipe"))
-		SDKHook(entity, SDKHook_Touch, OnProjectileTouch);
-}
-
-void OnProjectileTouch(int entity, int other) // direct hit detector, taken from MGEMod
-{
-	plyDirecter = other;
-	if (other > 0 && other <= MaxClients)
-	{
-		plyTakenDirectHit[plyDirecter] = true;
-	}
-}
-
-public void Hook_OnProjCollideChange(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (newValue[0] == '0')
-		trikzProjCollideSave = 0;
-	if (newValue[0] == '1')
-		trikzProjCollideSave = 1;
-	if (newValue[0] == '2')
-		trikzProjCollideSave = 2;
-}
-
-public void Hook_OnProjCollideDev(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if(FindConVar("sm_projectiles_ignore_teammates") != null) 
-		SetConVarInt(FindConVar("sm_projectiles_ignore_teammates"), 0);
-	if (newValue[0] == '0')
-		trikzProjCollideCurVal = 0;
-	if (newValue[0] == '1')
-		trikzProjCollideCurVal = 1;
-	if (newValue[0] == '2')
-		trikzProjCollideCurVal = 2;
-}
-
-public int ProjCollideValue()
-{
-	return trikzProjCollideCurVal;
-}
-
-public void Hook_OnTrikzChange(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (newValue[0] == '0')
-		SetConVarInt(FindConVar("mp_friendlyfire"), 0);
-	if (newValue[0] == '1' || newValue[0] == '2' || newValue[0] == '3')
-		SetConVarInt(FindConVar("mp_friendlyfire"), 1);
-}*/
 
 public OnClientCookiesCached(int client)
 {
@@ -334,7 +270,7 @@ float DistanceAboveGround(int victim) // taken from mgemod
 	return distance;
 }
 
-Action Event_RJ(Event event, const char[] name, bool dontBroadcast) // rj and sj not fired when lifted up by another player
+Action Event_RJ(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	arrbBlastJumpStatus[client] = true;
@@ -371,72 +307,6 @@ Action OnChangeClass(int client, const char[] strCommand, int args)
 	}
 	return Plugin_Continue;
 }
-
-/*Action Event_OnTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype, int& weapon, float damageForce[3], float damagePosition[3], int damagecustom)
-{
-	char victimName[MAX_NAME_LENGTH], attackerName[MAX_NAME_LENGTH];
-	char steamid_victim[16];
-	char team_victim[12];
-	GetClientName(victim, victimName, sizeof(victimName));
-	GetClientAuthId(victim, AuthId_Steam3, steamid_victim, sizeof(steamid_victim));
-	if (victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && DistanceAboveGround(victim) > 200 && plyTakenDirectHit[victim] && GetEntProp(victim, Prop_Send, "m_bHasPasstimeBall") == 1 && TF2_GetClientTeam(victim) != TF2_GetClientTeam(attacker))
-	{
-		char steamid_attacker[16];
-		char team_attacker[12];
-		GetClientName(attacker, attackerName, sizeof(attackerName));
-		GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-		if (bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffffball carrier %s!", attackerName, victimName);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_carrier_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
-	}
-	if (trikzEnable.IntValue == 0 || attacker <= 0 || !IsClientInGame(attacker) || !IsValidClient(victim)) // should not damage
-	{
-		SetConVarInt(trikzProjDev, 0); // reset
-		return Plugin_Continue;	// end function early if attacker or victim is not legit player in game
-	}
-	if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND) && plyTakenDirectHit[victim])
-	{
-		SetConVarInt(trikzProjDev, trikzProjCollideSave);
-		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
-		if (DistanceAboveGround(victim) > 200)
-		{
-			char steamid_attacker[16];
-			char team_attacker[12];
-			GetClientName(attacker, attackerName, sizeof(attackerName));
-			GetClientAuthId(attacker, AuthId_Steam3, steamid_attacker, sizeof(steamid_attacker));
-			if (bPrintStats.BoolValue)
-				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00airshot \x0700ffff%s!", attackerName, victimName);
-			LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_friendly_airshot\" against \"%N<%i><%s><%s>\"", attacker, GetClientUserId(attacker), steamid_attacker, team_attacker, victim, GetClientUserId(victim), steamid_victim, team_victim);
-		}
-		plyTakenDirectHit[victim] = false;
-		return Plugin_Changed;
-	}
-	else if (trikzEnable.IntValue == 1 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
-	{
-		SetConVarInt(trikzProjDev, 0); // never collide
-		damage = 0.0;
-		return Plugin_Changed;
-	}
-	if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker && !(GetEntityFlags(victim) & FL_ONGROUND))
-	{
-		SetConVarInt(trikzProjDev, trikzProjCollideSave);
-		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
-		return Plugin_Changed;
-	}
-	else if (trikzEnable.IntValue == 2 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker) // should not damage
-	{	
-		SetConVarInt(trikzProjDev, 0); // never collide
-		damage = 0.0;
-		return Plugin_Changed;
-	}
-	if (trikzEnable.IntValue == 3 && TF2_GetClientTeam(victim) == TF2_GetClientTeam(attacker) && victim != attacker)
-	{
-		SetConVarInt(trikzProjDev, trikzProjCollideSave);
-		TF2_AddCondition(victim, TFCond_PasstimeInterception, 0.05 , 0);
-		return Plugin_Changed;
-	}
-	return Plugin_Continue;	
-}*/
 
 public void TF2_OnConditionAdded(int client, TFCond condition)
 {
@@ -559,7 +429,7 @@ Action Event_PassBallBlocked(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // passget prehook occurs AFTER ball throw, this is posthook tho
+Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 {
 	iPlyWhoGotJack = event.GetInt("owner");
 
@@ -584,7 +454,6 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast) // pass
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_get\" (firstcontact \"%i\") (position \"%.0f %.0f %.0f\")",
 		iPlyWhoGotJack, GetClientUserId(iPlyWhoGotJack), steamid, team, ibFirstGrabCheck,
 		position[0], position[1], position[2]);
-		// ex: "TOMATO TERROR<19><[U:1:160108865]><Blue>" triggered "pass_get" (firstcontact "0")
 	if (ibFirstGrabCheck && arrbBlastJumpStatus[iPlyWhoGotJack])
 	{
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
@@ -1016,9 +885,3 @@ void RemoveShotty(int client)
 		}
 	}
 }
-
-
-/*
-some data that will be useful later
-https://lmaobox.net/lua/TF2_props/
-*/
