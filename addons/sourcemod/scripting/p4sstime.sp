@@ -683,7 +683,6 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	else {	  // if a player throws the ball then goes spec they can trigger this event as a spectator
 		team_catcher = "Spectator";
 	}
-	ibHandoffCheck = false;
 	GetClientName(thrower, throwerName, sizeof(throwerName));
 	GetClientName(catcher, catcherName, sizeof(catcherName));
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
@@ -701,7 +700,7 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 		catcher_position[0], catcher_position[1], catcher_position[2]);
 	arrbPanaceaCheck[thrower] = false;
 	arrbPanaceaCheck[catcher] = false;
-	
+
 	return Plugin_Handled;
 }
 
