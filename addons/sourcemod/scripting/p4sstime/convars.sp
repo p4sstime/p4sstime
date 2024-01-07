@@ -28,7 +28,7 @@ public void TF2_OnConditionAdded(int client, TFCond condition)
 	}
 	if (condition == TFCond_Charging && TF2_GetPlayerClass(client)==TFClass_DemoMan)
 	{
-		CreateTimer(0.1, TimedFilterCheck, client);
+		CreateTimer(0.1, MultiCheck, client);
 	}
 }
 
