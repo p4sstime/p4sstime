@@ -1,3 +1,4 @@
+/* this is just so my sourcepawn extension in vs code wont yell at me
 #pragma newdecls required
 #pragma semicolon 1
 
@@ -32,3 +33,4 @@ static MRESReturn Hook_CBaseProjectile_CanCollideWithTeammates(int self, Handle 
 	}
 	return MRES_Ignored;
 }
+*/
