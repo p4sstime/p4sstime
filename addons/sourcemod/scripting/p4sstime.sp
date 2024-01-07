@@ -435,7 +435,6 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	int assistant = event.GetInt("assister");
 	char playerName[MAX_NAME_LENGTH], assistantName[MAX_NAME_LENGTH];
 	GetClientName(scorer, playerName, sizeof(playerName));
-	GetClientName(assistant, assistantName, sizeof(assistantName));
 
 	SetLogInfo(scorer);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%.0f %.0f %.0f\")", 
@@ -455,6 +454,7 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 
 	if (assistant > 0)
 	{
+		GetClientName(assistant, assistantName, sizeof(assistantName));
 		SetLogInfo(assistant);
 		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
 			user1, GetClientUserId(user1), user1steamid, user1team,
