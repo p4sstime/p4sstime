@@ -109,7 +109,7 @@ public void OnPluginStart()
 	bPrintStats		 		= CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
 	fStatsPrintDelay		= CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
 	bPracticeMode	 		= CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	fCaberTimer 			= CreateConVar("sm_pt_caber_rechargetime", "20", "Set how long it takes for caber to recharge.", FCVAR_NOTIFY);
+	fCaberTimer 			= CreateConVar("sm_pt_caber_rechargetime", "20", "Set how long it takes for caber to recharge. If 0, recharging is disabled.", FCVAR_NOTIFY);
 
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);

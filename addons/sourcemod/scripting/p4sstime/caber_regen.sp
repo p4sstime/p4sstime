@@ -4,7 +4,7 @@ Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 	int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if (victim == 0 || attacker != victim || !IsClientInGame(victim) || GetEventInt(event, "custom") != TF_CUSTOM_STICKBOMB_EXPLOSION)
+	if (victim == 0 || attacker != victim || !IsClientInGame(victim) || GetEventInt(event, "custom") != TF_CUSTOM_STICKBOMB_EXPLOSION || GetConVarFloat(fCaberTimer)==0)
 		return Plugin_Handled;
 
 	tCaberRegen[victim] = CreateTimer(GetConVarFloat(fCaberTimer), Timer_RefreshStickBomb, GetClientUserId(victim));
