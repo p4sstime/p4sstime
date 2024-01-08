@@ -36,6 +36,7 @@ sm_pt_drop_collision     1/0    # If 1, disables the jack colliding with dropped
 sm_pt_stats              0/1    # If 1, enables printing of passtime events to chat both during and after games. If map begins with "pa", stats is enabled automatically. Does not affect logging.
 sm_pt_stats_delay        7.5    # Set the delay between round end and the stats being displayed in chat.
 sm_pt_practice           0/1    # If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.
+sm_pt_caber_rechargetime 20     # Set how long it takes for caber to recharge. If 0, recharging is disabled.
 ```
 
 ### Logs Example

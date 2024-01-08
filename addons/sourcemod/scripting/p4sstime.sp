@@ -61,9 +61,9 @@ float user2position[3];
 public Plugin myinfo =
 {
 	name		= "4v4 PASS Time Extension",
-	author		= "blake++, Dr. Underscore, EasyE, sappho (MGEMod), muddy",
+	author		= "blake++",
 	description = "The main plugin for 4v4 Competitive PASS Time.",
-	version		= "1.5.1",
+	version		= "2.0.0",
 	url			= "https://github.com/blakeplusplus/p4sstime"
 };
 
