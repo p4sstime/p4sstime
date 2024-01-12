@@ -286,10 +286,11 @@ public void OnClientDisconnect(int client)
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
 void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
+	char strName[15];
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
+	GetEntPropString(caller, Prop_Send, "m_iName", strName, sizeof(strName));
 	ibFirstGrabCheck = true;
-	CreateTimer(1.5, CheckBallLocation, _); // this will mean that untouched, if the jack spawns from upper, it has not reached the bottom catapult yet and thus the check will say upper
 }
 
 Action CheckBallLocation(Handle timer)
@@ -522,8 +523,7 @@ bool InGoalieZone(int client)
 
 void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
 {
-	char strName[50];
-	GetEntPropString(caller, Prop_Send, "m_iName", strName, sizeof(strName))
+	GetEntPropString(caller, Prop_Send, "m_iName", strName, sizeof(strName));
 	if(activator == eiJack && !ibFirstGrabCheck && IsClientConnected(iPlyWhoGotJack) && strName != "catapult1") // ONLY WORKS FOR ARENA2 ATM
 	{
 		SetLogInfo(iPlyWhoGotJack);
