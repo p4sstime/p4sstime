@@ -180,6 +180,7 @@ Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!bPrintStats.BoolValue) return Plugin_Handled;
 	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
+	iPlyWhoGotJack = 0; // reset this because it's a good idea. doesn't actually fix anything but this shouldn't carry over between rounds
 	return Plugin_Handled;
 }
 
@@ -281,7 +282,7 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 	char spawnName[20];
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
-	GetEntPropString(caller, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+	GetEntPropString(caller, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
 		LogToGame("passtime_ball spawned from the upper spawnpoint.");
 	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
@@ -515,10 +516,10 @@ bool InGoalieZone(int client)
 void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
 {
 	char catapultName[15];
-	if(activator == eiJack && IsClientConnected(iPlyWhoGotJack))
+	GetEntPropString(caller, Prop_Data, "m_iName", catapultName, sizeof(catapultName));
+	if(activator == eiJack && iPlyWhoGotJack != 0)
 	{
-		GetEntPropString(caller, Prop_Send, "m_iName", catapultName, sizeof(catapultName));
-		if(StrEqual(catapultName, "red_catapult1") || StrEqual(catapultName, "red_catapult2") || StrEqual(catapultName, "blu_catapult1") || StrEqual(catapultName, "blu_catapult2"))
+		if(StrEqual(catapultName, "red_catapult1") || StrEqual(catapultName, "red_catapult2") || StrEqual(catapultName, "blu_catapult1") || StrEqual(catapultName, "blu_catapult2") && IsClientConnected(iPlyWhoGotJack))
 		{
 			SetLogInfo(iPlyWhoGotJack);
 			LogToGame("\"%N<%i><%s><%s>\" triggered \"%s\" with the jack (position \"%.0f %.0f %.0f\")", 
