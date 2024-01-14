@@ -12,7 +12,6 @@ Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 
 Action OnChangeClass(int client, const char[] strCommand, int args)
 {
-	KillCaberRegenTimer(client);
 	char sChosenClass[12];
 	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
 	{
@@ -41,7 +40,6 @@ Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	RemoveShotty(client);
-	KillCaberRegenTimer(client);
 
 	return Plugin_Handled;
 }

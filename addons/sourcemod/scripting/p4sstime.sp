@@ -7,8 +7,6 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define STICKBOMB_CLASS "CTFStickBomb" // required(?) for caber regen
-
 enum struct enubPlyJackSettings
 {
 	bool bPlyHudTextSetting;
@@ -30,7 +28,7 @@ enuiPlyRoundStats	arriPlyRoundPassStats[MAXPLAYERS + 1];
 
 float			fBluGoalPos[3], fRedGoalPos[3];
 
-ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode, fCaberTimer;
+ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
 
 int				iPlyWhoGotJack;
 // int				plyDirecter;
@@ -44,7 +42,6 @@ bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
 // bool			plyTakenDirectHit[MAXPLAYERS + 1];
-Handle 			tCaberRegen[MAXPLAYERS + 1];
 Handle  		cookieBallHudHud = INVALID_HANDLE;
 Handle  		cookieBallHudChat = INVALID_HANDLE;
 Handle  		cookieBallHudSound = INVALID_HANDLE;
@@ -85,7 +82,6 @@ public void OnPluginStart()
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("post_inventory_application", Event_PlayerResup);
-	HookEvent("player_hurt", Event_PlayerHurt);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("pass_get", Event_PassGet);
 	HookEvent("pass_free", Event_PassFree);
@@ -110,7 +106,6 @@ public void OnPluginStart()
 	bPrintStats		 		= CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
 	fStatsPrintDelay		= CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
 	bPracticeMode	 		= CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	fCaberTimer 			= CreateConVar("sm_pt_caber_rechargetime", "20", "Set how long it takes for caber to recharge. If 0, recharging is disabled.", FCVAR_NOTIFY);
 
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
 	//trikzProjCollide = CreateConVar("sm_pt_trikz_projcollide", "2", "Manually set team projectile collision behavior when trikz is on. 2 always collides, 1 will cause your projectiles to phase through if you are too close (default game behavior), 0 will cause them to never collide.", 0, true, 0.0, true, 2.0);
@@ -149,7 +144,6 @@ public void OnPluginStart()
 #include <p4sstime/pass_menu.sp>
 #include <p4sstime/practice.sp>
 #include <p4sstime/anticheat.sp>
-#include <p4sstime/caber_regen.sp>
 #include <p4sstime/convars.sp>
 
 public void OnMapStart() // getgoallocations
@@ -266,7 +260,6 @@ Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	arrbPlyIsDead[client] = true;
-	KillCaberRegenTimer(client);
 
 	return Plugin_Handled;
 }
@@ -274,7 +267,6 @@ Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 public void OnClientDisconnect(int client)
 {
 	arrbPlyIsDead[client] = false;
-	KillCaberRegenTimer(client);
 
 	arriPlyRoundPassStats[client].iPlyScores		   = 0;
 	arriPlyRoundPassStats[client].iPlyAssists	   = 0;
