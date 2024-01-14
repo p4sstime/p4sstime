@@ -37,7 +37,6 @@ int				iPlyWhoGotJack;
 int				ibFirstGrabCheck;
 int  			eiJack;
 int  			eiPassTarget;
-int				ibBallSpawnLocation = 0;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mBallHudMenu;
@@ -50,6 +49,7 @@ Handle  		cookieBallHudHud = INVALID_HANDLE;
 Handle  		cookieBallHudChat = INVALID_HANDLE;
 Handle  		cookieBallHudSound = INVALID_HANDLE;
 
+// log variables
 int user1;
 char user1steamid[16];
 char user1team[12];
@@ -286,20 +286,19 @@ public void OnClientDisconnect(int client)
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
 void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
-	char strName[15];
+	char spawnName[20];
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
-	GetEntPropString(caller, Prop_Send, "m_iName", strName, sizeof(strName));
+	GetEntPropString(caller, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+	if(StrEqual(spawnName, "passtime_ball_spawn1"))
+		LogToGame("passtime_ball spawned from the upper spawnpoint.");
+	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
+		LogToGame("passtime_ball spawned from the lower spawnpoint.");
+	else if(StrEqual(spawnName, "passtime_ball_spawn3"))
+		LogToGame("passtime_ball spawned from the right spawnpoint.");
+	else if(StrEqual(spawnName, "passtime_ball_spawn4"))
+		LogToGame("passtime_ball spawned from the left spawnpoint.");
 	ibFirstGrabCheck = true;
-}
-
-Action CheckBallLocation(Handle timer)
-{
-	if(ibBallSpawnLocation == 0)
-		LogToGame("passtime_ball spawned upper.");
-	else
-		LogToGame("passtime_ball spawned lower.");
-	return Plugin_Stop;
 }
 
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
@@ -523,17 +522,17 @@ bool InGoalieZone(int client)
 
 void Hook_OnCatapult(const char[] output, int caller, int activator, float delay)
 {
-	GetEntPropString(caller, Prop_Send, "m_iName", strName, sizeof(strName));
-	if(activator == eiJack && !ibFirstGrabCheck && IsClientConnected(iPlyWhoGotJack) && strName != "catapult1") // ONLY WORKS FOR ARENA2 ATM
+	char catapultName[15];
+	if(activator == eiJack && IsClientConnected(iPlyWhoGotJack))
 	{
-		SetLogInfo(iPlyWhoGotJack);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_trigger_catapult\" with the jack (position \"%.0f %.0f %.0f\")", 
-			user1, GetClientUserId(user1), user1steamid, user1team,
-			user1position[0], user1position[1], user1position[2]);
-	}
-	else if(activator == eiJack && ibFirstGrabCheck) // if the ball hasn't been grabbed
-	{
-		ibBallSpawnLocation = 1; // spawned lower
+		GetEntPropString(caller, Prop_Send, "m_iName", catapultName, sizeof(catapultName));
+		if(StrEqual(catapultName, "red_catapult1") || StrEqual(catapultName, "red_catapult2") || StrEqual(catapultName, "blu_catapult1") || StrEqual(catapultName, "blu_catapult2"))
+		{
+			SetLogInfo(iPlyWhoGotJack);
+			LogToGame("\"%N<%i><%s><%s>\" triggered \"%s\" with the jack (position \"%.0f %.0f %.0f\")", 
+				user1, GetClientUserId(user1), user1steamid, user1team,
+				catapultName, user1position[0], user1position[1], user1position[2]);
+		}
 	}
 }
 
