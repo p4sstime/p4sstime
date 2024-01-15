@@ -310,9 +310,9 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 	if (!(arrbBlastJumpStatus[owner]))
 		arrbPanaceaCheck[owner] = false;
 	SetLogInfo(owner);
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_free\" (position \"%.0f %.0f %.0f\")",
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_free\" (dead \"%i\") (position \"%.0f %.0f %.0f\")",
 		user1, GetClientUserId(user1), user1steamid, user1team,
-		user1position[0], user1position[1], user1position[2]);
+		arrbPlyIsDead[owner], user1position[0], user1position[1], user1position[2]);
 	return Plugin_Handled;
 }
 
