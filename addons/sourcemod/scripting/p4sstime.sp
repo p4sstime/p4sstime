@@ -35,6 +35,7 @@ int				iPlyWhoGotJack;
 int				ibFirstGrabCheck;
 int  			eiJack;
 int  			eiPassTarget;
+int 			ibBallSpawnedLower;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mBallHudMenu;
@@ -286,7 +287,10 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
 		LogToGame("passtime_ball spawned from the upper spawnpoint.");
 	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
-		LogToGame("passtime_ball spawned from the lower spawnpoint.");
+	{
+		LogToGame("passtime_ball spawned from the lower spawnpoint."); 
+		ibBallSpawnedLower = 1;
+	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn3"))
 		LogToGame("passtime_ball spawned from the right spawnpoint.");
 	else if(StrEqual(spawnName, "passtime_ball_spawn4"))
@@ -459,6 +463,9 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	int assistant = event.GetInt("assister");
 	char playerName[MAX_NAME_LENGTH], assistantName[MAX_NAME_LENGTH];
 	GetClientName(scorer, playerName, sizeof(playerName));
+
+	if(ibBallSpawnedLower)
+		arrbPanaceaCheck[scorer] = false;
 
 	SetLogInfo(scorer);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (position \"%.0f %.0f %.0f\")", 
