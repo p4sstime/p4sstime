@@ -80,6 +80,7 @@ public void OnPluginStart()
 	cookieBallHudSound = RegClientCookie("ballhudSoundSetting", "p4sstime's sm_ballhud Sounds Setting Value", CookieAccess_Public);
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
+	RegConsoleCmd("sm_pt_suicide", Command_PasstimeSuicide);
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("post_inventory_application", Event_PlayerResup);

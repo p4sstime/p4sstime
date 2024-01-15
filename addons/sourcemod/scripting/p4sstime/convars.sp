@@ -44,6 +44,11 @@ Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
+Action Command_PasstimeSuicide(int client, int args)
+{
+	SDKHooks_TakeDamage(client, client, client, 500.0);
+	return Plugin_Handled;
+}
 
 void RemoveShotty(int client)
 {
