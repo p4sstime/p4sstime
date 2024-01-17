@@ -13,3 +13,21 @@ passget prehook occurs AFTER ball throw
 tf2 ent props - https://lmaobox.net/lua/TF2_props/
 
 rj and sj events are not fired when lifted up by another player
+
+default (white): \x01
+teamcolour (will be purple if message from server): \x03
+red: \x07
+lightred: \x0F
+darkred: \x02
+bluegrey: \x0A
+blue: \x0B
+darkblue: \x0C
+purple: \x03
+orchid: \x0E
+yellow: \x09
+gold: \x10
+lightgreen: \x05
+green: \x04
+lime: \x06
+grey: \x08
+grey2: \x0D 

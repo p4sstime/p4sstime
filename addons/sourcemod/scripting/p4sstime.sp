@@ -4,6 +4,8 @@
 #include <sdktools>
 //#include <dhooks>
 #include <clientprefs>
+#include <regex>
+#include <usermessages>
 
 #pragma semicolon 1	   // required for logs.tf
 
@@ -39,6 +41,7 @@ int 			ibBallSpawnedLower;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mBallHudMenu;
+Menu 			mMatchEndStatsMenu;
 bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
@@ -56,6 +59,10 @@ int user2;
 char user2steamid[16];
 char user2team[12];
 float user2position[3];
+
+// stats menu variables
+char logsurl[10];
+char moreurl[24];
 
 public Plugin myinfo =
 {
@@ -81,6 +88,7 @@ public void OnPluginStart()
 
 	RegConsoleCmd("sm_ballhud", Command_BallHud);
 	RegConsoleCmd("sm_pt_suicide", Command_PasstimeSuicide);
+	RegConsoleCmd("sm_pt_statsmenu", Command_MatchEndStatsMenu);
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("post_inventory_application", Event_PlayerResup);
@@ -100,6 +108,7 @@ public void OnPluginStart()
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
+	HookUserMessage(GetUserMessageId("TextMsg"), Event_TextMsg);
 
 	bEquipStockWeapons		= CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
 	bSwitchDuringRespawn	= CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
@@ -124,6 +133,10 @@ public void OnPluginStart()
 	mBallHudMenu.AddItem("chattext", "Toggle chat notification");
 	mBallHudMenu.AddItem("sound", "Toggle sound notification");
 
+	mMatchEndStatsMenu = new Menu(MatchEndStatsMenuHandler);
+	mMatchEndStatsMenu.SetTitle("Round Summary");
+	mMatchEndStatsMenu.AddItem("DisplayMoreTF", "Show more.tf");
+
 	/*for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
@@ -147,6 +160,7 @@ public void OnPluginStart()
 #include <p4sstime/practice.sp>
 #include <p4sstime/anticheat.sp>
 #include <p4sstime/convars.sp>
+#include <p4sstime/stats_menu.sp>
 
 public void OnMapStart() // getgoallocations
 {
@@ -182,6 +196,7 @@ Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!bPrintStats.BoolValue) return Plugin_Handled;
 	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
+	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayMatchEndStatsMenu);
 	iPlyWhoGotJack = 0; // reset this because it's a good idea. doesn't actually fix anything but this shouldn't carry over between rounds
 	return Plugin_Handled;
 }
@@ -196,7 +211,34 @@ bool IsValidClient(int client)
 	return true;
 }
 
+Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)
+{
+	// MC_PrintToChatAll("%s%s", "{lightgreen}[LogsTF] {blue}Logs were uploaded to: ", g_sLastLogURL);
+	// g_sLastLogURL looks like logs.tf/9999999; so total output string is probably "\x05[LogsTF] \x0BLogs were uploaded to: logs.tf/9991111"
+	// https://github.com/Bara/Multi-Colors/blob/a31112557f36bc66545cc15cb22f40aeaf42f4ba/addons/sourcemod/scripting/include/multicolors/morecolors.inc#L68C12-L68C29
+	
+	char strOutput[60];
+	BfReadString(msg, strOutput, sizeof(strOutput));
+	Regex LOGSTFMatcher = CompileRegex(".*logs\\.tf\\/(\\d+)");
+	if(LOGSTFMatcher.Match(strOutput) > 0)
+	{
+		moreurl = "http://more.tf/";
+		LOGSTFMatcher.GetSubString(1, logsurl, sizeof(logsurl));
+		StrCat(moreurl, sizeof(moreurl), logsurl);
+	}
+	delete LOGSTFMatcher;
+	return Plugin_Continue;
+}
+
 /*-------------------------------------------------- Player Events --------------------------------------------------*/
+
+public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
+{
+	// do pass menu stuff here
+	// also want to have /more and .more
+
+	return Plugin_Continue;
+}
 
 bool TraceEntityFilterPlayer(int entity, int contentsMask) // taken from mgemod; just going to use this instead of isvalidclient for the below function
 {
