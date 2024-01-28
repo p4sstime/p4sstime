@@ -9,7 +9,7 @@ Action Command_PasstimeSimpleChatPrint(int client, int args)
 		if(value == 0)
 			arrbJackAcqSettings[client].bPlySimpleChatPrintSetting = false;
 	}
-	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Simple end of round stats: %s", arrbJackAcqSettings[client].bPlySimpleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Simple round summary stats: %s", arrbJackAcqSettings[client].bPlySimpleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 	PrintToChat(client, status);
 	return Plugin_Handled;
 }
@@ -25,7 +25,7 @@ Action Command_PasstimeToggleChatPrint(int client, int args)
 		if(value == 0)
 			arrbJackAcqSettings[client].bPlyToggleChatPrintSetting = false;
 	}
-	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle end of round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 	PrintToChat(client, status);
 	return Plugin_Handled;
 }
