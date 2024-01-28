@@ -612,7 +612,7 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
 		}
-		else if(bPrintStats.BoolValue && dist > 1000)
+		else if(bPrintStats.BoolValue && dist > 1600)
 		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
 		}
