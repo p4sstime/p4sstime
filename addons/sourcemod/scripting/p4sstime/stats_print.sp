@@ -60,8 +60,8 @@ Action Timer_DisplayStats(Handle timer)
 
 		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////");
 		PrintToConsole(x, "//                                        //                          //");
-		PrintToConsole(x, "//               PASS Stats               //    Plugin Version: %s    //", VERSION);
-		PrintToConsole(x, "//           Thanks for playing!          //            %s            //", __DATE__);
+		PrintToConsole(x, "//               PASS Stats               //    Plugin Version: %s //", VERSION);
+		PrintToConsole(x, "//           Thanks for playing!          //           %s     //", __DATE__);
 		PrintToConsole(x, "//                                        //                          //");
 		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////");
 		PrintToConsole(x, "//                                                                    //");
@@ -96,12 +96,12 @@ Action Timer_DisplayStats(Handle timer)
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 				PrintToConsole(x, "//   BLU | %N", i); // have this be red so your team shows up first?
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals         //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
+				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs          //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
+				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                          //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
+				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves);
 				PrintToConsole(x, "//                                                                    //");
 			}
@@ -119,12 +119,12 @@ Action Timer_DisplayStats(Handle timer)
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 				PrintToConsole(x, "//   RED | %N", i);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals         //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
+				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs          //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
+				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
 					, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                          //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
+				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
 					, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
 				PrintToConsole(x, "//                                                                    //");
 			}
@@ -144,12 +144,12 @@ Action Timer_DisplayStats(Handle timer)
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 				PrintToConsole(x, "//   RED | %N", i);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals         //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
+				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs          //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
+				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
 					, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                          //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
+				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
 					, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
 				PrintToConsole(x, "//                                                                    //");
 			}
@@ -167,12 +167,12 @@ Action Timer_DisplayStats(Handle timer)
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
 				PrintToConsole(x, "//   BLU | %N", i);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals         //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
+				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs          //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
+				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                          //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
+				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves);
 				PrintToConsole(x, "//                                                                    //");
 			}
