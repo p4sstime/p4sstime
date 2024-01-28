@@ -50,6 +50,54 @@ Action Command_PasstimeSuicide(int client, int args)
 	return Plugin_Handled;
 }
 
+Action Command_PasstimeJackPickupHud(int client, int args)
+{
+	int value = 0;
+	char status[64];
+	if(GetCmdArgIntEx(1, value))
+	{
+		if(value == 1)
+			arrbJackAcqSettings[client].bPlyHudTextSetting = true;
+		if(value == 0)
+			arrbJackAcqSettings[client].bPlyHudTextSetting = false;
+	}
+	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[client].bPlyHudTextSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+	PrintToChat(client, status);
+	return Plugin_Handled;
+}
+
+Action Command_PasstimeJackPickupChat(int client, int args)
+{
+	int value = 0;
+	char status[64];
+	if(GetCmdArgIntEx(1, value))
+	{
+		if(value == 1)
+			arrbJackAcqSettings[client].bPlyChatPrintSetting = true;
+		if(value == 0)
+			arrbJackAcqSettings[client].bPlyChatPrintSetting = false;
+	}
+	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+	PrintToChat(client, status);
+	return Plugin_Handled;
+}
+
+Action Command_PasstimeJackPickupSound(int client, int args)
+{
+	int value = 0;
+	char status[64];
+	if(GetCmdArgIntEx(1, value))
+	{
+		if(value == 1)
+			arrbJackAcqSettings[client].bPlySoundSetting = true;
+		if(value == 0)
+			arrbJackAcqSettings[client].bPlySoundSetting = false;
+	}
+	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[client].bPlySoundSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+	PrintToChat(client, status);
+	return Plugin_Handled;
+}
+
 void RemoveShotty(int client)
 {
 	if (bEquipStockWeapons.BoolValue)
