@@ -377,7 +377,7 @@ public void OnClientDisconnect(int client)
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
 void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
-	char spawnName[20];
+	char spawnName[24];
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
 	GetEntPropString(caller, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
