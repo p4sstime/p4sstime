@@ -185,8 +185,6 @@ public void OnMapStart() // getgoallocations and top spawn
 	int goal2 = FindEntityByClassname(goal1, "func_passtime_goal");
 	int spawn1 = FindEntityByClassname(-1, "info_passtime_ball_spawn");
 	int spawn2 = FindEntityByClassname(spawn1, "info_passtime_ball_spawn");
-	int spawn3 = -1;
-	int spawn4 = -1;
 	char spawnName[20];
 
 	int team1 = GetEntProp(goal1, Prop_Send, "m_iTeamNum");
@@ -200,24 +198,24 @@ public void OnMapStart() // getgoallocations and top spawn
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
 
-	GetEntPropString(spawn1, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+	GetEntPropString(spawn1, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
 		GetEntPropVector(spawn1, Prop_Send, "m_vecOrigin", fTopSpawnPos);
 	else
 	{
-		GetEntPropString(spawn2, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+		GetEntPropString(spawn2, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 		if(StrEqual(spawnName, "passtime_ball_spawn1"))
 			GetEntPropVector(spawn2, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-		else
+		else if (FindEntityByClassname(spawn2, "info_passtime_ball_spawn") != -1)
 		{
-			spawn3 = FindEntityByClassname(spawn2, "info_passtime_ball_spawn");
-			GetEntPropString(spawn3, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+			int spawn3 = FindEntityByClassname(spawn2, "info_passtime_ball_spawn");
+			GetEntPropString(spawn3, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 			if(StrEqual(spawnName, "passtime_ball_spawn1"))
 				GetEntPropVector(spawn3, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-			else
+			else if(FindEntityByClassname(spawn3, "info_passtime_ball_spawn") != -1)
 			{
-				spawn4 = FindEntityByClassname(spawn3, "info_passtime_ball_spawn");
-				GetEntPropString(spawn4, Prop_Send, "m_iName", spawnName, sizeof(spawnName));
+				int spawn4 = FindEntityByClassname(spawn3, "info_passtime_ball_spawn");
+				GetEntPropString(spawn4, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 				if(StrEqual(spawnName, "passtime_ball_spawn1"))
 					GetEntPropVector(spawn4, Prop_Send, "m_vecOrigin", fTopSpawnPos);
 			}
