@@ -403,7 +403,7 @@ Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
 		ShowHudText(owner, 1, "");
 	}
-	GetEntPropVector(eiJack, Prop_Send, "m_vecOrigin", fFreeBallPos);
+	GetEntPropVector(eiJack, Prop_Data, "m_vecAbsOrigin", fFreeBallPos);
 	eiPassTarget = EntRefToEntIndex(GetEntPropEnt(owner, Prop_Send, "m_hPasstimePassTarget"));
 	if (!(arrbBlastJumpStatus[owner]))
 	{
@@ -592,9 +592,9 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	if(ibBallSpawnedLower)
 		arrbPanaceaCheck[scorer] = false;
 
-	float position[3];
-	GetEntPropVector(eiJack, Prop_Send, "m_vecOrigin", position);
-	float dist = GetVectorDistance(fFreeBallPos, position, false); // hoping jack isn't despawned at this point
+	float fScoredBallPos[3];
+	GetEntPropVector(eiJack, Prop_Send, "m_vecOrigin", fScoredBallPos);
+	float dist = GetVectorDistance(fFreeBallPos, fScoredBallPos, false);
 
 	SetLogInfo(scorer);
 	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
