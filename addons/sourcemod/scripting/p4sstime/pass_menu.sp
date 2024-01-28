@@ -71,7 +71,7 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 				SetClientCookie(param1, cookieSimpleChatPrint, "1");
 			else
 				SetClientCookie(param1, cookieSimpleChatPrint, "0");
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Simple end of round stats: %s", arrbJackAcqSettings[param1].bPlySimpleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Simple round summary stats: %s", arrbJackAcqSettings[param1].bPlySimpleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 		if(StrEqual(info, "toggleprint"))
@@ -82,7 +82,7 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 				SetClientCookie(param1, cookieToggleChatPrint, "1");
 			else
 				SetClientCookie(param1, cookieToggleChatPrint, "0");
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle end of round stats printing: %s", arrbJackAcqSettings[param1].bPlyToggleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[param1].bPlyToggleChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
 	}
