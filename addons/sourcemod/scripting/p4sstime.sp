@@ -280,13 +280,13 @@ Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int player
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
 {
-	if(StrEqual(command, "/more", false) || StrEqual(command, ".more", false))
+	if(StrEqual(sArgs, "/more", false) || StrEqual(sArgs, ".more", false))
 	{
 		CreateTimer(0.1, Timer_ShowMoreTF, client, TIMER_FLAG_NO_MAPCHANGE);
 		return Plugin_Handled;
 	}
-	if(StrEqual(command, "/pass", false) || StrEqual(command, "/p4ss", false) || StrEqual(command, ".pass", false) || StrEqual(command, ".p4ss", false) || StrEqual(command, "/passmenu", false
-		|| StrEqual(command, "/p4ssmenu", false) || StrEqual(command, ".passmenu", false) || StrEqual(command, ".p4ssmenu", false)))
+	if(StrEqual(sArgs, "/pass", false) || StrEqual(sArgs, "/p4ss", false) || StrEqual(sArgs, ".pass", false) || StrEqual(sArgs, ".p4ss", false) || StrEqual(sArgs, "/passmenu", false
+		|| StrEqual(sArgs, "/p4ssmenu", false) || StrEqual(sArgs, ".passmenu", false) || StrEqual(sArgs, ".p4ssmenu", false)))
 	{
 		mPassMenu.Display(client, MENU_TIME_FOREVER);
 		return Plugin_Handled;
