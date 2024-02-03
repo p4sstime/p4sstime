@@ -58,13 +58,8 @@ Action Timer_DisplayStats(Handle timer)
 	{
 		if (!IsValidClient(x)) continue;
 
-		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////");
-		PrintToConsole(x, "//                                        //                          //");
-		PrintToConsole(x, "//               PASS Stats               //    Plugin Version: %s //", VERSION);
-		PrintToConsole(x, "//           Thanks for playing!          //      %s     //", __DATE__);
-		PrintToConsole(x, "//                                        //                          //");
-		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////");
-		PrintToConsole(x, "//                                                                    //");
+		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////\n//                                        //                          //\n//               PASS Stats               //   Plugin Version: %s  //\n//           Thanks for playing!          //         %s       //\n//                                        //                          //\n////////////////////////////////////////////////////////////////////////\n//                                                                    //", VERSION, __DATE__); 
+		// i hate this as much as you do but this is what has to be done to make it not out of order
 
 		if (TF2_GetClientTeam(x) == TFTeam_Red)
 		{
@@ -95,15 +90,13 @@ Action Timer_DisplayStats(Handle timer)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   BLU | %s", playerName); // have this be red so your team shows up first?
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
+				PrintToConsole(x, "//   BLU | %s\n//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //\n//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //\n//   %d catapults, %d blocks, %d steal2saves                             //\n//                                                                    //", playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves);
-				PrintToConsole(x, "//                                                                    //");
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks
+					, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves); // have this be red so your team shows up first?
 			}
 
 			for (int i = 0; i < redCursor; i++)
@@ -112,21 +105,19 @@ Action Timer_DisplayStats(Handle timer)
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
 				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
-						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
+						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
+						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
 				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
-						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   RED | %s", playerName);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
+						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
+						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
+				PrintToConsole(x, "//   RED | %s\n//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //\n//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //\n//   %d catapults, %d blocks, %d steal2saves                             //\n//                                                                    //", playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
-					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
-					, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
-					, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
-				PrintToConsole(x, "//                                                                    //");
+					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals
+					, arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats
+					, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs
+					, arriPlyRoundPassStats[redTeam[i]].iPlyCatapults, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks
+					, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
 			}
 		}
 
@@ -137,21 +128,19 @@ Action Timer_DisplayStats(Handle timer)
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
 				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
-						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
+						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
+						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
 				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
-						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   RED | %s", playerName);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[redTeam[i]].iPlyScores
+						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
+						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
+				PrintToConsole(x, "//   RED | %s\n//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //\n//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //\n//   %d catapults, %d blocks, %d steal2saves                             //\n//                                                                    //", playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
-					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas
-					, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[redTeam[i]].iPlyCatapults
-					, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
-				PrintToConsole(x, "//                                                                    //");
+					, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals
+					, arriPlyRoundPassStats[redTeam[i]].iPlyPanaceas, arriPlyRoundPassStats[redTeam[i]].iPlyWinStrats
+					, arriPlyRoundPassStats[redTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[redTeam[i]].iPlyFirstGrabs
+					, arriPlyRoundPassStats[redTeam[i]].iPlyCatapults, arriPlyRoundPassStats[redTeam[i]].iPlyBlocks
+					, arriPlyRoundPassStats[redTeam[i]].iPlySteal2Saves);
 			}
 
 			for (int i = 0; i < bluCursor; i++)
@@ -166,15 +155,13 @@ Action Timer_DisplayStats(Handle timer)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   BLU | %s", playerName);
-				PrintToConsole(x, "//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //", arriPlyRoundPassStats[bluTeam[i]].iPlyScores
+				PrintToConsole(x, "//   BLU | %s\n//   %d goals, %d assists, %d saves, %d intercepts, %d steals              //\n//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //\n//   %d catapults, %d blocks, %d steal2saves                             //\n//                                                                    //", playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores
 					, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				PrintToConsole(x, "//   %d Panaceas, %d win strats, %d handoffs, %d first grabs              //", arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs);
-				PrintToConsole(x, "//   %d catapults, %d blocks, %d steal2saves                             //", arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults
-					, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves);
-				PrintToConsole(x, "//                                                                    //");
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyPanaceas, arriPlyRoundPassStats[bluTeam[i]].iPlyWinStrats
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyHandoffs, arriPlyRoundPassStats[bluTeam[i]].iPlyFirstGrabs
+					, arriPlyRoundPassStats[bluTeam[i]].iPlyCatapults, arriPlyRoundPassStats[bluTeam[i]].iPlyBlocks
+					, arriPlyRoundPassStats[bluTeam[i]].iPlySteal2Saves); 
 			}
 		}
 	}

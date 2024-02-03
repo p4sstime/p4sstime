@@ -421,7 +421,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		arriPlyRoundPassStats[iPlyWhoGotJack].iPlyFirstGrabs++;
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 		GetClientAbsOrigin(iPlyWhoGotJack, position);
-		if(GetVectorDistance(position, fTopSpawnPos, false) < 140) // may need to be changed
+		if(GetVectorDistance(position, fTopSpawnPos, false) < 240) // may need to be changed
 			{
 				arrbPanaceaCheck[iPlyWhoGotJack] = false;
 				arrbWinStratCheck[iPlyWhoGotJack] = true;
