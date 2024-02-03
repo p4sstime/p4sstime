@@ -179,14 +179,10 @@ public void OnPluginStart()
 #include <p4sstime/convars.sp>
 #include <p4sstime/stats_print.sp>
 
-public void OnMapStart() // getgoallocations and top spawn
+public void OnMapStart() // getgoallocations
 {
 	int goal1 = FindEntityByClassname(-1, "func_passtime_goal");
 	int goal2 = FindEntityByClassname(goal1, "func_passtime_goal");
-	int spawn1 = FindEntityByClassname(-1, "info_passtime_ball_spawn");
-	int spawn2 = FindEntityByClassname(spawn1, "info_passtime_ball_spawn");
-	char spawnName[20];
-
 	int team1 = GetEntProp(goal1, Prop_Send, "m_iTeamNum");
 	if (team1 == 2)
 	{
@@ -196,30 +192,6 @@ public void OnMapStart() // getgoallocations and top spawn
 	else {
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fBluGoalPos);
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fRedGoalPos);
-	}
-
-	GetEntPropString(spawn1, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
-	if(StrEqual(spawnName, "passtime_ball_spawn1"))
-		GetEntPropVector(spawn1, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-	else
-	{
-		GetEntPropString(spawn2, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
-		if(StrEqual(spawnName, "passtime_ball_spawn1"))
-			GetEntPropVector(spawn2, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-		else if (FindEntityByClassname(spawn2, "info_passtime_ball_spawn") != -1)
-		{
-			int spawn3 = FindEntityByClassname(spawn2, "info_passtime_ball_spawn");
-			GetEntPropString(spawn3, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
-			if(StrEqual(spawnName, "passtime_ball_spawn1"))
-				GetEntPropVector(spawn3, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-			else if(FindEntityByClassname(spawn3, "info_passtime_ball_spawn") != -1)
-			{
-				int spawn4 = FindEntityByClassname(spawn3, "info_passtime_ball_spawn");
-				GetEntPropString(spawn4, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
-				if(StrEqual(spawnName, "passtime_ball_spawn1"))
-					GetEntPropVector(spawn4, Prop_Send, "m_vecOrigin", fTopSpawnPos);
-			}
-		}
 	}
 }
 
@@ -382,7 +354,10 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
 	GetEntPropString(caller, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
+	{
 		LogToGame("passtime_ball spawned from the upper spawnpoint.");
+		GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fTopSpawnPos);
+	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
 	{
 		LogToGame("passtime_ball spawned from the lower spawnpoint."); 
@@ -446,7 +421,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		arriPlyRoundPassStats[iPlyWhoGotJack].iPlyFirstGrabs++;
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 		GetClientAbsOrigin(iPlyWhoGotJack, position);
-		if(GetVectorDistance(position, fTopSpawnPos, false) > 350) // may need to be changed
+		if(GetVectorDistance(position, fTopSpawnPos, false) < 140) // may need to be changed
 			{
 				arrbPanaceaCheck[iPlyWhoGotJack] = false;
 				arrbWinStratCheck[iPlyWhoGotJack] = true;
@@ -638,6 +613,8 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
 		}
 	}
+	arrbPanaceaCheck[scorer] = false;
+	arrbWinStratCheck[scorer] = false; // reset these cuz its good idea
 
 	return Plugin_Handled;
 }
