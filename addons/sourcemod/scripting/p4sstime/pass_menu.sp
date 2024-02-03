@@ -27,7 +27,7 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 		char info[32];
 		char status[64];
 		mPassMenu.GetItem(param2, info, sizeof(info));
-		if (StrEqual(info, "hudtext"))
+		if (StrEqual(info, "jackpickuphud"))
 		{
 			arrbJackAcqSettings[param1].bPlyHudTextSetting = !arrbJackAcqSettings[param1].bPlyHudTextSetting;
 			mPassMenu.Display(param1, MENU_TIME_FOREVER);
@@ -39,7 +39,7 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[param1].bPlyHudTextSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
-		if (StrEqual(info, "chattext"))
+		if (StrEqual(info, "jackpickupchat"))
 		{
 			arrbJackAcqSettings[param1].bPlyChatPrintSetting = !arrbJackAcqSettings[param1].bPlyChatPrintSetting;
 			mPassMenu.Display(param1, MENU_TIME_FOREVER);
@@ -51,7 +51,7 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[param1].bPlyChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
 			PrintToChat(param1, status);
 		}
-		if (StrEqual(info, "sound"))
+		if (StrEqual(info, "jackpickupsound"))
 		{
 			arrbJackAcqSettings[param1].bPlySoundSetting = !arrbJackAcqSettings[param1].bPlySoundSetting;
 			mPassMenu.Display(param1, MENU_TIME_FOREVER);

@@ -148,9 +148,9 @@ public void OnPluginStart()
 
 	mPassMenu = new Menu(PassMenuHandler);
 	mPassMenu.SetTitle("P4SS Menu");
-	mPassMenu.AddItem("hudtext", "Toggle HUD notification");
-	mPassMenu.AddItem("chattext", "Toggle chat notification");
-	mPassMenu.AddItem("sound", "Toggle sound notification");
+	mPassMenu.AddItem("jackpickuphud", "JACK Pickup Hud Notif");
+	mPassMenu.AddItem("jackpickupchat", "JACK Pickup Chat Notif");
+	mPassMenu.AddItem("jackpickupsound", "JACK Pickup Sound Notif");
 	mPassMenu.AddItem("simpleprint", "Toggle simple chat prints");
 	mPassMenu.AddItem("toggleprint", "Toggle chat prints");
 
