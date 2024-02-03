@@ -351,6 +351,7 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 {
 	char spawnName[24];
 	eiJack = FindEntityByClassname(-1, "passtime_ball");
+	ibBallSpawnedLower = 0;
 	if (bDroppedItemsCollision.BoolValue) SetEntityCollisionGroup(eiJack, 4);
 	GetEntPropString(caller, Prop_Data, "m_iName", spawnName, sizeof(spawnName));
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
