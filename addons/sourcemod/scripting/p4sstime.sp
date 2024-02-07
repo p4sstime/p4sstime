@@ -217,7 +217,7 @@ bool IsValidClient(int client, bool blockbots = true)
 Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)
 {
 	// MC_PrintToChatAll("%s%s", "{lightgreen}[LogsTF] {blue}Logs were uploaded to: ", g_sLastLogURL);
-	// g_sLastLogURL looks like logs.tf/9999999; so total output string is probably "\x05[LogsTF] \x0BLogs were uploaded to: logs.tf/9991111"
+	// g_sLastLogURL looks like logs.tf/9999999; so total output string is probably "\x05[LogsTF] \x0BLogs were uploaded to: logs.tf/3576799"
 	// https://github.com/Bara/Multi-Colors/blob/a31112557f36bc66545cc15cb22f40aeaf42f4ba/addons/sourcemod/scripting/include/multicolors/morecolors.inc#L68C12-L68C29
 	
 	char strOutput[60];
