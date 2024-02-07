@@ -41,7 +41,7 @@ enuiPlyRoundStats	arriPlyRoundPassStats[MAXPLAYERS + 1];
 
 float			fBluGoalPos[3], fRedGoalPos[3], fTopSpawnPos[3], fFreeBallPos[3];
 
-ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, fStatsPrintDelay, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
+ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
 
 int				iPlyWhoGotJack;
 // int				plyDirecter;
@@ -125,12 +125,11 @@ public void OnPluginStart()
 	AddCommandListener(OnChangeClass, "joinclass");
 	HookUserMessage(GetUserMessageId("TextMsg"), Event_TextMsg);
 
-	bEquipStockWeapons		= CreateConVar("sm_pt_whitelist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as whitelists can't normally block stock weapons.", FCVAR_NOTIFY);
-	bSwitchDuringRespawn	= CreateConVar("sm_pt_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
-	bStealBlurryOverlay		= CreateConVar("sm_pt_hud", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
-	bDroppedItemsCollision 	= CreateConVar("sm_pt_drop_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
-	bPrintStats		 		= CreateConVar("sm_pt_stats", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
-	fStatsPrintDelay		= CreateConVar("sm_pt_stats_delay", "7.5", "Set the delay between round end and the stats being displayed in chat.", FCVAR_NOTIFY);
+	bEquipStockWeapons		= CreateConVar("sm_pt_stock_blocklist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as allowlists can't normally block stock weapons.", FCVAR_NOTIFY);
+	bSwitchDuringRespawn	= CreateConVar("sm_pt_block_instant_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
+	bStealBlurryOverlay		= CreateConVar("sm_pt_disable_intercept_blur", "1", "If 1, disable blurry screen overlay after intercepting or stealing.", FCVAR_NOTIFY);
+	bDroppedItemsCollision 	= CreateConVar("sm_pt_disable_jack_drop_item_collision", "1", "If 1, disables the jack colliding with dropped ammo packs or weapons.", FCVAR_NOTIFY);
+	bPrintStats		 		= CreateConVar("sm_pt_print_events", "0", "If 1, enables printing of passtime events to chat both during and after games. Does not affect logging.", FCVAR_NOTIFY);
 	bPracticeMode	 		= CreateConVar("sm_pt_practice", "0", "If 1, enables practice mode. When the round timer reaches 5 minutes, add 5 minutes to the timer.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	//trikzEnable	 = CreateConVar("sm_pt_trikz", "0", "Set 'trikz' mode. 1 adds friendly knockback for airshots, 2 adds friendly knockback for splash damage, 3 adds friendly knockback for everywhere", FCVAR_NOTIFY, true, 0.0, true, 3.0);
@@ -200,7 +199,7 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!bPrintStats.BoolValue) return Plugin_Handled;
-	CreateTimer(fStatsPrintDelay.FloatValue, Timer_DisplayStats);
+	CreateTimer(0.5, Timer_DisplayStats);
 	iPlyWhoGotJack = 0; // reset this because it's a good idea. doesn't actually fix anything but this shouldn't carry over between rounds
 	return Plugin_Handled;
 }

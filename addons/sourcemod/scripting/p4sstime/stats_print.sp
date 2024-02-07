@@ -82,8 +82,6 @@ Action Timer_DisplayStats(Handle timer)
 	}
 	for (int x = 1; x < MaxClients + 1; x++)
 	{
-		if (!IsValidClient(x)) continue;
-
 		if (TF2_GetClientTeam(x) == TFTeam_Red)
 		{
 			for (int i = 0; i < bluCursor; i++)
