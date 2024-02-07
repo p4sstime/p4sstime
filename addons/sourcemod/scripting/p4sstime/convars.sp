@@ -58,11 +58,15 @@ Action Command_PasstimeJackPickupHud(int client, int args)
 	{
 		if(value == 1)
 			arrbJackAcqSettings[client].bPlyHudTextSetting = true;
-		if(value == 0)
+		else if(value == 0)
 			arrbJackAcqSettings[client].bPlyHudTextSetting = false;
+		if(value == 1 || value == 0)
+		{
+			SetCookieBool(client, cookieJACKPickupHud, arrbJackAcqSettings[client].bPlyHudTextSetting);
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup HUD text: %s", arrbJackAcqSettings[client].bPlyHudTextSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
+			PrintToChat(client, status);
+		}
 	}
-	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Hud text: %s", arrbJackAcqSettings[client].bPlyHudTextSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-	PrintToChat(client, status);
 	return Plugin_Handled;
 }
 
@@ -76,9 +80,13 @@ Action Command_PasstimeJackPickupChat(int client, int args)
 			arrbJackAcqSettings[client].bPlyChatPrintSetting = true;
 		if(value == 0)
 			arrbJackAcqSettings[client].bPlyChatPrintSetting = false;
+		if(value == 1 || value == 0)
+		{
+			SetCookieBool(client, cookieJACKPickupChat, arrbJackAcqSettings[client].bPlyChatPrintSetting);
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup chat text: %s", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
+			PrintToChat(client, status);
+		}
 	}
-	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Chat text: %s", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-	PrintToChat(client, status);
 	return Plugin_Handled;
 }
 
@@ -92,9 +100,13 @@ Action Command_PasstimeJackPickupSound(int client, int args)
 			arrbJackAcqSettings[client].bPlySoundSetting = true;
 		if(value == 0)
 			arrbJackAcqSettings[client].bPlySoundSetting = false;
+		if(value == 1 || value == 0)
+		{
+			SetCookieBool(client, cookieJACKPickupSound, arrbJackAcqSettings[client].bPlySoundSetting);
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup sound: %s", arrbJackAcqSettings[client].bPlySoundSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
+			PrintToChat(client, status);
+		}
 	}
-	Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Sound notification: %s", arrbJackAcqSettings[client].bPlySoundSetting ? "\x0700ff00Enabled" : "\x07ff0000Disabled");
-	PrintToChat(client, status);
 	return Plugin_Handled;
 }
 

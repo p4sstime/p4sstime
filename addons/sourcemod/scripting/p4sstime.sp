@@ -57,11 +57,7 @@ bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if h
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
 bool			arrbWinStratCheck[MAXPLAYERS + 1];
 // bool			plyTakenDirectHit[MAXPLAYERS + 1];
-Handle  		cookieJACKPickupHud = INVALID_HANDLE;
-Handle  		cookieJACKPickupChat = INVALID_HANDLE;
-Handle  		cookieJACKPickupSound = INVALID_HANDLE;
-Handle 			cookieSimpleChatPrint = INVALID_HANDLE;
-Handle 			cookieToggleChatPrint = INVALID_HANDLE;
+Cookie  		cookieJACKPickupHud, cookieJACKPickupChat, cookieJACKPickupSound, cookieSimpleChatPrint, cookieToggleChatPrint;
 
 // log variables
 int user1;
@@ -145,14 +141,6 @@ public void OnPluginStart()
 	//HookConVarChange(trikzProjCollide, Hook_OnProjCollideChange);
 	//HookConVarChange(trikzProjDev, Hook_OnProjCollideDev);
 	HookConVarChange(bPracticeMode, Hook_OnPracticeModeChange);
-
-	mPassMenu = new Menu(PassMenuHandler);
-	mPassMenu.SetTitle("P4SS Menu");
-	mPassMenu.AddItem("jackpickuphud", "JACK Pickup Hud Notif");
-	mPassMenu.AddItem("jackpickupchat", "JACK Pickup Chat Notif");
-	mPassMenu.AddItem("jackpickupsound", "JACK Pickup Sound Notif");
-	mPassMenu.AddItem("simpleprint", "Toggle simple chat prints");
-	mPassMenu.AddItem("toggleprint", "Toggle chat prints");
 
 	/*for (int client = 1; client <= MaxClients; client++)
 	{
@@ -260,7 +248,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 	if(StrEqual(sArgs, "/pass", false) || StrEqual(sArgs, "/p4ss", false) || StrEqual(sArgs, ".pass", false) || StrEqual(sArgs, ".p4ss", false) || StrEqual(sArgs, "/passmenu", false
 		|| StrEqual(sArgs, "/p4ssmenu", false) || StrEqual(sArgs, ".passmenu", false) || StrEqual(sArgs, ".p4ssmenu", false)))
 	{
-		mPassMenu.Display(client, MENU_TIME_FOREVER);
+		ShowPassMenu(client);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
