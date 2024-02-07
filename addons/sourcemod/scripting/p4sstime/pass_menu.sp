@@ -52,7 +52,7 @@ void ShowPassMenu(int client)
 	mPassMenu.AddItem("jackpickupsound", buffer);
 	FormatEx(buffer, sizeof(buffer), "%s: %s", "Simple chat round summary", arrbJackAcqSettings[client].bPlySimpleChatPrintSetting ? "ON" : "OFF");
 	mPassMenu.AddItem("simpleprint", buffer);
-	FormatEx(buffer, sizeof(buffer), "%s: %s", "Toggle chat round summary", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "ON" : "OFF");
+	FormatEx(buffer, sizeof(buffer), "%s: %s", "Toggle chat round summary", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "OFF" : "ON");
 	mPassMenu.AddItem("toggleprint", buffer);
 
 	mPassMenu.Display(client, MENU_TIME_FOREVER);

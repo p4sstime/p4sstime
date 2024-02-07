@@ -31,7 +31,7 @@ Action Command_PasstimeToggleChatPrint(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieToggleChatPrint, arrbJackAcqSettings[client].bPlyToggleChatPrintSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
+			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "\x07ff0000OFF" : "\x0700ff00ON");
 			PrintToChat(client, status);
 		}
 	}
@@ -90,11 +90,11 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
@@ -111,11 +111,11 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
 						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
@@ -134,11 +134,11 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
 						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
-				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
@@ -155,11 +155,11 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B G %d,\x073bc48f A %d,\x07ffff00 SV %d,\x07ff00ff I %d,\x07ff8000 ST %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
-				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				else if(!arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B goals %d,\x073bc48f assists %d,\x07ffff00 saves %d,\x07ff00ff intercepts %d,\x07ff8000 steals %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);
