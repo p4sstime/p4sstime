@@ -204,12 +204,12 @@ Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 	return Plugin_Handled;
 }
 
-bool IsValidClient(int client)
+bool IsValidClient(int client, bool blockbots = true)
 {
 	if (client > 4096) client = EntRefToEntIndex(client);
 	if (client <= 0 || client > MaxClients) return false;
 	if (!IsClientInGame(client)) return false;
-	if (IsFakeClient(client)) return false; // comment this to test with bots per easye
+	if (blockbots && IsFakeClient(client)) return false;
 	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
 	return true;
 }
