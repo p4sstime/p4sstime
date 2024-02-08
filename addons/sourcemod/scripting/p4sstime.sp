@@ -142,12 +142,8 @@ public void OnPluginStart()
 	HookConVarChange(bPracticeMode, Hook_OnPracticeModeChange);
 
 	/*for (int client = 1; client <= MaxClients; client++)
-	{
 		if (IsClientInGame(client))
-		{
-			OnClientPutInServer(client);
-		}
-	}*/
+			OnClientPutInServer(client);*/
 	for (new i = MaxClients; i > 0; --i)
 	{
 		if (!AreClientCookiesCached(i))

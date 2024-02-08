@@ -33,3 +33,5 @@ grey: \x08
 grey2: \x0D 
 
 packing crosshairs and changing them dynamically for each client is not possible per sourcemod discord: https://discord.com/channels/335290997317697536/335290997317697536/1204927235635806268
+
+can't use SDKHooks for sm_pt_focus due to it being too late: https://discord.com/channels/335290997317697536/335290997317697536/1204978864627908619
