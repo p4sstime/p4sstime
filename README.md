@@ -74,11 +74,20 @@ L 02/10/2024 - 16:26:13: "blake++<2><[U:1:95447021]><Red>" triggered "blu_catapu
 
 ## Maps
 
-[pass_arena2](https://tf2maps.net/downloads/pass_arena2.16840/)\
-[pass_stadium](https://tf2maps.net/downloads/pass_stadium.15102/)\
-[pass_stonework](https://tf2maps.net/downloads/pass_stonework.15974/)\
-[pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796/)\
-[pass_park](https://tf2maps.net/downloads/park.16805/)
+_Exer's_\
+[pass_arena2](https://tf2maps.net/downloads/pass_arena2.16840)\
+[pass_stadium](https://tf2maps.net/downloads/pass_stadium.15102)\
+[pass_stonework](https://tf2maps.net/downloads/pass_stonework.15974)\
+pass_colosseum2\
+pass_greenhouse
+
+_Yo Yo Bobby Joe's_\
+[pass_park](https://tf2maps.net/downloads/park.16805)\
+[pass_skyline](https://tf2maps.net/downloads/skyline.17153)\
+[pass_aquarium](https://tf2maps.net/downloads/aquarium.17211/)
+
+_DropKnock's_\
+[pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796)
 
 ## For Mappers
 
