@@ -546,17 +546,6 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 		points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], dist,
 		user1position[0], user1position[1], user1position[2]);
 	arriPlyRoundPassStats[scorer].iPlyScores++;
-	if(bPrintStats.BoolValue)
-	{
-		if (arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
-		else if (arrbWinStratCheck[scorer] && bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
-		else if(bPrintStats.BoolValue && dist > 1600)
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
-		else if(bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
-	}
 	if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
 		arriPlyRoundPassStats[scorer].iPlyPanaceas++;
 	else if(arrbWinStratCheck[scorer])
@@ -569,8 +558,19 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 			user1, GetClientUserId(user1), user1steamid, user1team,
 			user1position[0], user1position[1], user1position[2]);
 		arriPlyRoundPassStats[assistant].iPlyAssists++;
-		if(bPrintStats.BoolValue)
+	}
+	if(bPrintStats.BoolValue)
+	{
+		if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
+			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+		else if(arrbWinStratCheck[scorer])
+			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
+		else if(dist > 1600)
+			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
+		else if(assistant > 0)
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
+		else
+			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
 	}
 	arrbPanaceaCheck[scorer] = false;
 	arrbWinStratCheck[scorer] = false; // reset these cuz its good idea
