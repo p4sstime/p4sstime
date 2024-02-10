@@ -14,6 +14,8 @@ tf2 ent props - https://lmaobox.net/lua/TF2_props/
 
 rj and sj events are not fired when lifted up by another player
 
+#include sourcemod is done by default, so no need to have it. includes: https://discord.com/channels/335290997317697536/335290997317697536/1206022034757255229
+
 default (white): \x01
 teamcolour (will be purple if message from server): \x03
 red: \x07
