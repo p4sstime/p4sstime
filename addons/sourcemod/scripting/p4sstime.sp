@@ -84,7 +84,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	/*GameData gamedata = new GameData("passtime");
+	/*GameData gamedata = new GameData("p4sstime");
 	if (gamedata)
 	{
 		DHooks_Initialize(gamedata);
