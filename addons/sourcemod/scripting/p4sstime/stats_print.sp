@@ -56,6 +56,27 @@ Action Timer_ShowMoreTF(Handle timer, any client)
 	return Plugin_Stop;
 }
 
+void ClearLocalStats(int client)
+{
+	arrbPlyIsDead[client] = false;
+	arrbBlastJumpStatus[client] = false;
+	arrbPanaceaCheck[client] = false;
+	arrbWinStratCheck[client] = false;
+
+	arriPlyRoundPassStats[client].iPlyScores = 0;
+	arriPlyRoundPassStats[client].iPlyAssists = 0;
+	arriPlyRoundPassStats[client].iPlySaves = 0;
+	arriPlyRoundPassStats[client].iPlyIntercepts = 0;
+	arriPlyRoundPassStats[client].iPlySteals = 0;
+	arriPlyRoundPassStats[client].iPlyPanaceas = 0;
+	arriPlyRoundPassStats[client].iPlyWinStrats = 0;
+	arriPlyRoundPassStats[client].iPlyHandoffs = 0;
+	arriPlyRoundPassStats[client].iPlyFirstGrabs = 0;
+	arriPlyRoundPassStats[client].iPlyCatapults = 0;
+	arriPlyRoundPassStats[client].iPlyBlocks = 0;
+	arriPlyRoundPassStats[client].iPlySteal2Saves = 0;
+}
+
 // this is really fucking sloppy but shrug
 Action Timer_DisplayStats(Handle timer)
 {
@@ -65,9 +86,6 @@ Action Timer_DisplayStats(Handle timer)
 	for (int x = 1; x < MaxClients + 1; x++)
 	{
 		if (!IsValidClient(x)) continue;
-
-		PrintToConsole(x, "////////////////////////////////////////////////////////////////////////\n//                                        //                          //\n//               PASS Stats               //   Plugin Version: %s  //\n//           Thanks for playing!          //         %s       //\n//                                        //                          //\n////////////////////////////////////////////////////////////////////////\n//                                                                    //", VERSION, __DATE__); 
-		// i hate this as much as you do but this is what has to be done to make it not out of order
 
 		if (TF2_GetClientTeam(x) == TFTeam_Red)
 		{
@@ -176,13 +194,7 @@ Action Timer_DisplayStats(Handle timer)
 
 	// clear stats
 	for (int i = 0; i < MaxClients + 1; i++)
-	{
-		if(IsValidClient(i)) // idk why we need to check this for this but whatever
-			PrintToConsole(i, "////////////////////////////////////////////////////////////////////////");
-		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0
-		, arriPlyRoundPassStats[i].iPlyPanaceas = 0, arriPlyRoundPassStats[i].iPlyWinStrats = 0, arriPlyRoundPassStats[i].iPlyHandoffs = 0, arriPlyRoundPassStats[i].iPlyFirstGrabs = 0,
-		arriPlyRoundPassStats[i].iPlyCatapults = 0, arriPlyRoundPassStats[i].iPlyBlocks = 0, arriPlyRoundPassStats[i].iPlySteal2Saves = 0;
-	}
+		ClearLocalStats(i);
 
 	return Plugin_Stop;
 }

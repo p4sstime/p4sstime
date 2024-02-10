@@ -180,10 +180,8 @@ public void OnMapStart() // getgoallocations
 
 Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 {
-	for (int i = 0; i < MaxClients + 1; i++) // clear stats
-	{
-		arriPlyRoundPassStats[i].iPlyScores = 0, arriPlyRoundPassStats[i].iPlyAssists = 0, arriPlyRoundPassStats[i].iPlySaves = 0, arriPlyRoundPassStats[i].iPlyIntercepts = 0, arriPlyRoundPassStats[i].iPlySteals = 0;
-	}
+	for (int i = 0; i < MaxClients + 1; i++)
+		ClearLocalStats(i);
 	if(GetConVarInt(bPracticeMode) == 1)
 	{
 		SetConVarInt(bPracticeMode, 0);
@@ -320,13 +318,7 @@ Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 
 public void OnClientDisconnect(int client)
 {
-	arrbPlyIsDead[client] = false;
-
-	arriPlyRoundPassStats[client].iPlyScores		   = 0;
-	arriPlyRoundPassStats[client].iPlyAssists	   = 0;
-	arriPlyRoundPassStats[client].iPlySaves		   = 0;
-	arriPlyRoundPassStats[client].iPlyIntercepts = 0;
-	arriPlyRoundPassStats[client].iPlySteals		   = 0;
+	ClearLocalStats(client);
 }
 
 /*-------------------------------------------------- PASS Events --------------------------------------------------*/
