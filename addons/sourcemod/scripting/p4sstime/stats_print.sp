@@ -30,7 +30,7 @@ Action Command_PasstimeToggleChatPrint(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieToggleChatPrint, arrbJackAcqSettings[client].bPlyToggleChatPrintSetting);
-			ReplyToCommand(client, "[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "OFF" : "ON");
+			ReplyToCommand(client, "[PASS] Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "OFF" : "ON");
 		}
 	}
 	else
