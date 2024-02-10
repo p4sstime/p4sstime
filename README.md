@@ -86,35 +86,45 @@ Certain entities and properties need to be named certain things for them to work
 
 Below are the requirements for having your map work with the plugin. The reason for changing these is that it allows me to log more things like which spawn the jack spawns from.
 
-Entity Names:
+### Entity Names:
 **Right/Left based off of RED spawn**
-```Top info_passtime_ball_spawn name: "passtime_ball_spawn1"
+```
+Top info_passtime_ball_spawn name: "passtime_ball_spawn1"
 Bottom info_passtime_ball_spawn name: "passtime_ball_spawn2"
 Right info_passtime_ball_spawn name: "passtime_ball_spawn3"
-Left info_passtime_ball_spawn name: "passtime_ball_spawn4"```
-**Right/Left based off of RED spawn**
-```Top spawn trigger_catapult name: "spawn_catapult1"
+Left info_passtime_ball_spawn name: "passtime_ball_spawn4"
+```
+```
+Top spawn trigger_catapult name: "spawn_catapult1"
 Bottom spawn trigger_catapult name: "spawn_catapult2"
 Right spawn trigger_catapult name: "spawn_catapult3"
-Left spawn trigger_catapult name: "spawn_catapult4"```
-**Right/Left based off of RED spawn**
-```RED Right trigger_catapult name: "red_catapult1"
-RED Left trigger_catapult name: "red_catapult2"```
+Left spawn trigger_catapult name: "spawn_catapult4"
+```
+```
+RED Right trigger_catapult name: "red_catapult1"
+RED Left trigger_catapult name: "red_catapult2"
+```
+```
+RED Right/Main func_respawnroom name: "red_respawnroom1"
+RED Left func_respawnroom name: "red_respawnroom2"
+```
+```
+RED Right/Main info_player_teamspawn name: "red_respawnpoint1"
+RED Left info_player_teamspawn name: "red_respawnpoint2"
+```
 **Right/Left based off of BLU spawn**
-```BLU Right trigger_catapult name: "blu_catapult1"
-BLU Left trigger_catapult name: "blu_catapult2"```
-**Right/Left based off of BLU spawn**
-```BLU Right/Main func_respawnroom name: "blu_respawnroom1"
-BLU Left func_respawnroom name: "blu_respawnroom2"```
-**Right/Left based off of RED spawn**
-```RED Right/Main func_respawnroom name: "red_respawnroom1"
-RED Left func_respawnroom name: "red_respawnroom2"```
-**Right/Left based off of BLU spawn**
-```BLU Right/Main info_player_teamspawn name: "blu_respawnpoint1"
-BLU Left info_player_teamspawn name: "blu_respawnpoint2"```
-**Right/Left based off of RED spawn**
-```BLU Right/Main info_player_teamspawn name: "red_respawnpoint1"
-BLU Left info_player_teamspawn name: "red_respawnpoint2"```
+```
+BLU Right trigger_catapult name: "blu_catapult1"
+BLU Left trigger_catapult name: "blu_catapult2"
+```
+```
+BLU Right/Main func_respawnroom name: "blu_respawnroom1"
+BLU Left func_respawnroom name: "blu_respawnroom2"
+```
+```
+BLU Right/Main info_player_teamspawn name: "blu_respawnpoint1"
+BLU Left info_player_teamspawn name: "blu_respawnpoint2"
+```
 
 - All map catapults need to have a classname of trigger_catapult and an output named OnCatapulted.
 - All ball spawners need to have a classname of info_passtime_ball_spawn and an output named OnSpawnBall.
