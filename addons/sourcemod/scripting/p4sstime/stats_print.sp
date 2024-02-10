@@ -1,7 +1,6 @@
 Action Command_PasstimeSimpleChatPrint(int client, int args)
 {
 	int value = 0;
-	char status[64];
 	if(GetCmdArgIntEx(1, value))
 	{
 		if(value == 1)
@@ -11,17 +10,17 @@ Action Command_PasstimeSimpleChatPrint(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieSimpleChatPrint, arrbJackAcqSettings[client].bPlySimpleChatPrintSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Simple round chat summary: %s", arrbJackAcqSettings[client].bPlySimpleChatPrintSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
-			PrintToChat(client, status);
+			ReplyToCommand(client, "[PASS] Simple round chat summary: %s", arrbJackAcqSettings[client].bPlySimpleChatPrintSetting ? "ON" : "OFF");
 		}
 	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
 	return Plugin_Handled;
 }
 
 Action Command_PasstimeToggleChatPrint(int client, int args)
 {
 	int value = 0;
-	char status[64];
 	if(GetCmdArgIntEx(1, value))
 	{
 		if(value == 1)
@@ -31,10 +30,11 @@ Action Command_PasstimeToggleChatPrint(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieToggleChatPrint, arrbJackAcqSettings[client].bPlyToggleChatPrintSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "\x07ff0000OFF" : "\x0700ff00ON");
-			PrintToChat(client, status);
+			ReplyToCommand(client, "[PASS]\x01 Toggle round chat summary: %s", arrbJackAcqSettings[client].bPlyToggleChatPrintSetting ? "OFF" : "ON");
 		}
 	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
 	return Plugin_Handled;
 }
 

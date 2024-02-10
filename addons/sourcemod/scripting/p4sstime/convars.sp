@@ -47,13 +47,13 @@ Action Event_PlayerResup(Event event, const char[] name, bool dontBroadcast)
 Action Command_PasstimeSuicide(int client, int args)
 {
 	SDKHooks_TakeDamage(client, client, client, 500.0);
+	ReplyToCommand(client, "[PASS] Committed suicide");
 	return Plugin_Handled;
 }
 
 Action Command_PasstimeJackPickupHud(int client, int args)
 {
 	int value = 0;
-	char status[64];
 	if(GetCmdArgIntEx(1, value))
 	{
 		if(value == 1)
@@ -63,17 +63,17 @@ Action Command_PasstimeJackPickupHud(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieJACKPickupHud, arrbJackAcqSettings[client].bPlyHudTextSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup HUD text: %s", arrbJackAcqSettings[client].bPlyHudTextSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
-			PrintToChat(client, status);
+			ReplyToCommand(client, "[PASS] JACK pickup HUD text: %s", arrbJackAcqSettings[client].bPlyHudTextSetting ? "ON" : "OFF");
 		}
 	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
 	return Plugin_Handled;
 }
 
 Action Command_PasstimeJackPickupChat(int client, int args)
 {
 	int value = 0;
-	char status[64];
 	if(GetCmdArgIntEx(1, value))
 	{
 		if(value == 1)
@@ -83,17 +83,17 @@ Action Command_PasstimeJackPickupChat(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieJACKPickupChat, arrbJackAcqSettings[client].bPlyChatPrintSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup chat text: %s", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
-			PrintToChat(client, status);
+			ReplyToCommand(client, "[PASS] JACK pickup chat text: %s", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "ON" : "OFF");
 		}
 	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
 	return Plugin_Handled;
 }
 
 Action Command_PasstimeJackPickupSound(int client, int args)
 {
 	int value = 0;
-	char status[64];
 	if(GetCmdArgIntEx(1, value))
 	{
 		if(value == 1)
@@ -103,10 +103,11 @@ Action Command_PasstimeJackPickupSound(int client, int args)
 		if(value == 1 || value == 0)
 		{
 			SetCookieBool(client, cookieJACKPickupSound, arrbJackAcqSettings[client].bPlySoundSetting);
-			Format(status, sizeof(status), "\x0700ffff[PASS]\x01 JACK pickup sound: %s", arrbJackAcqSettings[client].bPlySoundSetting ? "\x0700ff00ON" : "\x07ff0000OFF");
-			PrintToChat(client, status);
+			ReplyToCommand(client, "[PASS] JACK pickup sound: %s", arrbJackAcqSettings[client].bPlySoundSetting ? "ON" : "OFF");
 		}
 	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
 	return Plugin_Handled;
 }
 
