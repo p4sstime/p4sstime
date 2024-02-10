@@ -14,7 +14,7 @@ If you are using the default HUD or a custom HUD that does not have the file, si
 
 ## Removing or Modifying PASS Time HUD Labels
 
-Sometimes the PASS Time ball HUD text for events can be intrusive or even useless (for example, +CRIT does not apply to 4v4 PASS Time). Thankfully, we can also modify these elements (although it's a bit more difficult than removing the power meter).
+Sometimes the PASS Time HUD text for events can be intrusive or even useless (for example, +CRIT does not apply to 4v4 PASS Time). Thankfully, we can also modify these elements (although it's a bit more difficult than removing the power meter).
 ![PASS Time Event Hud Text Example](https://i.imgur.com/c9YAXXG.png)
 If you have a custom HUD, go to your `custom` folder and open the HUD folder. Then go to `resource/ui/` and look for a file named `hudpasstimeballstatus.res`. If the file exists, [click here](#custom-hud--file-exists-changing-labels).
 
@@ -22,13 +22,29 @@ Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labe
 
 ## Custom PASS Time Reticles
 
-Not a fan of the default PASS Time ball reticle?
-![PASS Time Ball Reticle Example](https://i.imgur.com/sWvgo0R.png)
+Not a fan of the default PASS Time JACK reticle?
+![PASS Time JACK Reticle Example](https://i.imgur.com/sWvgo0R.png)
 As long as you're in a server with sv_pure set to 0, you can use these. Otherwise, it'll just go back to the default crosshair.
 
 Simply place one of the folders inside the [passtime-crosshairs](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/passtime-crosshairs.7z) archive into your `custom` folder.
 
 The crosshairs are originally created by slamborghini and can be found in the Official 4v4 PASS Time Discord. I just wanted to archive them in another place.
+
+## Bonus Mods
+
+Here are some neat JACK & JACK trail replacement mods available on Gamebanana.
+
+- [Basketball](https://gamebanana.com/mods/205828)
+- [Too Many Balls](https://gamebanana.com/mods/491558) (includes Metroid balls, Mario balls, ANIMATED plasma ball, pool balls, rubber band ball)
+- [PASS Time Ball Pack](https://gamebanana.com/mods/491646) (includes ULTRAKILL skulls, Halo 2 Oddball skull, and a festive jack)
+- [Australium PASS Time JACK](https://gamebanana.com/mods/491682)
+- [PASS Time Trail Pack](https://gamebanana.com/mods/11843)
+
+Using [this mod preloader](https://gamebanana.com/wips/79779) allows them to work in servers that use `sv_pure 1`, like Valve servers or competitive games.
+
+If you want to practice on a local server, you may note loading the map locally results in an annoying "Waiting for Players" message that takes 20 seconds to go away before the actual game can start and the ball can spawn. While you could manually enter `mp_waitingforplayers_cancel 1` every time, you could instead download the [Disable "Waiting For Players" Message](https://gamebanana.com/mods/448996) mod, making the game instantly start!
+
+And an [Invisible Hands](https://gamebanana.com/mods/467431) mod which quite a few PASS Time players enjoy, since the JACK uses an All Class animation resulting in clipping issues with viewmodels.
 
 # END OF FILE
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
