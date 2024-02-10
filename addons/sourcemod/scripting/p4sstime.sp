@@ -172,7 +172,8 @@ public void OnMapStart() // getgoallocations
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fBluGoalPos);
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
-	else {
+	else 
+	{
 		GetEntPropVector(goal2, Prop_Send, "m_vecOrigin", fBluGoalPos);
 		GetEntPropVector(goal1, Prop_Send, "m_vecOrigin", fRedGoalPos);
 	}
@@ -265,9 +266,9 @@ float DistanceAboveGround(int victim) // taken from mgemod
 	{
 		TR_GetEndPosition(vEnd, trace);
 		distance = GetVectorDistance(vStart, vEnd, false);
-	} else {
+	} 
+	else 
 		LogError("trace error. victim %N(%d)", victim, victim);
-	}
 
 	delete trace;
 	return distance;
@@ -417,14 +418,10 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 	}
 
 	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlyChatPrintSetting)
-	{
 		PrintToChat(iPlyWhoGotJack, "\x07ffff00[PASS]\x0700ff00 YOU HAVE THE JACK!!!");
-	}
 
 	if (arrbJackAcqSettings[iPlyWhoGotJack].bPlySoundSetting)
-	{
 		ClientCommand(iPlyWhoGotJack, "playgamesound Passtime.BallSmack");
-	}
 
 	return Plugin_Handled;
 }
@@ -556,21 +553,13 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	if(bPrintStats.BoolValue)
 	{
 		if (arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
-		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
-		}
 		else if (arrbWinStratCheck[scorer] && bPrintStats.BoolValue)
-		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
-		}
 		else if(bPrintStats.BoolValue && dist > 1600)
-		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
-		}
 		else if(bPrintStats.BoolValue)
-		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
-		}
 	}
 	if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
 		arriPlyRoundPassStats[scorer].iPlyPanaceas++;
@@ -585,9 +574,7 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 			user1position[0], user1position[1], user1position[2]);
 		arriPlyRoundPassStats[assistant].iPlyAssists++;
 		if(bPrintStats.BoolValue)
-		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
-		}
 	}
 	arrbPanaceaCheck[scorer] = false;
 	arrbWinStratCheck[scorer] = false; // reset these cuz its good idea
@@ -597,7 +584,7 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 
 bool InGoalieZone(int client)
 {
-	int	  team = GetClientTeam(client);
+	int	team = GetClientTeam(client);
 	float position[3];
 	GetClientAbsOrigin(client, position);
 
