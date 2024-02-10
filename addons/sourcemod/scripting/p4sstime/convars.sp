@@ -16,7 +16,7 @@ Action OnChangeClass(int client, const char[] strCommand, int args)
 	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
 	{
 		GetCmdArg(1, sChosenClass, sizeof(sChosenClass));
-		PrintCenterText(client, "You can't change class yet.\nClass when spawned will be %s.", sChosenClass);
+		PrintCenterText(client, "Class when spawned will be %s.", sChosenClass);
 		TFClassType class = TF2_GetClass(sChosenClass);
 		if (class != TFClass_Unknown) SetEntProp(client, Prop_Send, "m_iDesiredPlayerClass", class);
 		return Plugin_Handled;
