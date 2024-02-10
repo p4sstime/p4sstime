@@ -1,11 +1,8 @@
-#include <sourcemod>
 #include <tf2_stocks>
 #include <sdkhooks>
-#include <sdktools>
 //#include <dhooks>
 #include <clientprefs>
 #include <regex>
-#include <usermessages>
 
 #pragma semicolon 1	   // required for logs.tf
 
