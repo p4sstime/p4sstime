@@ -87,7 +87,8 @@ _Yo Yo Bobby Joe's_\
 [pass_aquarium](https://tf2maps.net/downloads/aquarium.17211/)
 
 _DropKnock's_\
-[pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796)
+[pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796)\
+[pass_ruin](https://tf2maps.net/downloads/pass_ruin.14697)
 
 ## For Mappers
 
