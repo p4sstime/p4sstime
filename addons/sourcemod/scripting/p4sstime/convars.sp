@@ -12,13 +12,36 @@ Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 
 Action OnChangeClass(int client, const char[] strCommand, int args)
 {
+	// class limits; demo = 1, med = 1, soldier = 3
+	// essentially we just check every time someone changes class if the class change is possible. i dont like doing it this way but alternative is dhooks :vomit:
 	char sChosenClass[12];
+	bool demo = false;
+	bool med = false;
+	int solly = 0;
+	GetCmdArg(1, sChosenClass, sizeof(sChosenClass));
+	TFClassType class = TF2_GetClass(sChosenClass);
+	TFTeam currentTeam = TF2_GetClientTeam(client);
+	for(int x = 1; x < MaxClients + 1; x++)
+	{
+		if(!IsValidClient(x)) continue;
+		if(TF2_GetClientTeam(x) == currentTeam)
+		{
+			TFClassType classcheck = TF2_GetPlayerClass(x);
+			if(classcheck == TFClass_Soldier) solly++;
+			else if(classcheck == TFClass_DemoMan) demo = true;
+			else if(classcheck == TFClass_Medic) med = true;
+		}
+	}
 	if(arrbPlyIsDead[client] == true && bSwitchDuringRespawn.BoolValue)
 	{
-		GetCmdArg(1, sChosenClass, sizeof(sChosenClass));
-		PrintCenterText(client, "Class when spawned will be %s.", sChosenClass);
-		TFClassType class = TF2_GetClass(sChosenClass);
-		if (class != TFClass_Unknown) SetEntProp(client, Prop_Send, "m_iDesiredPlayerClass", class);
+		if(class == TFClass_Medic && med) return Plugin_Handled;
+		else if(class == TFClass_DemoMan && demo) return Plugin_Handled;
+		else if(class == TFClass_Soldier && solly > 2) return Plugin_Handled;
+		if (class != TFClass_Unknown && class != TFClass_Pyro && class != TFClass_Heavy && class != TFClass_Engineer && class != TFClass_Spy && class != TFClass_Sniper && class != TFClass_Scout)
+		{
+			SetEntProp(client, Prop_Send, "m_iDesiredPlayerClass", class);
+			PrintCenterText(client, "Class when spawned will be %s.", sChosenClass);
+		}
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;

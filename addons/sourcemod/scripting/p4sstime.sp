@@ -6,7 +6,7 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define VERSION "2.0.0b"
+#define VERSION "2.0.0c"
 
 enum struct enubPlyJackSettings
 {
@@ -68,7 +68,7 @@ float user2position[3];
 
 // stats menu variables
 char logsurl[10];
-char moreurl[24];
+char moreurl[128];
 
 public Plugin myinfo =
 {
@@ -211,20 +211,26 @@ Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int player
 	// MC_PrintToChatAll("%s%s", "{lightgreen}[LogsTF] {blue}Logs were uploaded to: ", g_sLastLogURL);
 	// g_sLastLogURL looks like logs.tf/9999999; so total output string is probably "\x05[LogsTF] \x0BLogs were uploaded to: logs.tf/3576799"
 	// https://github.com/Bara/Multi-Colors/blob/a31112557f36bc66545cc15cb22f40aeaf42f4ba/addons/sourcemod/scripting/include/multicolors/morecolors.inc#L68C12-L68C29
+	// test event by using PrintToChatAll
 	
 	char strOutput[60];
 	BfReadString(msg, strOutput, sizeof(strOutput));
 	Regex LOGSTFMatcher = CompileRegex(".*logs\\.tf\\/(\\d+)");
 	if(LOGSTFMatcher.Match(strOutput) > 0)
 	{
-		moreurl = "http://more.tf/";
+		moreurl = "https://more.tf/log/";
 		LOGSTFMatcher.GetSubString(1, logsurl, sizeof(logsurl));
 		StrCat(moreurl, sizeof(moreurl), logsurl);
-		PrintToChatAll("\x0E[PASS] \x10Logs can be viewed at: %s", moreurl);
-		PrintToChatAll("\x0E[PASS] \x10Alternatively, type \x06/more \x10or \x06.more");
+		CreateTimer(0.1, Timer_PrintMoreURL);
 	}
 	delete LOGSTFMatcher;
 	return Plugin_Continue;
+}
+
+Action Timer_PrintMoreURL(Handle timer)
+{
+	PrintToChatAll("\x0700ffff[PASS] \x0700eb00Type /more or .more to view logs.");
+	return Plugin_Handled;
 }
 
 /*-------------------------------------------------- Player Events --------------------------------------------------*/
