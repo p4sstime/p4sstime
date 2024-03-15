@@ -180,6 +180,7 @@ public void OnMapStart() // getgoallocations
 Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 {
 	moreurl = "";
+	bMoreURLPrinted = true;
 	for (int i = 0; i < MaxClients + 1; i++)
 		ClearLocalStats(i);
 	if(GetConVarInt(bPracticeMode) == 1)
@@ -231,7 +232,10 @@ Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int player
 void Event_TextMsgPost(UserMsg msg_id, bool sent)
 {
 	if(bMoreURLPrinted)
+	{
 		CreateTimer(0.1, Timer_PrintMoreURL);
+		bMoreURLPrinted = false;
+	}
 }
 
 Action Timer_PrintMoreURL(Handle timer)
