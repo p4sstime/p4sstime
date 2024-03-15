@@ -6,7 +6,7 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define VERSION "2.0.0c"
+#define VERSION "2.0.0d"
 
 enum struct enubPlyJackSettings
 {
@@ -49,6 +49,7 @@ int 			ibBallSpawnedLower;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
+bool 			bMoreURLPrinted;
 bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
@@ -120,7 +121,7 @@ public void OnPluginStart()
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
-	HookUserMessage(GetUserMessageId("TextMsg"), Event_TextMsg);
+	HookUserMessage(GetUserMessageId("TextMsg"), Event_TextMsg, false, Event_TextMsgPost);
 
 	bEquipStockWeapons		= CreateConVar("sm_pt_stock_blocklist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as allowlists can't normally block stock weapons.", FCVAR_NOTIFY);
 	bSwitchDuringRespawn	= CreateConVar("sm_pt_block_instant_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
@@ -178,6 +179,7 @@ public void OnMapStart() // getgoallocations
 
 Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 {
+	moreurl = "";
 	for (int i = 0; i < MaxClients + 1; i++)
 		ClearLocalStats(i);
 	if(GetConVarInt(bPracticeMode) == 1)
@@ -221,10 +223,15 @@ Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int player
 		moreurl = "https://more.tf/log/";
 		LOGSTFMatcher.GetSubString(1, logsurl, sizeof(logsurl));
 		StrCat(moreurl, sizeof(moreurl), logsurl);
-		CreateTimer(0.1, Timer_PrintMoreURL);
 	}
 	delete LOGSTFMatcher;
 	return Plugin_Continue;
+}
+
+void Event_TextMsgPost(UserMsg msg_id, bool sent)
+{
+	if(bMoreURLPrinted)
+		CreateTimer(0.1, Timer_PrintMoreURL);
 }
 
 Action Timer_PrintMoreURL(Handle timer)
