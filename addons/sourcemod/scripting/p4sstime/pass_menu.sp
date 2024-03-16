@@ -23,6 +23,7 @@ void SetCookieBool(int client, Cookie cookie, bool state)
 
 public OnClientCookiesCached(int client)
 {
+	arrbJackAcqSettings[client].bPlyCoundownCaptionSetting  = GetCookieBool(client, cookieCountdownCaption);
 	arrbJackAcqSettings[client].bPlyHudTextSetting 			= GetCookieBool(client, cookieJACKPickupHud);
 	arrbJackAcqSettings[client].bPlyChatPrintSetting 		= GetCookieBool(client, cookieJACKPickupChat);
 	arrbJackAcqSettings[client].bPlySoundSetting 			= GetCookieBool(client, cookieJACKPickupSound);
@@ -44,6 +45,8 @@ void ShowPassMenu(int client)
 
 	char buffer[2048];
 
+	FormatEx(buffer, sizeof(buffer), "%s: %s", "JACK spawn timer captions", arrbJackAcqSettings[client].bPlyCoundownCaptionSetting ? "ON" : "OFF");
+	mPassMenu.AddItem("countdowncaption", buffer);
 	FormatEx(buffer, sizeof(buffer), "%s: %s", "JACK pickup HUD text", arrbJackAcqSettings[client].bPlyHudTextSetting ? "ON" : "OFF");
 	mPassMenu.AddItem("jackpickuphud", buffer);
 	FormatEx(buffer, sizeof(buffer), "%s: %s", "JACK pickup chat text", arrbJackAcqSettings[client].bPlyChatPrintSetting ? "ON" : "OFF");
@@ -64,6 +67,12 @@ int PassMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 	{
 		char info[32], display[255];
 		mPassMenu.GetItem(param2, info, sizeof(info), _, display, sizeof(display));
+		if (StrEqual(info, "countdowncaption"))
+		{
+			arrbJackAcqSettings[param1].bPlyCoundownCaptionSetting = !arrbJackAcqSettings[param1].bPlyCoundownCaptionSetting;
+			SetCookieBool(param1, cookieCountdownCaption, arrbJackAcqSettings[param1].bPlyCoundownCaptionSetting);
+			ShowPassMenu(param1);
+		}
 		if (StrEqual(info, "jackpickuphud"))
 		{
 			arrbJackAcqSettings[param1].bPlyHudTextSetting = !arrbJackAcqSettings[param1].bPlyHudTextSetting;

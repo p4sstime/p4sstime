@@ -74,6 +74,26 @@ Action Command_PasstimeSuicide(int client, int args)
 	return Plugin_Handled;
 }
 
+Action Command_PasstimeCoundownCaption(int client, int args)
+{
+	int value = 0;
+	if(GetCmdArgIntEx(1, value))
+	{
+		if(value == 1)
+			arrbJackAcqSettings[client].bPlyCoundownCaptionSetting = true;
+		else if(value == 0)
+			arrbJackAcqSettings[client].bPlyCoundownCaptionSetting = false;
+		if(value == 1 || value == 0)
+		{
+			SetCookieBool(client, cookieCountdownCaption, arrbJackAcqSettings[client].bPlyCoundownCaptionSetting);
+			ReplyToCommand(client, "[PASS] JACK spawn timer captions: %s", arrbJackAcqSettings[client].bPlyCoundownCaptionSetting ? "ON" : "OFF");
+		}
+	}
+	else
+		ReplyToCommand(client, "[PASS] Invalid argument");
+	return Plugin_Handled;
+}
+
 Action Command_PasstimeJackPickupHud(int client, int args)
 {
 	int value = 0;

@@ -6,10 +6,11 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define VERSION "2.0.0h"
+#define VERSION "2.0.0i"
 
 enum struct enubPlyJackSettings
 {
+	bool bPlyCoundownCaptionSetting;
 	bool bPlyHudTextSetting;
 	bool bPlyChatPrintSetting;
 	bool bPlySoundSetting;
@@ -50,12 +51,13 @@ int 			ibBallSpawnedLower;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
 bool 			bMoreURLPrinted;
+bool 			bHalloweenMode;
 bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
 bool			arrbWinStratCheck[MAXPLAYERS + 1];
 // bool			plyTakenDirectHit[MAXPLAYERS + 1];
-Cookie  		cookieJACKPickupHud, cookieJACKPickupChat, cookieJACKPickupSound, cookieSimpleChatPrint, cookieToggleChatPrint;
+Cookie  		cookieCountdownCaption, cookieJACKPickupHud, cookieJACKPickupChat, cookieJACKPickupSound, cookieSimpleChatPrint, cookieToggleChatPrint;
 
 // log variables
 int user1;
@@ -89,6 +91,7 @@ public void OnPluginStart()
 		delete gamedata;
 	}*/
 
+	cookieCountdownCaption = RegClientCookie("p4ssClientCountdownCaption", "p4sstime's client setting (1/0) for captions for JACK spawn timer", CookieAccess_Public);
 	cookieJACKPickupHud = RegClientCookie("p4ssClientJACKPickupHudText", "p4sstime's client setting (1/0) for HUD text when picking up JACK", CookieAccess_Public);
 	cookieJACKPickupChat = RegClientCookie("p4ssClientJACKPickupChatMsg", "p4sstime's client setting (1/0) for chat msg when picking up JACK", CookieAccess_Public);
 	cookieJACKPickupSound = RegClientCookie("p4ssClientJACKPickupSound", "p4sstime's client setting (1/0) for sound when picking up JACK", CookieAccess_Public);
@@ -97,6 +100,7 @@ public void OnPluginStart()
 
 	RegConsoleCmd("sm_pt_menu", Command_PassMenu);
 	RegConsoleCmd("sm_pt_suicide", Command_PasstimeSuicide);
+	RegConsoleCmd("sm_pt_countdowncaption", Command_PasstimeCoundownCaption);
 	RegConsoleCmd("sm_pt_jackpickup_hud", Command_PasstimeJackPickupHud);
 	RegConsoleCmd("sm_pt_jackpickup_chat", Command_PasstimeJackPickupChat);
 	RegConsoleCmd("sm_pt_jackpickup_sound", Command_PasstimeJackPickupSound);
@@ -116,6 +120,8 @@ public void OnPluginStart()
 	HookEvent("rocket_jump_landed", Event_RJLand);
 	HookEvent("sticky_jump", Event_SJ);
 	HookEvent("sticky_jump_landed", Event_SJLand);
+	HookEvent("teamplay_pre_round_time_left", Event_PregameCountdown);
+	HookEvent("teamplay_broadcast_audio", Event_MidgameCountdown);
 	HookEvent("teamplay_round_win", Event_TeamWin);
 	HookEvent("stats_resetround", Event_RoundReset);
 	HookEvent("tf_game_over", Event_GameReset);
@@ -187,6 +193,7 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 		SetConVarInt(bPracticeMode, 0);
 		PrintToChatAll("\x0700ffff[PASS] Game started; practice mode disabled.");
 	}
+	bHalloweenMode = false;
 	return Plugin_Handled;
 }
 
@@ -194,6 +201,76 @@ Action Event_GameReset(Event event, const char[] name, bool dontBroadcast)
 {
 	moreurl = "https://more.tf/log/";
 	bMoreURLPrinted = true;
+	return Plugin_Handled;
+}
+
+Action Event_PregameCountdown(Event event, const char[] name, bool dontBroadcast)
+{
+	int time = event.GetInt("time");
+	for (int x = 1; x < MaxClients + 1; x++)
+	{
+		if (!IsValidClient(x) || !arrbJackAcqSettings[x].bPlyCoundownCaptionSetting) continue;
+
+		if(time == 10)
+			PrintToChat(x, "\x0700ffff[PASS] \x07ff000010 seconds...");
+		else if(time == 5)
+			PrintToChat(x, "\x0700ffff[PASS] \x07ffff005");
+		else if(time == 4)
+			PrintToChat(x, "\x0700ffff[PASS] \x07ffff004");
+		else if(time == 3)
+			PrintToChat(x, "\x0700ffff[PASS] \x07ffff003");
+		else if(time == 2)
+			PrintToChat(x, "\x0700ffff[PASS] \x0700ff002");
+		else if(time == 1)
+			PrintToChat(x, "\x0700ffff[PASS] \x0700ff001");
+	}
+	return Plugin_Handled;
+}
+
+Action Event_MidgameCountdown(Event event, const char[] name, bool dontBroadcast)
+{
+	// if it is halloween, announcer always says 10 seconds, but merasmus says 5-1
+	// for pregame, announcer ALWAYS says start
+
+	char sound[128];
+	event.GetString("sound", sound, sizeof(sound));
+	if(StrEqual(sound, "Passtime.Merasmus.Laugh")) // if this occurs (which it does during halloween right after ball spawn), assume halloween
+		bHalloweenMode = true;
+	for (int x = 1; x < MaxClients + 1; x++)
+	{
+		if (!IsValidClient(x) || !arrbJackAcqSettings[x].bPlyCoundownCaptionSetting) continue;
+
+		if(StrEqual(sound, "Announcer.RoundBegins10seconds"))
+			PrintToChat(x, "\x0700ffff[PASS] \x07ff000010 seconds...");
+		else if(StrEqual(sound, "Passtime.BallSpawn"))
+			PrintToChat(x, "\x0700ffff[PASS] \x0700ff00Ball has spawned!");
+		if(bHalloweenMode)
+		{
+			if(StrEqual(sound, "Merasmus.RoundBegins5seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x07ffff005");
+			else if(StrEqual(sound, "Merasmus.RoundBegins4seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x07ffff004");
+			else if(StrEqual(sound, "Merasmus.RoundBegins3seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff003");
+			else if(StrEqual(sound, "Merasmus.RoundBegins2seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff002");
+			else if(StrEqual(sound, "Merasmus.RoundBegins1seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff001");
+		}
+		else
+		{
+			if(StrEqual(sound, "Announcer.RoundBegins5seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x07ffff005");
+			else if(StrEqual(sound, "Announcer.RoundBegins4seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x07ffff004");
+			else if(StrEqual(sound, "Announcer.RoundBegins3seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff003");
+			else if(StrEqual(sound, "Announcer.RoundBegins2seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff002");
+			else if(StrEqual(sound, "Announcer.RoundBegins1seconds"))
+				PrintToChat(x, "\x0700ffff[PASS] \x0700ff001");
+		}
+	}
 	return Plugin_Handled;
 }
 
