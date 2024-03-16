@@ -6,7 +6,7 @@
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define VERSION "2.0.0i"
+#define VERSION "2.0.0j"
 
 enum struct enubPlyJackSettings
 {
@@ -490,7 +490,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		arriPlyRoundPassStats[iPlyWhoGotJack].iPlyFirstGrabs++;
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 		GetClientAbsOrigin(iPlyWhoGotJack, position);
-		if(GetVectorDistance(position, fTopSpawnPos, false) < 240) // may need to be changed
+		if(GetVectorDistance(position, fTopSpawnPos, false) < 300) // may need to be changed
 			{
 				arrbPanaceaCheck[iPlyWhoGotJack] = false;
 				arrbWinStratCheck[iPlyWhoGotJack] = true;
