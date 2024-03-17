@@ -1,4 +1,11 @@
 // This file relates to all logging features and will contain the functions for them
+public void LogUploaded(bool success, const char[] logid, const char[] url) {
+	if (!success) return;
+	moreurl = "https://more.tf/log/";
+	StrCat(moreurl, sizeof(moreurl), logid);
+	PrintToChatAll("\x0700ffff[PASS] \x0700eb00Type /more or .more to view logs.");
+}
+
 void SetLogInfo(int p1, int p2 = 0)
 {
 	user1=p1;

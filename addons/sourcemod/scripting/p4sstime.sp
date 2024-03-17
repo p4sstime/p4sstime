@@ -2,11 +2,10 @@
 #include <sdkhooks>
 //#include <dhooks>
 #include <clientprefs>
-#include <regex>
 
 #pragma semicolon 1	   // required for logs.tf
 
-#define VERSION "2.0.0j"
+#define VERSION "2.0.0k"
 
 enum struct enubPlyJackSettings
 {
@@ -42,7 +41,7 @@ float			fBluGoalPos[3], fRedGoalPos[3], fTopSpawnPos[3], fFreeBallPos[3];
 ConVar			bEquipStockWeapons, bSwitchDuringRespawn, bStealBlurryOverlay, bDroppedItemsCollision, bPrintStats, /*trikzEnable, trikzProjCollide, trikzProjDev*/bPracticeMode;
 
 int				iPlyWhoGotJack;
-// int				plyDirecter;
+// int			plyDirecter;
 int				ibFirstGrabCheck;
 int  			eiJack;
 int  			eiPassTarget;
@@ -50,7 +49,6 @@ int 			ibBallSpawnedLower;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
-bool 			bMoreURLPrinted;
 bool 			bHalloweenMode;
 bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
@@ -70,7 +68,6 @@ char user2team[12];
 float user2position[3];
 
 // stats menu variables
-char logsurl[128];
 char moreurl[128];
 
 public Plugin myinfo =
@@ -124,11 +121,9 @@ public void OnPluginStart()
 	HookEvent("teamplay_broadcast_audio", Event_MidgameCountdown);
 	HookEvent("teamplay_round_win", Event_TeamWin);
 	HookEvent("stats_resetround", Event_RoundReset);
-	HookEvent("tf_game_over", Event_GameReset);
 	HookEntityOutput("trigger_catapult", "OnCatapulted", Hook_OnCatapult);
 	HookEntityOutput("info_passtime_ball_spawn", "OnSpawnBall", Hook_OnSpawnBall);
 	AddCommandListener(OnChangeClass, "joinclass");
-	HookUserMessage(GetUserMessageId("TextMsg"), Event_TextMsg);
 
 	bEquipStockWeapons		= CreateConVar("sm_pt_stock_blocklist", "0", "If 1, disable ability to equip shotgun, stickies, and needles; this is needed as allowlists can't normally block stock weapons.", FCVAR_NOTIFY);
 	bSwitchDuringRespawn	= CreateConVar("sm_pt_block_instant_respawn", "0", "If 1, disable class switch ability while dead to instantly respawn.", FCVAR_NOTIFY);
@@ -194,13 +189,6 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 		PrintToChatAll("\x0700ffff[PASS] Game started; practice mode disabled.");
 	}
 	bHalloweenMode = false;
-	return Plugin_Handled;
-}
-
-Action Event_GameReset(Event event, const char[] name, bool dontBroadcast)
-{
-	moreurl = "https://more.tf/log/";
-	bMoreURLPrinted = true;
 	return Plugin_Handled;
 }
 
@@ -290,37 +278,6 @@ bool IsValidClient(int client, bool blockbots = true)
 	if (blockbots && IsFakeClient(client)) return false;
 	if (GetEntProp(client, Prop_Send, "m_bIsCoaching")) return false;
 	return true;
-}
-
-Action Event_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)
-{
-	// MC_PrintToChatAll("%s%s", "{lightgreen}[LogsTF] {blue}Logs were uploaded to: ", g_sLastLogURL);
-	// g_sLastLogURL looks like logs.tf/9999999; so total output string is probably "\x05[LogsTF] \x0BLogs were uploaded to: logs.tf/3576799"
-	// https://github.com/Bara/Multi-Colors/blob/a31112557f36bc66545cc15cb22f40aeaf42f4ba/addons/sourcemod/scripting/include/multicolors/morecolors.inc#L68C12-L68C29
-	// test event by using PrintToChatAll
-
-	BfReadString(msg, logsurl, sizeof(logsurl));
-	Regex LOGSTFMatcher = CompileRegex(".*logs\\.tf\\/(\\d+)");
-	if(LOGSTFMatcher.Match(logsurl) > 0)
-	{
-		moreurl = "https://more.tf/log/";
-		LOGSTFMatcher.GetSubString(1, logsurl, sizeof(logsurl));
-		StrCat(moreurl, sizeof(moreurl), logsurl);
-		logsurl = "";
-		if(bMoreURLPrinted)
-		{
-			bMoreURLPrinted = false;
-			CreateTimer(0.2, Timer_PrintMoreURL);
-		}
-	}
-	delete LOGSTFMatcher;
-	return Plugin_Continue;
-}
-
-Action Timer_PrintMoreURL(Handle timer)
-{
-	PrintToChatAll("\x0700ffff[PASS] \x0700eb00Type /more or .more to view logs.");
-	return Plugin_Handled;
 }
 
 /*-------------------------------------------------- Player Events --------------------------------------------------*/
