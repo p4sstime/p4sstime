@@ -4,8 +4,9 @@
 #include <clientprefs>
 
 #pragma semicolon 1	   // required for logs.tf
+#pragma newdecls required
 
-#define VERSION "2.0.0k"
+#define VERSION "2.0.0l"
 
 enum struct enubPlyJackSettings
 {
@@ -144,7 +145,7 @@ public void OnPluginStart()
 	/*for (int client = 1; client <= MaxClients; client++)
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);*/
-	for (new i = MaxClients; i > 0; --i)
+	for (int i = MaxClients; i > 0; --i)
 	{
 		if (!AreClientCookiesCached(i))
 		{
@@ -352,7 +353,7 @@ Action Event_SJLand(Event event, const char[] name, bool dontBroadcast)
 }
 
 // the below function is dr underscore's fix. thanks!
-public void TF2_OnConditionRemoved(client, TFCond condition)
+public void TF2_OnConditionRemoved(int client, TFCond condition)
 {
 	if (condition == TFCond_Ubercharged)
 		TF2_RemoveCondition(client, TFCond_UberchargeFading);
