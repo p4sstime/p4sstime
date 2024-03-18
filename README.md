@@ -34,6 +34,7 @@ CHAT
 CLIENT
 sm_pt_menu               cmd    # Open menu to change plugin-specific client settings (shown below).
 sm_pt_suicide            cmd    # Commit suicide; good for a type of bomb called a deathbomb.
+sm_pt_countdowncaption   0/1    # If 1, print chat messages for JACK spawn timer.
 sm_pt_jackpickup_hud     0/1    # If 1, show HUD message when you pick up the JACK.
 sm_pt_jackpickup_chat    0/1    # If 1, show chat message when you pick up the JACK.
 sm_pt_jackpickup_sound   0/1    # If 1, play sound when you pick up the JACK.
@@ -89,6 +90,9 @@ _Yo Yo Bobby Joe's_\
 _DropKnock's_\
 [pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796)\
 [pass_ruin](https://tf2maps.net/downloads/pass_ruin.14697)
+
+_Shears's_
+pass_plexiglass
 
 ## For Mappers
 
