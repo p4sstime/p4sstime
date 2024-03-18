@@ -91,7 +91,7 @@ _DropKnock's_\
 [pass_ufo](https://tf2maps.net/downloads/pass_ufo.16796)\
 [pass_ruin](https://tf2maps.net/downloads/pass_ruin.14697)
 
-_Shears's_
+_Shears's_\
 pass_plexiglass
 
 ## For Mappers
