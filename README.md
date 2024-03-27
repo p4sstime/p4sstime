@@ -18,6 +18,7 @@ Competitive 4v4 PASS Time plugins, configs, and more.
     - Win strats
     - Handoffs
     - Etc
+- Also prints to STV with tick count for major game events for ease of fragmovie creation
 - Prints end of round statistics in chat (optional) and in console
 - Every command and its effect below
 

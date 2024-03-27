@@ -6,7 +6,7 @@
 #pragma semicolon 1	   // required for logs.tf
 #pragma newdecls required
 
-#define VERSION "2.0.0"
+#define VERSION "2.1.0"
 
 enum struct enubPlyJackSettings
 {
@@ -47,6 +47,7 @@ int				ibFirstGrabCheck;
 int  			eiJack;
 int  			eiPassTarget;
 int 			ibBallSpawnedLower;
+int 			iRoundResetTick;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
@@ -162,6 +163,7 @@ public void OnPluginStart()
 #include <p4sstime/anticheat.sp>
 #include <p4sstime/convars.sp>
 #include <p4sstime/stats_print.sp>
+#include <p4sstime/f2stocks.sp>
 
 public void OnMapStart() // getgoallocations
 {
@@ -190,6 +192,7 @@ Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
 		PrintToChatAll("\x0700ffff[PASS] Game started; practice mode disabled.");
 	}
 	bHalloweenMode = false;
+	iRoundResetTick = GetGameTickCount();
 	return Plugin_Handled;
 }
 
@@ -269,6 +272,13 @@ Action Event_TeamWin(Event event, const char[] name, bool dontBroadcast)
 	CreateTimer(0.5, Timer_DisplayStats);
 	iPlyWhoGotJack = 0; // reset this because it's a good idea. doesn't actually fix anything but this shouldn't carry over between rounds
 	return Plugin_Handled;
+}
+
+int STVTickCount()
+{
+	int tick;
+	tick = GetGameTickCount() - iRoundResetTick;
+	return tick;
 }
 
 bool IsValidClient(int client, bool blockbots = true)
@@ -383,17 +393,25 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
 	{
 		LogToGame("passtime_ball spawned from the upper spawnpoint.");
+		PrintToSTV("passtime_ball spawned from the upper spawnpoint.");
 		GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fTopSpawnPos);
 	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
 	{
 		LogToGame("passtime_ball spawned from the lower spawnpoint."); 
+		PrintToSTV("passtime_ball spawned from the lower spawnpoint.");
 		ibBallSpawnedLower = 1;
 	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn3"))
+	{
 		LogToGame("passtime_ball spawned from the right spawnpoint.");
+		PrintToSTV("passtime_ball spawned from the right spawnpoint.");
+	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn4"))
+	{
 		LogToGame("passtime_ball spawned from the left spawnpoint.");
+		PrintToSTV("passtime_ball spawned from the left spawnpoint.");
+	}
 	ibFirstGrabCheck = true;
 }
 
@@ -502,12 +520,14 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 			arriPlyRoundPassStats[catcher].iPlySaves++;
 			if(bPrintStats.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
+			PrintToSTV("[PASS] %s blocked %s from scoring. Tick: %d", catcherName, throwerName, STVTickCount());
 		}
 		else
 		{
 			arriPlyRoundPassStats[catcher].iPlyIntercepts++;
 			if(bPrintStats.BoolValue)
 				PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+			PrintToSTV("[PASS] %s intercepted %s. Tick: %d", catcherName, throwerName, STVTickCount());
 		}
 	}
 
@@ -515,6 +535,7 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	{
 		if (bPrintStats.BoolValue)
 			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		PrintToSTV("[PASS] %s handed off to %s. Tick: %d", throwerName, catcherName, STVTickCount());
 		ibHandoffCheck = true;
 		arriPlyRoundPassStats[thrower].iPlyHandoffs++;
 		eiPassTarget = 0;
@@ -571,9 +592,15 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 		GetClientName(thief, thiefName, sizeof(thiefName));
 		GetClientName(victim, victimName, sizeof(victimName));
 		if(InGoalieZone(thief))
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 defensively stole from\x0700ffff %s!", thiefName, victimName);
+			PrintToSTV("[PASS] %s defensively stole from %s. Tick: %d", thiefName, victimName, STVTickCount());
+		}
 		else
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
+			PrintToSTV("[PASS] %s stole from %s. Tick: %d", thiefName, victimName, STVTickCount());
+		}
 	}
 	arriPlyRoundPassStats[thief].iPlySteals++;
 	return Plugin_Handled;
@@ -616,15 +643,30 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	if(bPrintStats.BoolValue)
 	{
 		if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+			PrintToSTV("[PASS] %s scored a Panacea. Tick: %d", playerName, STVTickCount());
+		}
 		else if(arrbWinStratCheck[scorer])
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
+			PrintToSTV("[PASS] %s scored a win strat. Tick: %d", playerName, STVTickCount());
+		}
 		else if(dist > 1600)
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
+			PrintToSTV("[PASS] %s scored a goal from distance of %.0fhu. Tick: %d", playerName, dist, STVTickCount());
+		}
 		else if(assistant > 0)
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
+			PrintToSTV("[PASS] %s scored a goal assisted by %s. Tick: %d", playerName, assistantName, STVTickCount());
+		}
 		else
+		{
 			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
+			PrintToSTV("[PASS] %s scored a goal. Tick: %d", playerName, STVTickCount());
+		}
 	}
 	arrbPanaceaCheck[scorer] = false;
 	arrbWinStratCheck[scorer] = false; // reset these cuz its good idea
@@ -665,6 +707,7 @@ void Hook_OnCatapult(const char[] output, int caller, int activator, float delay
 				user1, GetClientUserId(user1), user1steamid, user1team,
 				catapultName, user1position[0], user1position[1], user1position[2]);
 			arriPlyRoundPassStats[iPlyWhoGotJack].iPlyCatapults++;
+			PrintToSTV("[PASS] %N triggered \"%s\" with the jack. Tick: %d", user1, catapultName, STVTickCount());
 		}
 	}
 }

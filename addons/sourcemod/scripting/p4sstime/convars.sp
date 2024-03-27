@@ -170,13 +170,13 @@ void RemoveShotty(int client)
 
 			if (StrEqual(classname, "tf_weapon_shotgun_soldier") || StrEqual(classname, "tf_weapon_pipebomblauncher"))
 			{
-				PrintToChat(client, "\x07ff0000 [PASS] Shotgun/Stickies equipped");
+				PrintToChat(client, "\x07ff0000[PASS] Shotgun/Stickies equipped");
 				TF2_RemoveWeaponSlot(client, 1);
 			}
 
 			if (StrEqual(classname, "tf_weapon_syringegun_medic"))
 			{
-				PrintToChat(client, "\x07ff0000 [PASS] Syringe Gun equipped");
+				PrintToChat(client, "\x07ff0000[PASS] Syringe Gun equipped");
 				TF2_RemoveWeaponSlot(client, 0);
 			}
 		}
