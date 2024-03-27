@@ -393,24 +393,24 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 	if(StrEqual(spawnName, "passtime_ball_spawn1"))
 	{
 		LogToGame("passtime_ball spawned from the upper spawnpoint.");
-		PrintToSTV("passtime_ball spawned from the upper spawnpoint.");
+		PrintToSTV("[PASS] passtime_ball spawned from the upper spawnpoint.");
 		GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fTopSpawnPos);
 	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn2"))
 	{
 		LogToGame("passtime_ball spawned from the lower spawnpoint."); 
-		PrintToSTV("passtime_ball spawned from the lower spawnpoint.");
+		PrintToSTV("[PASS] passtime_ball spawned from the lower spawnpoint.");
 		ibBallSpawnedLower = 1;
 	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn3"))
 	{
 		LogToGame("passtime_ball spawned from the right spawnpoint.");
-		PrintToSTV("passtime_ball spawned from the right spawnpoint.");
+		PrintToSTV("[PASS] passtime_ball spawned from the right spawnpoint.");
 	}
 	else if(StrEqual(spawnName, "passtime_ball_spawn4"))
 	{
 		LogToGame("passtime_ball spawned from the left spawnpoint.");
-		PrintToSTV("passtime_ball spawned from the left spawnpoint.");
+		PrintToSTV("[PASS] passtime_ball spawned from the left spawnpoint.");
 	}
 	ibFirstGrabCheck = true;
 }
