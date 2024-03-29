@@ -152,7 +152,7 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(redTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting || IsClientSourceTV(x))
 					PrintToChat(x, "\x0700ffff[PASS]\x07C43F3B %s:\x073BC43B GLS %d,\x073bc48f AST %d,\x07ffff00 SAV %d,\x07ff00ff INT %d,\x07ff8000 STL %d"
 						, playerName, arriPlyRoundPassStats[redTeam[i]].iPlyScores, arriPlyRoundPassStats[redTeam[i]].iPlyAssists, arriPlyRoundPassStats[redTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[redTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[redTeam[i]].iPlySteals);
@@ -173,7 +173,7 @@ Action Timer_DisplayStats(Handle timer)
 			{
 				char playerName[MAX_NAME_LENGTH];
 				GetClientName(bluTeam[i], playerName, sizeof(playerName));
-				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting)
+				if(arrbJackAcqSettings[x].bPlySimpleChatPrintSetting && !arrbJackAcqSettings[x].bPlyToggleChatPrintSetting || IsClientSourceTV(x))
 					PrintToChat(x, "\x0700ffff[PASS]\x074EA6C1 %s:\x073BC43B GLS %d,\x073bc48f AST %d,\x07ffff00 SAV %d,\x07ff00ff INT %d,\x07ff8000 STL %d"
 						, playerName, arriPlyRoundPassStats[bluTeam[i]].iPlyScores, arriPlyRoundPassStats[bluTeam[i]].iPlyAssists, arriPlyRoundPassStats[bluTeam[i]].iPlySaves
 						, arriPlyRoundPassStats[bluTeam[i]].iPlyIntercepts, arriPlyRoundPassStats[bluTeam[i]].iPlySteals);

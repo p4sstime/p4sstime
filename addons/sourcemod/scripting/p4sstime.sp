@@ -519,14 +519,26 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 			bSave = true;
 			arriPlyRoundPassStats[catcher].iPlySaves++;
 			if(bPrintStats.BoolValue)
-				PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
+			{
+				for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s \x07ffff00blocked \x0700ffff%s from scoring!", catcherName, throwerName);
+				}
+			}
 			PrintToSTV("[PASS-TV] %s blocked %s from scoring. Tick: %d", catcherName, throwerName, STVTickCount());
 		}
 		else
 		{
 			arriPlyRoundPassStats[catcher].iPlyIntercepts++;
 			if(bPrintStats.BoolValue)
-				PrintToChatAll("\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+			{
+				for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s \x07ff00ffintercepted \x0700ffff%s!", catcherName, throwerName);
+				}
+			}
 			PrintToSTV("[PASS-TV] %s intercepted %s. Tick: %d", catcherName, throwerName, STVTickCount());
 		}
 	}
@@ -534,7 +546,13 @@ Action Event_PassCaught(Handle event, const char[] name, bool dontBroadcast)
 	if (TF2_GetClientTeam(thrower) == TF2_GetClientTeam(catcher) && eiPassTarget != catcher && !(GetEntityFlags(catcher) & FL_ONGROUND) && DistanceAboveGround(catcher) > 200) // if on same team and catcher is not locked onto for a pass, also 200 units above ground at least (to ignore just normal non-lock passes)
 	{
 		if (bPrintStats.BoolValue)
-			PrintToChatAll("\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+		{
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s \x07ffff00handed off \x0700ffffto %s!", throwerName, catcherName);
+				}
+		}
 		PrintToSTV("[PASS-TV] %s handed off to %s. Tick: %d", throwerName, catcherName, STVTickCount());
 		ibHandoffCheck = true;
 		arriPlyRoundPassStats[thrower].iPlyHandoffs++;
@@ -593,12 +611,20 @@ Action Event_PassStolen(Event event, const char[] name, bool dontBroadcast)
 		GetClientName(victim, victimName, sizeof(victimName));
 		if(InGoalieZone(thief))
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 defensively stole from\x0700ffff %s!", thiefName, victimName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x07ff8000 defensively stole from\x0700ffff %s!", thiefName, victimName);
+				}
 			PrintToSTV("[PASS-TV] %s defensively stole from %s. Tick: %d", thiefName, victimName, STVTickCount());
 		}
 		else
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x07ff8000 stole from\x0700ffff %s!", thiefName, victimName);
+				}
 			PrintToSTV("[PASS-TV] %s stole from %s. Tick: %d", thiefName, victimName, STVTickCount());
 		}
 	}
@@ -644,27 +670,47 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	{
 		if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a \x074df74dPanacea!", playerName);
+				}
 			PrintToSTV("[PASS-TV] %s scored a Panacea. Tick: %d", playerName, STVTickCount());
 		}
 		else if(arrbWinStratCheck[scorer])
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
+				}
 			PrintToSTV("[PASS-TV] %s scored a win strat. Tick: %d", playerName, STVTickCount());
 		}
 		else if(dist > 1600)
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a goal from a distance of %.0fhu!", playerName, dist);
+				}
 			PrintToSTV("[PASS-TV] %s scored a goal from distance of %.0fhu. Tick: %d", playerName, dist, STVTickCount());
 		}
 		else if(assistant > 0)
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a goal \x0700ffffassisted by %s!", playerName, assistantName);
+				}
 			PrintToSTV("[PASS-TV] %s scored a goal assisted by %s. Tick: %d", playerName, assistantName, STVTickCount());
 		}
 		else
 		{
-			PrintToChatAll("\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || !IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a goal!", playerName);
+				}
 			PrintToSTV("[PASS-TV] %s scored a goal. Tick: %d", playerName, STVTickCount());
 		}
 	}
