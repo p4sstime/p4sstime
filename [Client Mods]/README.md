@@ -42,6 +42,8 @@ Here are some neat JACK & JACK trail replacement mods available on Gamebanana.
 
 Using [this mod preloader](https://gamebanana.com/wips/79779) allows them to work in servers that use `sv_pure 1`, like Valve servers or competitive games.
 
+Mr Boom Snook from the 4v4 PASS Time Discord made a sound mod available [here](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/pt-sound-mod.7z) that alters the ball_catch, ball_get, and target_lock sounds to be more snappy and noticeable. Give it a shot! If you don't like just one of the sounds, just remove those sounds from the mod.
+
 If you want to practice on a local server, you may note loading the map locally results in an annoying "Waiting for Players" message that takes 20 seconds to go away before the actual game can start and the ball can spawn. While you could manually enter `mp_waitingforplayers_cancel 1` every time, you could instead download the [Disable "Waiting For Players" Message](https://gamebanana.com/mods/448996) mod, making the game instantly start!
 
 And an [Invisible Hands](https://gamebanana.com/mods/467431) mod which quite a few PASS Time players enjoy, since the JACK uses an All Class animation resulting in clipping issues with viewmodels.
