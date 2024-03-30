@@ -155,6 +155,6 @@ Contains work from:
 [eaasye](https://github.com/eaasye/passtime/tree/master/addons/sourcemod/plugins)\
 [drunderscore](https://github.com/drunderscore/SourcemodPlugins/blob/master/fix_uber_wearoff_condition.sp)\
 [muddy](https://github.com/SirBlockles/pass-tweaks/blob/main/passtweaks.sp)\
-[MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp#L546-L562); Direct hit detector\
+[MGEMod](https://github.com/sapphonie/MGEMod/blob/master/addons/sourcemod/scripting/mge.sp)\
 Huge shoutout to the AlliedModders Discord for being the most helpful source of info ever.\
 Thanks to those in The Dunking Dojo and those in the Official 4v4 PASS Time Discord for being my guinea pigs.
