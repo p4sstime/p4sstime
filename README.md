@@ -93,7 +93,7 @@ _DropKnock's_\
 [pass_ruin](https://tf2maps.net/downloads/pass_ruin.14697)
 
 _Shears's_\
-pass_plexiglass
+[pass_plexiglass](https://tf2maps.net/downloads/pass_plexiglass.17375/)
 
 ## For Mappers
 
