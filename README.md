@@ -1,6 +1,6 @@
-# p4sstime
+<a href="https://passtime.tf/"><img src="https://github.com/blakeplusplus/p4sstime/blob/main/%5BExtras%5D/final_logo.png" width=15%></a>
 
-<img src="https://github.com/blakeplusplus/p4sstime/blob/main/%5BExtras%5D/final_logo.png" max-width=25% display:inline>Competitive 4v4 PASS Time plugins, configs, and more.<br>[Join the 4v4 PASS Time Discord today!](https://discord.com/invite/Vrk3Etg)
+Competitive 4v4 PASS Time plugins, configs, and more.
 
 ## Plugin Features
 
