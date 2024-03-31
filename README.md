@@ -2,6 +2,8 @@
 
 Competitive 4v4 PASS Time plugins, configs, and more.
 
+[Development Plans](https://miro.com/app/board/uXjVKaLa06s=/?share_link_id=145609750167)
+
 ## Plugin Features
 
 - Uploads PASS Time specific data to logs.tf for display by [more.tf](https://more.tf) using in-game commands
