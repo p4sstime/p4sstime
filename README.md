@@ -4,6 +4,15 @@ Competitive 4v4 PASS Time plugins, configs, and more.
 
 [Development Plans](https://miro.com/app/board/uXjVKaLa06s=/?share_link_id=145609750167)
 
+## Dependencies
+
+[LogsTF](https://github.com/F2/F2s-sourcemod-plugins?tab=readme-ov-file#logstf--) - For uploading logs
+
+## Recommended Plugins
+
+[SrcTV+](https://github.com/dalegaard/srctvplus) - Makes SrcTV send everything; important for PASS Time
+[JumpQOL](https://github.com/chrb22/jumpqol/) - Fixes a lot of issues with blastjumping mechanics in TF2
+
 ## Plugin Features
 
 - Uploads PASS Time specific data to logs.tf for display by [more.tf](https://more.tf) using in-game commands
@@ -145,10 +154,6 @@ BLU Left info_player_teamspawn name: "blu_respawnpoint2"
 - All ball spawners need to have a classname of info_passtime_ball_spawn and an output named OnSpawnBall.
 
 When in doubt, mirror arena2's names and outputs, as they are the standard I'll be using.
-
-## Recommended Plugins
-
-[JumpQOL](https://github.com/chrb22/jumpqol/) - Fixes a lot of issues with blastjumping mechanics in TF2
 
 ## Credits
 
