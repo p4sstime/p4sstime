@@ -48,6 +48,7 @@ int  			eiJack;
 int  			eiPassTarget;
 int 			ibBallSpawnedLower;
 int 			iRoundResetTick;
+int 			iWinStratDistance;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
@@ -164,6 +165,14 @@ public void OnPluginStart()
 #include <p4sstime/convars.sp>
 #include <p4sstime/stats_print.sp>
 #include <p4sstime/f2stocks.sp>
+
+public void OnMapInit(const char[] mapName)
+{
+	if(StrContains(mapName, "stadium") != 1) // stadium has much lower top spawner so do this to avoid false positive win strats
+		iWinStratDistance = 150;
+	else
+		iWinStratDistance = 300;
+}
 
 public void OnMapStart() // getgoallocations
 {
@@ -466,7 +475,7 @@ Action Event_PassGet(Event event, const char[] name, bool dontBroadcast)
 		arriPlyRoundPassStats[iPlyWhoGotJack].iPlyFirstGrabs++;
 		arrbPanaceaCheck[iPlyWhoGotJack] = true;
 		GetClientAbsOrigin(iPlyWhoGotJack, position);
-		if(GetVectorDistance(position, fTopSpawnPos, false) < 300) // may need to be changed
+		if(GetVectorDistance(position, fTopSpawnPos, false) < iWinStratDistance) // may need to be changed
 			{
 				arrbPanaceaCheck[iPlyWhoGotJack] = false;
 				arrbWinStratCheck[iPlyWhoGotJack] = true;
