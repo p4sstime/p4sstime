@@ -666,25 +666,48 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	GetEntPropVector(eiJack, Prop_Send, "m_vecOrigin", fScoredBallPos);
 	float dist = GetVectorDistance(fFreeBallPos, fScoredBallPos, false);
 
-	SetLogInfo(scorer);
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (deathbomb \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
-		user1, GetClientUserId(user1), user1steamid, user1team,
-		points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], arrbDeathbombCheck[eiDeathBomber], dist,
-		user1position[0], user1position[1], user1position[2]);
-	arriPlyRoundPassStats[scorer].iPlyScores++;
+	if(arrbDeathbombCheck[eiDeathBomber])
+	{
+		SetLogInfo(eiDeathBomber);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (deathbomb \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
+			user1, GetClientUserId(user1), user1steamid, user1team,
+			points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], arrbDeathbombCheck[eiDeathBomber], dist,
+			user1position[0], user1position[1], user1position[2]);
+		arriPlyRoundPassStats[eiDeathBomber].iPlyScores++;
+		arriPlyRoundPassStats[eiDeathBomber].iPlyDeathbombs++;
+
+		GetClientName(scorer, assistantName, sizeof(assistantName));
+		SetLogInfo(scorer);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
+			user1, GetClientUserId(user1), user1steamid, user1team,
+			user1position[0], user1position[1], user1position[2]);
+		arriPlyRoundPassStats[scorer].iPlyAssists++;
+	}
+	else
+	{
+		SetLogInfo(scorer);
+		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (deathbomb \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
+			user1, GetClientUserId(user1), user1steamid, user1team,
+			points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], arrbDeathbombCheck[eiDeathBomber], dist,
+			user1position[0], user1position[1], user1position[2]);
+		arriPlyRoundPassStats[scorer].iPlyScores++;
+		
+		if (assistant > 0)
+		{
+			GetClientName(assistant, assistantName, sizeof(assistantName));
+			SetLogInfo(assistant);
+			LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
+				user1, GetClientUserId(user1), user1steamid, user1team,
+				user1position[0], user1position[1], user1position[2]);
+			arriPlyRoundPassStats[assistant].iPlyAssists++;
+		}
+	}
+
 	if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
 		arriPlyRoundPassStats[scorer].iPlyPanaceas++;
 	else if(arrbWinStratCheck[scorer])
 		arriPlyRoundPassStats[scorer].iPlyWinStrats++;
-	if (assistant > 0)
-	{
-		GetClientName(assistant, assistantName, sizeof(assistantName));
-		SetLogInfo(assistant);
-		LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score_assist\" (position \"%.0f %.0f %.0f\")", 
-			user1, GetClientUserId(user1), user1steamid, user1team,
-			user1position[0], user1position[1], user1position[2]);
-		arriPlyRoundPassStats[assistant].iPlyAssists++;
-	}
+	
 	if(bPrintStats.BoolValue)
 	{
 		if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
