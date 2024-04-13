@@ -6,7 +6,7 @@
 #pragma semicolon 1	   // required for logs.tf
 #pragma newdecls required
 
-#define VERSION "2.1.0"
+#define VERSION "2.2.0d"
 
 enum struct enubPlyJackSettings
 {
@@ -27,6 +27,7 @@ enum struct enuiPlyRoundStats
 	int iPlySteals;
 	int iPlyPanaceas;
 	int iPlyWinStrats;
+	int iPlyDeathbombs;
 	int iPlyHandoffs;
 	int iPlyFirstGrabs;
 	int iPlyCatapults;
@@ -49,6 +50,7 @@ int  			eiPassTarget;
 int 			ibBallSpawnedLower;
 int 			iRoundResetTick;
 int 			iWinStratDistance;
+int 			eiDeathBomber;
 //int  			trikzProjCollideCurVal;
 //int  			trikzProjCollideSave = 2;
 Menu			mPassMenu;
@@ -57,6 +59,7 @@ bool			arrbPlyIsDead[MAXPLAYERS + 1];
 bool			arrbBlastJumpStatus[MAXPLAYERS + 1]; // true if blast jumping, false if has landed
 bool			arrbPanaceaCheck[MAXPLAYERS + 1];
 bool			arrbWinStratCheck[MAXPLAYERS + 1];
+bool 			arrbDeathbombCheck[MAXPLAYERS + 1];
 // bool			plyTakenDirectHit[MAXPLAYERS + 1];
 Cookie  		cookieCountdownCaption, cookieJACKPickupHud, cookieJACKPickupChat, cookieJACKPickupSound, cookieSimpleChatPrint, cookieToggleChatPrint;
 
@@ -382,7 +385,11 @@ Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	arrbPlyIsDead[client] = true;
-
+	if(client == eiPassTarget)
+	{
+		eiDeathBomber = client;
+		arrbDeathbombCheck[eiDeathBomber] = true;
+	}
 	return Plugin_Handled;
 }
 
@@ -427,6 +434,9 @@ void Hook_OnSpawnBall(const char[] name, int caller, int activator, float delay)
 Action Event_PassFree(Event event, const char[] name, bool dontBroadcast)
 {
 	int owner = event.GetInt("owner");
+
+	arrbDeathbombCheck[eiDeathBomber] = false; // if anyone at all throws the ball, the deathbomb is automatically false
+	
 	if (arrbJackAcqSettings[owner].bPlyHudTextSetting)
 	{
 		SetHudTextParams(-1.0, 0.22, 3.0, 240, 0, 240, 255);
@@ -657,9 +667,9 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 	float dist = GetVectorDistance(fFreeBallPos, fScoredBallPos, false);
 
 	SetLogInfo(scorer);
-	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
+	LogToGame("\"%N<%i><%s><%s>\" triggered \"pass_score\" (points \"%i\") (panacea \"%d\") (win strat \"%d\") (deathbomb \"%d\") (dist \"%.0f\") (position \"%.0f %.0f %.0f\")", 
 		user1, GetClientUserId(user1), user1steamid, user1team,
-		points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], dist,
+		points, arrbPanaceaCheck[scorer], arrbWinStratCheck[scorer], arrbDeathbombCheck[eiDeathBomber], dist,
 		user1position[0], user1position[1], user1position[2]);
 	arriPlyRoundPassStats[scorer].iPlyScores++;
 	if(arrbPanaceaCheck[scorer] && TF2_GetPlayerClass(scorer) != TFClass_Medic)
@@ -694,6 +704,16 @@ Action Event_PassScore(Event event, const char[] name, bool dontBroadcast)
 					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a \x078aed8awin strat!", playerName);
 				}
 			PrintToSTV("[PASS-TV] %s scored a win strat. Tick: %d", playerName, STVTickCount());
+		}
+		else if(arrbDeathbombCheck[eiDeathBomber])
+		{
+			GetClientName(eiDeathBomber, playerName, sizeof(playerName));
+			for (int x = 1; x < MaxClients + 1; x++)
+				{
+					if(!IsValidClient(x) || IsClientSourceTV(x)) continue;
+					PrintToChat(x, "\x0700ffff[PASS] %s\x073BC43B scored a \x0797e043deathbomb!", playerName);
+				}
+			PrintToSTV("[PASS-TV] %s scored a deathbomb. Tick: %d", playerName, STVTickCount());
 		}
 		else if(dist > 1600)
 		{

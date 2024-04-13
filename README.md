@@ -66,7 +66,7 @@ Here are examples of each of the logs that the plugin will produce.
 ```
 L 02/10/2024 - 16:15:43: "blake++<2><[U:1:95447021]><Red>" triggered "pass_get" (firstcontact "1") (position "16 34 446")
 L 02/10/2024 - 16:15:44: "blake++<2><[U:1:95447021]><Red>" triggered "pass_free" (position "46 -591 468")
-L 02/10/2024 - 16:16:04: "blake++<2><[U:1:95447021]><Red>" triggered "pass_score" (points "1") (panacea "0") (win strat "0") (dist "302") (position "46 -1328 14")
+L 02/10/2024 - 16:16:04: "blake++<2><[U:1:95447021]><Red>" triggered "pass_score" (points "1") (panacea "0") (win strat "0") (deathbomb "0") (dist "302") (position "46 -1328 14")
 L 02/10/2024 - 16:41:46: "Morbidly_Obese_Dog<3><[U:1:1095402112><Red>" triggered "pass_score_assist" (position "-607 667 0")
 L 02/10/2024 - 16:41:44: "blake++<2><[U:1:95447021]><Red>" triggered "pass_pass_caught" against "Morbidly_Obese_Dog<3><[U:1:1095402112><Red>" (interception "0") (save "0") (handoff "0") (dist "75.688") (duration "1.184") (thrower_position "-0 -263 159") (catcher_position "-607 667 0")
 L 02/10/2024 - 16:43:36: "Morbidly_Obese_Dog<3><[U:1:1095402112><Red>" triggered "pass_ball_stolen" against "blake++<2><[U:1:95447021]><Blue>" (steal defense "0") (thief_position "201 -538 0") (victim_position "170 -485 0")
