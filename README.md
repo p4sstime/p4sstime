@@ -10,7 +10,7 @@ Competitive 4v4 PASS Time plugins, configs, and more.
 
 ## Recommended Plugins
 
-[SrcTV+](https://github.com/dalegaard/srctvplus) - Makes SrcTV send everything; important for PASS Time
+[SrcTV+](https://github.com/dalegaard/srctvplus) - Makes SrcTV send everything; important for PASS Time\
 [JumpQOL](https://github.com/chrb22/jumpqol/) - Fixes a lot of issues with blastjumping mechanics in TF2
 
 ## Plugin Features
