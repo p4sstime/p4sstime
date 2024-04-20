@@ -104,6 +104,8 @@ _DropKnock's_\
 _Shears's_\
 [pass_plexiglass](https://tf2maps.net/downloads/pass_plexiglass.17375/)
 
+The map archive is available [here](https://archive.org/details/@blakeplusplus/lists/1/4v4-pass-time-maps).
+
 ## For Mappers
 
 Certain entities and properties need to be named certain things for them to work with the plugin's logging capabilities.
