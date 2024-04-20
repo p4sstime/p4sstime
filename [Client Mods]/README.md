@@ -20,6 +20,10 @@ If you have a custom HUD, go to your `custom` folder and open the HUD folder. Th
 
 Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labels).
 
+## Removing Whistle Icons
+
+You may want to remove these when you're recording for a demo. You can download the blank.vtf file and put it in `custom/materials/passtime/hud/`; name it as `passtime_pass_to_me_prompt.vtf`.
+
 ## Custom PASS Time Reticles
 
 Not a fan of the default PASS Time JACK reticle?
