@@ -22,7 +22,7 @@ Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labe
 
 ## Removing Whistle Icons
 
-You may want to remove these when you're recording for a demo. You can download the blank.vtf file and put it in `custom/materials/passtime/hud/`; name it as `passtime_pass_to_me_prompt.vtf`.
+You may want to remove these when you're recording for a demo. You can download the [blank.vtf file](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/blank.vtf) and put it in `custom/materials/passtime/hud/`; name it as `passtime_pass_to_me_prompt.vtf`.
 
 ## Custom PASS Time Reticles
 
