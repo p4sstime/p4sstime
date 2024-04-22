@@ -6,7 +6,7 @@
 #pragma semicolon 1	   // required for logs.tf
 #pragma newdecls required
 
-#define VERSION "2.2.0d"
+#define VERSION "2.2.0"
 
 enum struct enubPlyJackSettings
 {
@@ -171,7 +171,7 @@ public void OnPluginStart()
 
 public void OnMapInit(const char[] mapName)
 {
-	if(StrContains(mapName, "stadium") != 1) // stadium has much lower top spawner so do this to avoid false positive win strats
+	if(StrContains(mapName, "stadium") != -1) // stadium has much lower top spawner so do this to avoid false positive win strats
 		iWinStratDistance = 150;
 	else
 		iWinStratDistance = 300;
