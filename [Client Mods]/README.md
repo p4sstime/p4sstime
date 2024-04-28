@@ -20,14 +20,9 @@ If you have a custom HUD, go to your `custom` folder and open the HUD folder. Th
 
 Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labels).
 
-## Removing Whistle Icons
+## Removing PASS Time HUD Elements
 
-You may want to remove these when you're recording for a demo. You can download the [blank.vtf file](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/blank.vtf) and put it in `custom/materials/passtime/hud/`; name it as `passtime_pass_to_me_prompt.vtf`.
-
-## Removing Teammate Icons
-
-![PASS Time Teammate Icon](https://i.imgur.com/RgppAEL.png)\
-You may want to remove these when you're recording for a demo. Just simply do the commands `tf_passtime_player_reticles_enemies 0` and `tf_passtime_player_reticles_friends 0`. 0 is never, 1 is when carrying ball, 2 is always.
+I have figured out one way or another to remove all of the PASS Time HUD elements. I released the [PASS Time Recording HUD](https://github.com/blakeplusplus/passtime-recording-hud) which shows in its commit history how I removed each and every HUD element I did (which you can use to reverse the process if you desire).
 
 ## Custom PASS Time Reticles
 
