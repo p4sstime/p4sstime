@@ -26,8 +26,8 @@ You may want to remove these when you're recording for a demo. You can download 
 
 ## Removing Teammate Icons
 
-![PASS Time Teammate Icon](https://i.imgur.com/RgppAEL.png)
-You may want to remove these when you're recording for a demo. You can download the [pt-teamicon-remover](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/pt-teamicon-remover.7z) and extract it to its own folder in `custom/`. The directory should look like `custom/pt-teamicon-remover/materials/...`.
+![PASS Time Teammate Icon](https://i.imgur.com/RgppAEL.png)\
+You may want to remove these when you're recording for a demo. You can download the [pt-teamicon-remover](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/pt-teamicon-remover.7z) archive and extract it to its own folder in `custom/`. The directory should look like `custom/pt-teamicon-remover/materials/...`.
 
 ## Custom PASS Time Reticles
 
