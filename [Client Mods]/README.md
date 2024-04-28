@@ -24,6 +24,11 @@ Otherwise, [click here](#custom-hud--file-not-found-or-default-hud-changing-labe
 
 You may want to remove these when you're recording for a demo. You can download the [blank.vtf file](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/blank.vtf) and put it in `custom/materials/passtime/hud/`; name it as `passtime_pass_to_me_prompt.vtf`.
 
+## Removing Teammate Icons
+
+![PASS Time Teammate Icon](https://i.imgur.com/RgppAEL.png)
+You may want to remove these when you're recording for a demo. You can download the [pt-teamicon-remover](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/pt-teamicon-remover.7z) and extract it to its own folder in `custom/`. The directory should look like `custom/pt-teamicon-remover/materials/...`.
+
 ## Custom PASS Time Reticles
 
 Not a fan of the default PASS Time JACK reticle?
