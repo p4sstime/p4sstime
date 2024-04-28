@@ -27,7 +27,7 @@ You may want to remove these when you're recording for a demo. You can download 
 ## Removing Teammate Icons
 
 ![PASS Time Teammate Icon](https://i.imgur.com/RgppAEL.png)\
-You may want to remove these when you're recording for a demo. You can download the [pt-teamicon-remover](https://github.com/blakeplusplus/p4sstime/raw/main/%5BClient%20Mods%5D/pt-teamicon-remover.7z) archive and extract it to its own folder in `custom/`. The directory should look like `custom/pt-teamicon-remover/materials/...`.
+You may want to remove these when you're recording for a demo. Just simply do the commands `tf_passtime_player_reticles_enemies 0` and `tf_passtime_player_reticles_friends 0`. 0 is never, 1 is when carrying ball, 2 is always.
 
 ## Custom PASS Time Reticles
 
