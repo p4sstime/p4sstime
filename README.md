@@ -1,3 +1,5 @@
+# For plugin/cfgs, go to [p4sstime-server-resources](https://github.com/p4sstime/p4sstime-server-resources)
+
 ## Dependencies
 
 [LogsTF](https://github.com/F2/F2s-sourcemod-plugins?tab=readme-ov-file#logstf--) - For uploading logs
